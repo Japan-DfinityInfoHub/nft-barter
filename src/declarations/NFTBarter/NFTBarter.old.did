@@ -1,3 +1,11 @@
+type UserId = principal;
+type Result = 
+ variant {
+   err: text;
+   ok: UserId;
+ };
 service : {
-  greet: (text) -> (text);
+  isRegistered: () -> (bool) query;
+  register: () -> (Result);
+  userId: () -> (Result) query;
 }
