@@ -27,9 +27,46 @@ If you want to test your project locally, you can use the following commands:
 ```bash
 # Starts the replica, running in the background
 dfx start --background
+```
 
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
+Then install a local Internet Identity (II) canister.
+
+(i) Clone the internet Identity repo locally, adjacent to this project.
+
+```
+cd ../internet-identity
+rm -rf .dfx/local
+II_FETCH_ROOT_KEY=1 II_DUMMY_CAPTCHA=1 dfx deploy --argument '(null)'
+```
+
+(ii) To check the canister ID of local II, run:
+
+```
+dfx canister id internet_identity
+```
+
+(iii) Visit the local II on your browser and create at least one local internet identity. The URL is the combination of the canister ID and `.localhost:8000`, for example:
+
+```
+http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/
+```
+
+Go back to our project:
+
+```
+cd ../nft-barter
+```
+
+Create `.env` file in the root directory and define `LOCAL_II_CANISTER_ID`:
+
+```
+LOCAL_II_CANISTER_ID=rkp4c-7iaaa-aaaaa-aaaca-cai
+```
+
+Deploy canisters locally:
+
+```
+sh ./install_local.sh
 ```
 
 Once the job completes, your application will be available at `http://localhost:8000?canisterId={asset_canister_id}`.
