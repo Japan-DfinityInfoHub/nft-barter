@@ -33,6 +33,7 @@
     "assert": "2.0.0",
     "buffer": "6.0.3",
     "copy-webpack-plugin": "^9.0.1",
+    "dotenv": "^16.0.0",
     "events": "3.3.0",
     "framer-motion": "^6.3.3",
     "html-webpack-plugin": "5.5.0",

@@ -1,8 +1,19 @@
 const path = require('path');
+const dotenv = require('dotenv');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+
+const network =
+  process.env.DFX_NETWORK ||
+  (process.env.NODE_ENV === 'production' ? 'ic' : 'local');
+
+// Replace this value with the ID of your local Internet Identity canister
+const env = dotenv.config().parsed;
+const LOCAL_II_CANISTER = `http://${
+  env && process.env.LOCAL_II_CANISTER_ID
+}.localhost:8000/#authorize`;
 
 function initCanisterEnv() {
   let localCanisters, prodCanisters;
@@ -20,10 +31,6 @@ function initCanisterEnv() {
   } catch (error) {
     console.log('No production canister_ids.json found. Continuing with local');
   }
-
-  const network =
-    process.env.DFX_NETWORK ||
-    (process.env.NODE_ENV === 'production' ? 'ic' : 'local');
 
   const canisterConfig = network === 'local' ? localCanisters : prodCanisters;
 
@@ -93,6 +100,8 @@ module.exports = {
     }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
+      DFX_NETWORK: network,
+      LOCAL_II_CANISTER,
       ...canisterEnvVariables,
     }),
     new webpack.ProvidePlugin({
