@@ -66,7 +66,7 @@ LOCAL_II_CANISTER_ID=rkp4c-7iaaa-aaaaa-aaaca-cai
 Deploy canisters locally:
 
 ```
-sh ./install_local.sh
+sh ./scripts/install_local.sh
 ```
 
 Once the job completes, your application will be available at `http://localhost:8000?canisterId={asset_canister_id}`.
