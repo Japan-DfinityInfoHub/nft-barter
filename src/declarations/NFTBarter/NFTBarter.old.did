@@ -1,19 +1,14 @@
-type UserId__1 = principal;
+type UserProfile = variant {none;};
 type UserId = principal;
 type Result_1 = 
  variant {
    err: text;
-   ok: DefiniteUser;
+   ok: UserProfile;
  };
 type Result = 
  variant {
    err: text;
    ok: UserId;
- };
-type DefiniteUser = 
- record {
-   id: UserId__1;
-   name: text;
  };
 service : {
   getMyInfo: () -> (Result_1) query;
