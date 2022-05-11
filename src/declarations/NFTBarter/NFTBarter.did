@@ -1,3 +1,19 @@
-service : {
-  greet: (text) -> (text);
-}
+type UserProfile = variant {none;};
+type UserId = principal;
+type Result_1 = 
+ variant {
+   err: text;
+   ok: UserProfile;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: UserId;
+ };
+type NFTBarter = 
+ service {
+   getMyProfile: () -> (Result_1) query;
+   isRegistered: () -> (bool) query;
+   register: () -> (Result);
+ };
+service : () -> NFTBarter
