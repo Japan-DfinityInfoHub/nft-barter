@@ -6,22 +6,20 @@ import List "mo:base/List";
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 
-import User "./User";
+import Types "./Types";
 
-shared ({ caller }) actor class NFTBarter() {
+shared (install) actor class NFTBarter() {
 
-  type User = User.User;
-  type UserId = User.UserId;
-  type DefiniteUser = User.DefiniteUser;
+  type UserProfile = Types.UserProfile;
+  type UserId = Types.UserId;
   type Result<T, E> = Result.Result<T, E>;
 
-  // Bind the caller and owner
-  let owner : Principal = caller;
+  let installer : Principal = install.caller;
 
   // Stable variables
-  stable var _stableUsers : [(UserId, User)] = [];
+  stable var _stableUsers : [(UserId, UserProfile)] = [];
 
-  let _users = HashMap.fromIter<UserId, User>(
+  let _userProfiles = HashMap.fromIter<UserId, UserProfile>(
     _stableUsers.vals(), 10, Principal.equal, Principal.hash
   );
 
@@ -32,26 +30,23 @@ shared ({ caller }) actor class NFTBarter() {
   //   - `caller` is the anonymous identity.
   public shared ({ caller }) func register(): async Result<UserId,Text>{
     if (Principal.isAnonymous(caller)) { return #err "You need to be authenticated." };
-    switch (_users.get(caller)) {
+    switch (_userProfiles.get(caller)) {
       case (?_) {
         #err "This principal id is already in use."
       };
       case null {
-        let user = {
-          id = caller;
-          var name = "anonymous";
-        };
-        _users.put(caller, user);
+        let userProfile : UserProfile = #none;
+        _userProfiles.put(caller, userProfile);
         #ok caller
       };
     }
   };
 
-  // Returns `user`.
+  // Returns `userProfile` associated with `caller`
   // Traps if `caller` is not a registered user.
-  public query ({ caller }) func getMyInfo(): async Result<DefiniteUser,Text> {
-    switch (_users.get(caller)) {
-      case (?user) { #ok (User.freeze(user)) };
+  public query ({ caller }) func getMyProfile(): async Result<UserProfile,Text> {
+    switch (_userProfiles.get(caller)) {
+      case (?userProfile) { #ok userProfile };
       case null { #err "You are not registered." };
     }
   };
@@ -63,21 +58,14 @@ shared ({ caller }) actor class NFTBarter() {
 
   // Returns `true` if `principal` is a registered user.
   private func _isUserRegistered(principal: Principal): Bool {
-    Option.isSome(_users.get(principal))
+    Option.isSome(_userProfiles.get(principal))
   };
 
   // The work required before a canister upgrade begins.
   system func preupgrade() {
     Debug.print("Starting pre-upgrade hook...");
-    _stableUsers := Iter.toArray(_users.entries());
+    _stableUsers := Iter.toArray(_userProfiles.entries());
     Debug.print("pre-upgrade finished.");
-  };
-
-  // The work required after a canister upgrade ends.
-  system func postupgrade() {
-    Debug.print("Starting post-upgrade hook...");
-    _stableUsers := [];
-    Debug.print("post-upgrade finished.");
   };
 
 }
