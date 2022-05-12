@@ -7,20 +7,26 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 
 import Types "./Types";
+import ChildCanister "./ChildCanister";
 
-shared (install) actor class NFTBarter() {
+shared (install) actor class NFTBarter() = this {
 
   type UserProfile = Types.UserProfile;
   type UserId = Types.UserId;
+  type CanisterID = Types.CanisterID;
   type Result<T, E> = Result.Result<T, E>;
 
   let installer : Principal = install.caller;
 
   // Stable variables
   stable var _stableUsers : [(UserId, UserProfile)] = [];
+  stable var _stableCanisters : [(CanisterID, UserId)] = [];
 
   let _userProfiles = HashMap.fromIter<UserId, UserProfile>(
     _stableUsers.vals(), 10, Principal.equal, Principal.hash
+  );
+  let _childCanisters = HashMap.fromIter<CanisterID, UserId>(
+    _stableCanisters.vals(), 10, Principal.equal, Principal.hash
   );
 
   // Register `caller` as a new user.
@@ -61,10 +67,18 @@ shared (install) actor class NFTBarter() {
     Option.isSome(_userProfiles.get(principal))
   };
 
+  /* child canister functions */
+  public shared ({ caller }) func mintChildCanister(): async Principal {
+    let child = await ChildCanister.ChildCanister(caller);
+    _childCanisters.put(Principal.fromActor(child), caller);
+    Principal.fromActor(child);
+  };
+  /* system functions */
   // The work required before a canister upgrade begins.
   system func preupgrade() {
     Debug.print("Starting pre-upgrade hook...");
     _stableUsers := Iter.toArray(_userProfiles.entries());
+    _stableCanisters := Iter.toArray(_childCanisters.entries());
     Debug.print("pre-upgrade finished.");
   };
 
