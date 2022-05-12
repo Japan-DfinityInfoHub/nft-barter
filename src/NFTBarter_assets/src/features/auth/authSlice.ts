@@ -1,7 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AuthClient } from '@dfinity/auth-client';
+import { Identity } from '@dfinity/agent';
 
-import { RootState } from '../../app/store';
+import { RootState, AsyncThunkConfig } from '../../app/store';
+import { createNFTBarterActor } from '../../utils/createNFTBarterActor';
+import {
+  UserProfile,
+  Result,
+} from '../../../../declarations/NFTBarter/NFTBarter.did';
 
 const DAYS = BigInt(1);
 const HOURSPERDAY = BigInt(24);
@@ -10,24 +16,45 @@ const NANOSECONDSPERHOUR = BigInt(3600000000000);
 export interface AuthState {
   isLogin: boolean;
   principal?: string;
+  userProfile?: UserProfile;
+  errorMessage?: string;
 }
 
 const initialState: AuthState = {
   isLogin: false,
 };
 
+const getMyProfile = async (identity: Identity) => {
+  const actor = createNFTBarterActor({ agentOptions: { identity } });
+  return await actor.getMyProfile();
+};
+
 const promisedLogin = (authClient: AuthClient) =>
-  new Promise<AuthState>(async (resolve, reject) => {
+  new Promise<{ res: Result; principal: string }>(async (resolve, reject) => {
     try {
       await authClient.login({
         onSuccess: async () => {
           const identity = await authClient.getIdentity();
           const isAnonymous = identity.getPrincipal().isAnonymous();
           if (!isAnonymous && (await authClient.isAuthenticated())) {
-            resolve({
-              isLogin: true,
-              principal: identity.getPrincipal().toText(),
-            });
+            const actor = createNFTBarterActor({ agentOptions: { identity } });
+            const isRegistered = await actor.isRegistered();
+
+            // Return `{ res: Result; principal: string }` here because
+            // `UserProfile` currently does not contain principal id.
+            // We may add `id: Principal` to `UserProfile` in the backend canister
+            // so that this function can simply return `Result`.
+            if (!isRegistered) {
+              resolve({
+                res: await actor.register(),
+                principal: identity.getPrincipal().toText(),
+              });
+            } else {
+              resolve({
+                res: await getMyProfile(identity),
+                principal: identity.getPrincipal().toText(),
+              });
+            }
           }
         },
         identityProvider:
@@ -42,23 +69,48 @@ const promisedLogin = (authClient: AuthClient) =>
     }
   });
 
-export const checkAuth = createAsyncThunk('auth/isAuth', async () => {
+export const checkAuth = createAsyncThunk<
+  AuthState,
+  undefined,
+  AsyncThunkConfig<{ errorMessage: string }>
+>('auth/isAuth', async (_, { rejectWithValue }) => {
   const authClient = await AuthClient.create();
   if (await authClient.isAuthenticated()) {
     const identity = authClient.getIdentity();
-    return { isLogin: true, principal: identity.getPrincipal().toText() };
+    const res = await getMyProfile(identity);
+    if ('ok' in res) {
+      return {
+        isLogin: true,
+        principal: identity.getPrincipal().toText(),
+        userProfile: res.ok,
+      };
+    } else {
+      return rejectWithValue({ errorMessage: res.err });
+    }
   } else {
     return { isLogin: false };
   }
 });
 
-export const login = createAsyncThunk('auth/login', async () => {
+export const login = createAsyncThunk<
+  AuthState,
+  undefined,
+  AsyncThunkConfig<{ errorMessage: string }>
+>('auth/login', async (_, { rejectWithValue }) => {
   const authClient = await AuthClient.create();
 
   if (!authClient) {
     throw new Error('Failed to use auth client.');
   }
-  return promisedLogin(authClient);
+  const { res, principal } = await promisedLogin(authClient);
+  if ('ok' in res) {
+    return {
+      isLogin: true,
+      principal,
+    };
+  } else {
+    return rejectWithValue({ errorMessage: res.err });
+  }
 });
 
 export const authSlice = createSlice({
@@ -76,10 +128,18 @@ export const authSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.isLogin = action.payload.isLogin;
       state.principal = action.payload.principal;
+      state.userProfile = action.payload.userProfile;
+    });
+    builder.addCase(login.rejected, (state, action) => {
+      state.errorMessage = action.payload?.errorMessage;
     });
     builder.addCase(checkAuth.fulfilled, (state, action) => {
       state.isLogin = action.payload.isLogin;
       state.principal = action.payload.principal;
+      state.userProfile = action.payload.userProfile;
+    });
+    builder.addCase(checkAuth.rejected, (state, action) => {
+      state.errorMessage = action.payload?.errorMessage;
     });
   },
 });
@@ -88,5 +148,7 @@ export const { logout } = authSlice.actions;
 
 export const selectIsLogin = (state: RootState) => state.auth.isLogin;
 export const selectPrincipal = (state: RootState) => state.auth.principal;
+export const selectUserProfile = (state: RootState) => state.auth.userProfile;
+export const selectErrorMessage = (state: RootState) => state.auth.errorMessage;
 
 export default authSlice.reducer;

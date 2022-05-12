@@ -1,18 +1,12 @@
 type UserProfile = variant {none;};
-type UserId = principal;
-type Result_1 = 
+type Result = 
  variant {
    err: text;
    ok: UserProfile;
  };
-type Result = 
- variant {
-   err: text;
-   ok: UserId;
- };
 type NFTBarter = 
  service {
-   getMyProfile: () -> (Result_1) query;
+   getMyProfile: () -> (Result) query;
    isRegistered: () -> (bool) query;
    register: () -> (Result);
  };

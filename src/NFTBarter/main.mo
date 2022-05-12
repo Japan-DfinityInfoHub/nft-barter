@@ -34,7 +34,7 @@ shared (install) actor class NFTBarter() = this {
   // Traps if:
   //   - `caller` is not a registered user.
   //   - `caller` is the anonymous identity.
-  public shared ({ caller }) func register(): async Result<UserId,Text>{
+  public shared ({ caller }) func register(): async Result<UserProfile,Text>{
     if (Principal.isAnonymous(caller)) { return #err "You need to be authenticated." };
     switch (_userProfiles.get(caller)) {
       case (?_) {
@@ -43,7 +43,7 @@ shared (install) actor class NFTBarter() = this {
       case null {
         let userProfile : UserProfile = #none;
         _userProfiles.put(caller, userProfile);
-        #ok caller
+        #ok userProfile
       };
     }
   };
