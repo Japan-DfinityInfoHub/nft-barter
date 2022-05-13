@@ -8,6 +8,7 @@ type NFTBarter =
  service {
    getMyProfile: () -> (Result) query;
    isRegistered: () -> (bool) query;
+   mintChildCanister: () -> (principal);
    register: () -> (Result);
  };
 service : () -> NFTBarter

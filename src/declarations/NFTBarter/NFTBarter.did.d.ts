@@ -2,6 +2,7 @@ import type { Principal } from '@dfinity/principal';
 export interface NFTBarter {
   'getMyProfile' : () => Promise<Result>,
   'isRegistered' : () => Promise<boolean>,
+  'mintChildCanister' : () => Promise<Principal>,
   'register' : () => Promise<Result>,
 }
 export type Result = { 'ok' : UserProfile } |

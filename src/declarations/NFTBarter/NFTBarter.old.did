@@ -7,5 +7,6 @@ type Result =
 service : {
   getMyProfile: () -> (Result) query;
   isRegistered: () -> (bool) query;
+  mintChildCanister: () -> (principal);
   register: () -> (Result);
 }
