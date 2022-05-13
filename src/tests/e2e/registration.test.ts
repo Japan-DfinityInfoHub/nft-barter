@@ -36,6 +36,13 @@ describe('User registration tests', () => {
     expect(await actorOfAlice.isRegistered()).toBe(false);
   });
 
+  it('Alice has no profile yet.', async () => {
+    const res = await actorOfAlice.getMyProfile();
+    if (!('err' in res)) {
+      throw new Error('getMyProfile should return err berofe registration.');
+    }
+  });
+
   it('Alice can be registered.', async () => {
     const res = await actorOfAlice.register();
     if ('ok' in res) {
@@ -47,5 +54,14 @@ describe('User registration tests', () => {
 
   it('Alice is already registered.', async () => {
     expect(await actorOfAlice.isRegistered()).toBe(true);
+  });
+
+  it('Now Alice has her own profile with initial values.', async () => {
+    const res = await actorOfAlice.getMyProfile();
+    if ('ok' in res) {
+      expect(res.ok).toStrictEqual(initialUserProfile);
+    } else {
+      throw new Error(res.err);
+    }
   });
 });
