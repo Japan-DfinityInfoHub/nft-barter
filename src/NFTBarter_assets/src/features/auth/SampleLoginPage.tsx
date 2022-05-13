@@ -8,6 +8,8 @@ import {
   logout,
   selectIsLogin,
   selectPrincipal,
+  selectUserProfile,
+  selectErrorMessage,
 } from './authSlice';
 
 interface ButtonProps {
@@ -34,6 +36,8 @@ export const SampleLoginPage: FC = () => {
   const dispatch = useAppDispatch();
   const isLogin = useAppSelector(selectIsLogin);
   const principal = useAppSelector(selectPrincipal);
+  const userProfile = useAppSelector(selectUserProfile);
+  const errorMessage = useAppSelector(selectErrorMessage);
 
   const handleLoginClick = async () => {
     await dispatch(login());
@@ -51,7 +55,12 @@ export const SampleLoginPage: FC = () => {
     <Center h='200px'>
       <VStack>
         <h1>Sample Login Page</h1>
+        {userProfile && (
+          <Text>USER PROFILE : {JSON.stringify(userProfile)}</Text>
+        )}
         {principal && <Text>YOUR PRINCIPAL IS : {principal}</Text>}
+        {errorMessage && <Text>ERROR : {errorMessage}</Text>}
+
         {isLogin ? (
           <SampleButton onClick={handleLogoutClick} text={'Logout'} />
         ) : (
