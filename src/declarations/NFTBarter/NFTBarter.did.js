@@ -4,6 +4,7 @@ export const idlFactory = ({ IDL }) => {
   const NFTBarter = IDL.Service({
     'getMyProfile' : IDL.Func([], [Result], ['query']),
     'isRegistered' : IDL.Func([], [IDL.Bool], ['query']),
+    'mintChildCanister' : IDL.Func([], [IDL.Principal], []),
     'register' : IDL.Func([], [Result], []),
   });
   return NFTBarter;
