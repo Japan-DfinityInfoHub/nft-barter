@@ -52,7 +52,7 @@ export const SampleLoginPage: FC = () => {
   });
 
   return (
-    <Center h='200px'>
+    <Center h='100vh'>
       <VStack>
         <h1>Sample Login Page</h1>
         {userProfile && (
