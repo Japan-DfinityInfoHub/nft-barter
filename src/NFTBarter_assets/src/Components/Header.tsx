@@ -4,6 +4,7 @@ import { Image, Box, Flex, Spacer, HStack } from '@chakra-ui/react';
 import { useAppSelector } from '../app/hooks';
 import { selectIsLogin } from '../features/auth/authSlice';
 import { LoginButton } from '../features/auth/LoginButton';
+import { UserIcon } from './UserIcon';
 
 export const Header = () => {
   const isLogin = useAppSelector(selectIsLogin);
@@ -22,8 +23,8 @@ export const Header = () => {
           <Image height={'20px'} alt='Brand logo' src={`/brand-name.svg`} />
         </HStack>
         <Spacer />
-        <Box as='nav' mr={{ base: '4', sm: '3' }}>
-          {isLogin ? 'UserIcon' : <LoginButton />}
+        <Box as='nav' mr={{ base: '4', sm: '3' }} verticalAlign='middle'>
+          {isLogin ? <UserIcon diameter={40} /> : <LoginButton />}
         </Box>
       </Flex>
     </Box>
