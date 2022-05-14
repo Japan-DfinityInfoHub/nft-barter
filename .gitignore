@@ -16,3 +16,6 @@ dist/
 
 # env file
 .env
+
+# declarations: .old.did files
+*.old.did
