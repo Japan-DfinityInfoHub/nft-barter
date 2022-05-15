@@ -45,11 +45,9 @@ describe('User registration tests', () => {
 
   it('Alice can be registered.', async () => {
     const res = await actorOfAlice.register();
-    if ('ok' in res) {
-      expect(res.ok).toStrictEqual(initialUserProfile);
-    } else {
-      throw new Error(res.err);
-    }
+    expect(res).toStrictEqual({
+      ok: initialUserProfile,
+    });
   });
 
   it('Alice is already registered.', async () => {
@@ -58,10 +56,8 @@ describe('User registration tests', () => {
 
   it('Now Alice has her own profile with initial values.', async () => {
     const res = await actorOfAlice.getMyProfile();
-    if ('ok' in res) {
-      expect(res.ok).toStrictEqual(initialUserProfile);
-    } else {
-      throw new Error(res.err);
-    }
+    expect(res).toStrictEqual({
+      ok: initialUserProfile,
+    });
   });
 });
