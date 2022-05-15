@@ -29,6 +29,14 @@ const identityOptionOfAlice = {
 };
 const actorOfAlice = createNFTBarterActor(identityOptionOfAlice);
 
+const identityOptionOfAnonymous = {
+  agentOptions: {
+    fetch,
+    host: 'http://localhost:8000',
+  },
+};
+const actorOfAnonymous = createNFTBarterActor(identityOptionOfAnonymous);
+
 const initialUserProfile: UserProfile = { none: null };
 
 describe('User registration tests', () => {
@@ -59,5 +67,25 @@ describe('User registration tests', () => {
     expect(res).toStrictEqual({
       ok: initialUserProfile,
     });
+  });
+});
+
+describe('Anonymous registration tests', () => {
+  it('Anomymous identity can not register.', async () => {
+    const res = await actorOfAnonymous.register();
+    expect(res).toStrictEqual({
+      err: 'You need to be authenticated.',
+    });
+  });
+
+  it('Anonymous identity never has its own profile.', async () => {
+    const res = await actorOfAnonymous.getMyProfile();
+    expect(res).toStrictEqual({
+      err: 'You are not registered.',
+    });
+  });
+
+  it('Anonymous identity never be registered.', async () => {
+    expect(await actorOfAnonymous.isRegistered()).toBe(false);
   });
 });
