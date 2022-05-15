@@ -9,8 +9,10 @@ jobs:
   issue-automation:
     runs-on: ubuntu-latest
     steps:
-      - uses: alex-page/github-project-automation-plus@v0.8.1
+      - uses: leonsteinhaeuser/project-beta-automations@v1.2.1
         with:
-          project: NFT-barter
-          column: Todo
-          repo-token: ${{ secrets.GHPROJECT_TOKEN }}
+          gh_token: ${{ secrets.GHPROJECT_TOKEN }}
+          organization: Japan-DfinityInfoHub
+          project_id: 1 # NFT-barter
+          resource_node_id: ${{ github.event.issue.node_id }}
+          status_value: Todo
