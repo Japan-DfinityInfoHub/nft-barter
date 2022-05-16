@@ -7,4 +7,11 @@ module {
     #none;
   };
 
+  public type Error = {
+    #unauthorized : Text;
+    #notYetRegistered : Text;
+    #alreadyRegistered : Text;
+    #other : Text;
+  }
+
 }

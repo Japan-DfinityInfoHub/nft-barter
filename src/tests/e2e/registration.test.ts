@@ -46,9 +46,11 @@ describe('User registration tests', () => {
 
   it('Alice has no profile yet.', async () => {
     const res = await actorOfAlice.getMyProfile();
-    if (!('err' in res)) {
-      throw new Error('getMyProfile should return err berofe registration.');
-    }
+    expect(res).toEqual({
+      err: {
+        notYetRegistered: expect.anything(),
+      },
+    });
   });
 
   it('Alice can be registered.', async () => {
@@ -73,15 +75,19 @@ describe('User registration tests', () => {
 describe('Anonymous registration tests', () => {
   it('Anomymous identity can not register.', async () => {
     const res = await actorOfAnonymous.register();
-    expect(res).toStrictEqual({
-      err: 'You need to be authenticated.',
+    expect(res).toEqual({
+      err: {
+        unauthorized: expect.anything(),
+      },
     });
   });
 
   it('Anonymous identity never has its own profile.', async () => {
     const res = await actorOfAnonymous.getMyProfile();
-    expect(res).toStrictEqual({
-      err: 'You are not registered.',
+    expect(res).toEqual({
+      err: {
+        notYetRegistered: expect.anything(),
+      },
     });
   });
 

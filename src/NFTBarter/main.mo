@@ -14,6 +14,7 @@ shared (install) actor class NFTBarter() = this {
   type UserProfile = Types.UserProfile;
   type UserId = Types.UserId;
   type CanisterID = Types.CanisterID;
+  type Error = Types.Error;
   type Result<T, E> = Result.Result<T, E>;
 
   let installer : Principal = install.caller;
@@ -34,11 +35,11 @@ shared (install) actor class NFTBarter() = this {
   // Traps if:
   //   - `caller` is not a registered user.
   //   - `caller` is the anonymous identity.
-  public shared ({ caller }) func register(): async Result<UserProfile,Text>{
-    if (Principal.isAnonymous(caller)) { return #err "You need to be authenticated." };
+  public shared ({ caller }) func register(): async Result<UserProfile,Error>{
+    if (Principal.isAnonymous(caller)) { return #err(#unauthorized(Principal.toText(caller))) };
     switch (_userProfiles.get(caller)) {
       case (?_) {
-        #err "This principal id is already in use."
+        #err(#alreadyRegistered "This principal id is already in use.")
       };
       case null {
         let userProfile : UserProfile = #none;
@@ -50,10 +51,10 @@ shared (install) actor class NFTBarter() = this {
 
   // Returns `userProfile` associated with `caller`
   // Traps if `caller` is not a registered user.
-  public query ({ caller }) func getMyProfile(): async Result<UserProfile,Text> {
+  public query ({ caller }) func getMyProfile(): async Result<UserProfile,Error> {
     switch (_userProfiles.get(caller)) {
       case (?userProfile) { #ok userProfile };
-      case null { #err "You are not registered." };
+      case null { #err(#notYetRegistered "You are not registered.")};
     }
   };
 

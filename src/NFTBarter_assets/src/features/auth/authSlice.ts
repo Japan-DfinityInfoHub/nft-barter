@@ -7,6 +7,7 @@ import { createNFTBarterActor } from '../../utils/createNFTBarterActor';
 import {
   UserProfile,
   Result,
+  Error,
 } from '../../../../declarations/NFTBarter/NFTBarter.did';
 
 const DAYS = BigInt(1);
@@ -17,7 +18,7 @@ export interface AuthState {
   isLogin: boolean;
   principal?: string;
   userProfile?: UserProfile;
-  errorMessage?: string;
+  error?: Error;
 }
 
 const initialState: AuthState = {
@@ -72,7 +73,7 @@ const promisedLogin = (authClient: AuthClient) =>
 export const checkAuth = createAsyncThunk<
   AuthState,
   undefined,
-  AsyncThunkConfig<{ errorMessage: string }>
+  AsyncThunkConfig<{ error: Error }>
 >('auth/isAuth', async (_, { rejectWithValue }) => {
   const authClient = await AuthClient.create();
   if (await authClient.isAuthenticated()) {
@@ -85,7 +86,7 @@ export const checkAuth = createAsyncThunk<
         userProfile: res.ok,
       };
     } else {
-      return rejectWithValue({ errorMessage: res.err });
+      return rejectWithValue({ error: res.err });
     }
   } else {
     return { isLogin: false };
@@ -95,7 +96,7 @@ export const checkAuth = createAsyncThunk<
 export const login = createAsyncThunk<
   AuthState,
   undefined,
-  AsyncThunkConfig<{ errorMessage: string }>
+  AsyncThunkConfig<{ error: Error }>
 >('auth/login', async (_, { rejectWithValue }) => {
   const authClient = await AuthClient.create();
 
@@ -109,7 +110,7 @@ export const login = createAsyncThunk<
       principal,
     };
   } else {
-    return rejectWithValue({ errorMessage: res.err });
+    return rejectWithValue({ error: res.err });
   }
 });
 
@@ -131,7 +132,7 @@ export const authSlice = createSlice({
       state.userProfile = action.payload.userProfile;
     });
     builder.addCase(login.rejected, (state, action) => {
-      state.errorMessage = action.payload?.errorMessage;
+      state.error = action.payload?.error;
     });
     builder.addCase(checkAuth.fulfilled, (state, action) => {
       state.isLogin = action.payload.isLogin;
@@ -139,7 +140,7 @@ export const authSlice = createSlice({
       state.userProfile = action.payload.userProfile;
     });
     builder.addCase(checkAuth.rejected, (state, action) => {
-      state.errorMessage = action.payload?.errorMessage;
+      state.error = action.payload?.error;
     });
   },
 });
@@ -149,6 +150,6 @@ export const { logout } = authSlice.actions;
 export const selectIsLogin = (state: RootState) => state.auth.isLogin;
 export const selectPrincipal = (state: RootState) => state.auth.principal;
 export const selectUserProfile = (state: RootState) => state.auth.userProfile;
-export const selectErrorMessage = (state: RootState) => state.auth.errorMessage;
+export const selectError = (state: RootState) => state.auth.error;
 
 export default authSlice.reducer;

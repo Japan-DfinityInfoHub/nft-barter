@@ -1,7 +1,7 @@
 type UserProfile = variant {none;};
 type Result = 
  variant {
-   err: text;
+   err: Error;
    ok: UserProfile;
  };
 type NFTBarter = 
@@ -10,5 +10,12 @@ type NFTBarter =
    isRegistered: () -> (bool) query;
    mintChildCanister: () -> (principal);
    register: () -> (Result);
+ };
+type Error = 
+ variant {
+   alreadyRegistered: text;
+   notYetRegistered: text;
+   other: text;
+   unauthorized: text;
  };
 service : () -> NFTBarter
