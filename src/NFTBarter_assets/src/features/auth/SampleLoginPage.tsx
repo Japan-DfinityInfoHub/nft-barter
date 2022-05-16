@@ -49,7 +49,7 @@ export const SampleLoginPage: FC = () => {
 
   useEffect(() => {
     dispatch(checkAuth());
-  });
+  }, []);
 
   return (
     <Center h='100vh'>
