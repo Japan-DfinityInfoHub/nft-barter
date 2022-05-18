@@ -3,7 +3,7 @@ import { Image, Box, HStack, Text } from '@chakra-ui/react';
 
 export const Footer = () => {
   return (
-    <Box as='footer' bg='gray.100'>
+    <Box as='footer' bg='#EDF4FF'>
       <Box maxW='1300px' mx='auto'>
         <HStack ml={{ base: '4', sm: '3' }} py='4' spacing='10px'>
           <Box>
