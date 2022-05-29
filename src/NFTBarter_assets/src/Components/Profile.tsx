@@ -3,6 +3,7 @@ import { Center, Box, HStack, Image, Text } from '@chakra-ui/react';
 import { useAppSelector } from '../app/hooks';
 import { selectPrincipal } from '../features/auth/authSlice';
 import { UserIcon } from './UserIcon';
+import { MyGenerativeArtNFTs } from '../features/myGenerativeArtNFT/MyGenerativeArtNFTs';
 
 const PrincipalID: FC<{ principal: string }> = ({ principal }) => {
   return (
@@ -46,6 +47,7 @@ export const Profile = () => {
         </Box>
         <Box mt='20'>{principal && <PrincipalID principal={principal} />}</Box>
       </Center>
+      <MyGenerativeArtNFTs />
       <Center h='60vh'></Center>
     </>
   );
