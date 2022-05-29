@@ -14,6 +14,7 @@ const env = dotenv.config().parsed;
 const LOCAL_II_CANISTER = `http://${
   env && process.env.LOCAL_II_CANISTER_ID
 }.localhost:8000/#authorize`;
+const LOCAL_NFT_CANISTER_ID = process.env.LOCAL_NFT_CANISTER_ID;
 
 function initCanisterEnv() {
   let localCanisters, prodCanisters;
@@ -102,6 +103,7 @@ module.exports = {
       NODE_ENV: 'development',
       DFX_NETWORK: network,
       LOCAL_II_CANISTER,
+      LOCAL_NFT_CANISTER_ID,
       ...canisterEnvVariables,
     }),
     new webpack.ProvidePlugin({

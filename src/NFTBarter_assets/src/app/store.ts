@@ -5,10 +5,12 @@ import {
   Dispatch,
 } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
+import mintReducer from '../features/mint/mintSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    mint: mintReducer,
   },
 });
 
