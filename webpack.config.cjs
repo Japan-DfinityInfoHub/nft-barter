@@ -14,7 +14,7 @@ const env = dotenv.config().parsed;
 const LOCAL_II_CANISTER = `http://${
   env && process.env.LOCAL_II_CANISTER_ID
 }.localhost:8000/#authorize`;
-const LOCAL_NFT_CANISTER_ID = process.env.LOCAL_NFT_CANISTER_ID;
+const LOCAL_NFT_CANISTER_ID = env ? process.env.LOCAL_NFT_CANISTER_ID : '';
 
 function initCanisterEnv() {
   let localCanisters, prodCanisters;
