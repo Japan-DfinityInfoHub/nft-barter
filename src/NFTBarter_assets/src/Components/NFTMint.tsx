@@ -1,22 +1,31 @@
 import React from 'react';
-import { Center, Button, Text } from '@chakra-ui/react';
+import { Center, Text, VStack } from '@chakra-ui/react';
+import { useAppSelector } from '../app/hooks';
+
+import { MintButton } from '../features/mint/MintButton';
+import {
+  selectTokenId,
+  selectTokenIndex,
+  selectError,
+} from '../features/mint/mintSlice';
 
 export const NFTMint = () => {
+  const tokenId = useAppSelector(selectTokenId);
+  const tokenIndex = useAppSelector(selectTokenIndex);
+  const error = useAppSelector(selectError);
+
   return (
     <>
       <Center h='80vh'>
-        <Button
-          color='white'
-          px='1em'
-          fontSize='md'
-          height='2.5em'
-          bgGradient='linear(to-r, blue.300, green.200)'
-          borderRadius='2xl'
-          _hover={{ bgGradient: 'linear(to-r, blue.400, green.300)' }}
-          onClick={async () => {}}
-        >
-          <Text fontWeight='semibold'>Mint</Text>
-        </Button>
+        <VStack>
+          {tokenId && tokenIndex && (
+            <Text>
+              You minted #{tokenIndex} ({tokenId})
+            </Text>
+          )}
+          {error && <Text>{error}</Text>}
+          <MintButton />
+        </VStack>
       </Center>
     </>
   );
