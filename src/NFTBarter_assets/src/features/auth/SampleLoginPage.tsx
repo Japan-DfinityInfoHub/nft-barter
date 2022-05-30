@@ -11,6 +11,7 @@ import {
   selectUserProfile,
   selectError,
 } from './authSlice';
+import { Layout } from '../../Components/Layout';
 
 interface ButtonProps {
   onClick: () => Promise<void>;
@@ -52,21 +53,23 @@ export const SampleLoginPage: FC = () => {
   }, []);
 
   return (
-    <Center h='100vh'>
-      <VStack>
-        <h1>Sample Login Page</h1>
-        {userProfile && (
-          <Text>USER PROFILE : {JSON.stringify(userProfile)}</Text>
-        )}
-        {principal && <Text>YOUR PRINCIPAL IS : {principal}</Text>}
-        {error && <Text>ERROR : {JSON.stringify(error)}</Text>}
+    <Layout>
+      <Center h='100vh'>
+        <VStack>
+          <h1>Sample Login Page</h1>
+          {userProfile && (
+            <Text>USER PROFILE : {JSON.stringify(userProfile)}</Text>
+          )}
+          {principal && <Text>YOUR PRINCIPAL IS : {principal}</Text>}
+          {error && <Text>ERROR : {JSON.stringify(error)}</Text>}
 
-        {isLogin ? (
-          <SampleButton onClick={handleLogoutClick} text={'Logout'} />
-        ) : (
-          <SampleButton onClick={handleLoginClick} text={'Login'} />
-        )}
-      </VStack>
-    </Center>
+          {isLogin ? (
+            <SampleButton onClick={handleLogoutClick} text={'Logout'} />
+          ) : (
+            <SampleButton onClick={handleLoginClick} text={'Login'} />
+          )}
+        </VStack>
+      </Center>
+    </Layout>
   );
 };

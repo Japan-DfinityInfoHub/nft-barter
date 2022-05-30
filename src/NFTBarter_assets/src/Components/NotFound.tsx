@@ -1,6 +1,11 @@
 import React from 'react';
 import { Center } from '@chakra-ui/react';
+import { Layout } from './Layout';
 
 export const NotFound = () => {
-  return <Center h='80vh'>Page Not Found</Center>;
+  return (
+    <Layout>
+      <Center h='80vh'>Page Not Found</Center>
+    </Layout>
+  );
 };
