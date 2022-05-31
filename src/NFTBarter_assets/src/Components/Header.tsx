@@ -5,6 +5,7 @@ import { useAppSelector } from '../app/hooks';
 import { selectIsLogin } from '../features/auth/authSlice';
 import { LoginButton } from '../features/auth/LoginButton';
 import { UserIcon } from './UserIcon';
+import { Menu } from './Menu';
 
 export const Header = () => {
   const isLogin = useAppSelector(selectIsLogin);
@@ -24,7 +25,7 @@ export const Header = () => {
         </HStack>
         <Spacer />
         <Box as='nav' mr={{ base: '4', sm: '3' }} verticalAlign='middle'>
-          {isLogin ? <UserIcon diameter={40} /> : <LoginButton />}
+          {isLogin ? <Menu /> : <LoginButton />}
         </Box>
       </Flex>
     </Box>
