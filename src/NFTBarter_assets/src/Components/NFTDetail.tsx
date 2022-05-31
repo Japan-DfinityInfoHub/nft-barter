@@ -3,11 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Center } from '@chakra-ui/react';
 import { decodeTokenId } from '../utils/ext';
 import { NotFound } from './NotFound';
-
-const CANISTER_ID =
-  process.env.DFX_NETWORK === 'ic' || !process.env.LOCAL_NFT_CANISTER_ID
-    ? 'REPLACE_TO_CANISTER_ID'
-    : process.env.LOCAL_NFT_CANISTER_ID;
+import { GENERATIVE_ART_NFT_CANISTER_ID } from '../utils/canisterId';
 
 export const NFTDetail = () => {
   const params = useParams();
@@ -19,7 +15,7 @@ export const NFTDetail = () => {
   const { canisterId } = decodeTokenId(tokenId);
 
   // So far we only accept GenerativeArtNFT canister
-  if (canisterId !== CANISTER_ID) {
+  if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
     return <NotFound />;
   }
 

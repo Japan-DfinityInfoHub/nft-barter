@@ -2,14 +2,10 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AuthClient } from '@dfinity/auth-client';
 import { RootState, AsyncThunkConfig } from '../../app/store';
 import { generateTokenIdentifier } from '../../utils/ext';
+import { GENERATIVE_ART_NFT_CANISTER_ID as canisterId } from '../../utils/canisterId';
 
 import { User } from '../../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
 import { createActor } from '../../../../declarations/GenerativeArtNFT';
-
-const canisterId =
-  process.env.DFX_NETWORK === 'ic' || !process.env.LOCAL_NFT_CANISTER_ID
-    ? 'REPLACE_TO_CANISTER_ID'
-    : process.env.LOCAL_NFT_CANISTER_ID;
 
 export interface GenerativeArtNFT {
   tokenId: string;
