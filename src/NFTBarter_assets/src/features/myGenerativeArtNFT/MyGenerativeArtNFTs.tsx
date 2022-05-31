@@ -1,13 +1,8 @@
 import React, { useEffect } from 'react';
 import { Box, SimpleGrid, Center } from '@chakra-ui/react';
 
+import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../../utils/canisterId';
 import { NFTCard } from './../../Components/NFTCard';
-
-const baseUrl =
-  process.env.DFX_NETWORK === 'ic' || !process.env.LOCAL_NFT_CANISTER_ID
-    ? 'http://REPLACE_TO_CANISTER_ID.ic0.app'
-    : `http://${process.env.LOCAL_NFT_CANISTER_ID}.localhost:8000`;
-
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { fetchNFTs, selectNfts } from './myGenerativeArtNFTSlice';
 

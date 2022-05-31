@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, HStack, Image, Text } from '@chakra-ui/react';
+import { Box, Image, Text } from '@chakra-ui/react';
 
 interface Props {
   tokenId: string;
