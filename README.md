@@ -25,16 +25,22 @@ dfx config --help
 If you want to test your project locally, you can use the following commands:
 
 ```bash
+https://github.com/Japan-DfinityInfoHub/nft-barter.git
+cd nft-barter/
+
 # Starts the replica, running in the background
 dfx start --background
 ```
 
 Then install a local Internet Identity (II) canister.
 
-(i) Clone the internet Identity repo locally, adjacent to this project.
+(i) Clone [the Internet Identity repo](https://github.com/dfinity/internet-identity) locally, adjacent to this project.
 
 ```
-cd ../internet-identity
+cd ..
+git clone https://github.com/dfinity/internet-identity.git
+
+cd ./internet-identity
 rm -rf .dfx/local
 II_FETCH_ROOT_KEY=1 II_DUMMY_CAPTCHA=1 dfx deploy --argument '(null)'
 ```
@@ -51,16 +57,43 @@ dfx canister id internet_identity
 http://rkp4c-7iaaa-aaaaa-aaaca-cai.localhost:8000/
 ```
 
+Next, install a local [generative-art-nft](https://github.com/Japan-DfinityInfoHub/generative-art-nft) canister and upload nft images.
+
+```
+cd ..
+git clone https://github.com/Japan-DfinityInfoHub/generative-art-nft.git
+cd generative-art-nft/
+
+# Deploy the canister locally
+./scripts/install_local.sh
+
+# Generate generative art images with token index 0~5
+npm i
+npm run generate:images -start=0 -end=5
+
+# Upload the images to the canister
+./scripts/update_token_image_setter.sh
+npm run upload:images -start=0 -end=5
+```
+
+Check the canister ID of the local generative-art-nft canister, because you'll need it for the following step.
+
+```
+dfx canister id GenerativeArtNFT
+# Ex) qaa6y-5yaaa-aaaaa-aaafa-cai
+```
+
 Go back to our project:
 
 ```
 cd ../nft-barter
 ```
 
-Create `.env` file in the root directory and define `LOCAL_II_CANISTER_ID`:
+Create `.env` file in the root directory and define `LOCAL_II_CANISTER_ID` and `LOCAL_NFT_CANISTER_ID`:
 
 ```
 LOCAL_II_CANISTER_ID=rkp4c-7iaaa-aaaaa-aaaca-cai
+LOCAL_NFT_CANISTER_ID=qaa6y-5yaaa-aaaaa-aaafa-cai
 ```
 
 Deploy canisters locally:
