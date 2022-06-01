@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -15,6 +15,9 @@ import {
   GENERATIVE_ART_NFT_CANISTER_ID,
   GENERATIVE_ART_NFT_BASE_URL as baseUrl,
 } from '../utils/canisterId';
+import { createActor } from '../../../declarations/GenerativeArtNFT';
+import { generateTokenIdentifier } from '../utils/ext';
+
 import { NotFound } from './NotFound';
 import { UserIcon } from './UserIcon';
 
@@ -28,6 +31,7 @@ const getStack = () => {
 };
 
 export const NFTDetail = () => {
+  const [accountId, setAccountId] = useState('');
   const Stack = getStack();
   const { tokenId } = useParams();
   const { index, canisterId } = decodeTokenId(tokenId);
@@ -36,6 +40,20 @@ export const NFTDetail = () => {
   if (canisterId && canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
     return <NotFound />;
   }
+
+  const fetchBearer = async () => {
+    const actor = createActor(canisterId);
+    const tid = generateTokenIdentifier(canisterId, index);
+    const res = await actor.bearer(tid);
+    if ('ok' in res) {
+      const aid = res.ok;
+      setAccountId(aid);
+    }
+  };
+
+  useEffect(() => {
+    fetchBearer();
+  }, []);
 
   return (
     <>
@@ -58,15 +76,28 @@ export const NFTDetail = () => {
             src={`${baseUrl}/?tokenid=${tokenId}`}
           />
         </Center>
-        <VStack>
+        <VStack
+          alignItems={{ base: 'center', sm: 'flex-start' }}
+          mx={{ base: '0px', md: '20px' }}
+          spacing={{ base: '10px', md: '20px' }}
+        >
           <Text
-            mx={{ base: '0px', md: '20px' }}
             mt={{ base: '20px', md: '40px' }}
             fontSize={{ base: '2xl', md: '3xl' }}
             fontWeight='bold'
           >
             Generave Art NFT #{index}
           </Text>
+          <Spacer />
+          <HStack
+            fontSize={{ base: 'lg', md: 'xl' }}
+            alignItems='stretch'
+            spacing='12px'
+          >
+            <Text color='gray.400'>Owned by</Text>
+            <UserIcon diameter={28} accountId={accountId} />
+            <Text color='blue.400'>{accountId.slice(0, 8)}...</Text>
+          </HStack>
         </VStack>
       </Stack>
     </>
