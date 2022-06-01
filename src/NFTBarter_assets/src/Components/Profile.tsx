@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import { Center, Box, HStack, Image, Text } from '@chakra-ui/react';
 import { useAppSelector } from '../app/hooks';
-import { selectPrincipal } from '../features/auth/authSlice';
+import { selectAccountId } from '../features/auth/authSlice';
 import { UserIcon } from './UserIcon';
 import { MyGenerativeArtNFTs } from '../features/myGenerativeArtNFT/MyGenerativeArtNFTs';
 
-const PrincipalID: FC<{ principal: string }> = ({ principal }) => {
+const AccountID: FC<{ accountId: string }> = ({ accountId }) => {
   return (
     <Box
       rounded='full'
@@ -28,7 +28,7 @@ const PrincipalID: FC<{ principal: string }> = ({ principal }) => {
           w='32'
           fontSize='xs'
         >
-          {principal}
+          {accountId}
         </Text>
       </HStack>
     </Box>
@@ -36,16 +36,16 @@ const PrincipalID: FC<{ principal: string }> = ({ principal }) => {
 };
 
 export const Profile = () => {
-  const principal = useAppSelector(selectPrincipal);
+  const accountId = useAppSelector(selectAccountId);
 
   return (
     <>
       <Box h={{ base: '32', sm: '40' }} bg='#EDF4FF' />
       <Center pos='relative'>
         <Box pos='absolute' top='-50'>
-          <UserIcon diameter={100} />
+          <UserIcon diameter={100} accountId={accountId} />
         </Box>
-        <Box mt='20'>{principal && <PrincipalID principal={principal} />}</Box>
+        <Box mt='20'>{accountId && <AccountID accountId={accountId} />}</Box>
       </Center>
       <MyGenerativeArtNFTs />
       <Center h='60vh'></Center>
