@@ -1,5 +1,7 @@
 import { toHexString } from '@dfinity/candid/lib/cjs/utils/buffer';
 import { Principal } from '@dfinity/principal';
+import { sha224 } from '@dfinity/principal/lib/esm/utils/sha224';
+import { getCrc32 } from '@dfinity/principal/lib/esm/utils/getCrc';
 
 export type TokenProps = {
   index: number;
@@ -17,6 +19,21 @@ export const generateTokenIdentifier = (
     ...numberTo32bits(index),
   ]);
   return Principal.fromUint8Array(array).toText();
+};
+
+export const principalToAccountIdentifier = (
+  principal: string,
+  subAccount: number
+) => {
+  const padding = Buffer.from('\x0Aaccount-id');
+  const array = new Uint8Array([
+    ...padding,
+    ...Principal.fromText(principal).toUint8Array(),
+    ...getSubAccount(subAccount),
+  ]);
+  const hash = sha224(array);
+  const checksum = numberTo32bits(getCrc32(hash));
+  return toHexString(new Uint8Array([...checksum, ...hash]));
 };
 
 export const getSubAccount = (index: number): number[] => {
