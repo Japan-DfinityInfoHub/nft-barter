@@ -23,9 +23,9 @@ export const getSubAccount = (index: number): number[] => {
   return Array(28).fill(0).concat(numberTo32bits(index));
 };
 
-export const decodeTokenId = (tid: string): TokenProps => {
-  if (!checkIfTextIsPrincipal(tid)) {
-    return { index: 0, canisterId: tid };
+export const decodeTokenId = (tid: string | undefined): TokenProps => {
+  if (!tid || !checkIfTextIsPrincipal(tid)) {
+    return { index: 0, canisterId: '' };
   }
 
   const array = [...Principal.fromText(tid).toUint8Array()];

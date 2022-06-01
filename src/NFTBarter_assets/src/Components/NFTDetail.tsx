@@ -28,30 +28,28 @@ const getStack = () => {
 };
 
 export const NFTDetail = () => {
-  const params = useParams();
-  const tokenId = params.tokenId;
-  if (!tokenId) {
-    return <NotFound />;
-  }
-
+  const Stack = getStack();
+  const { tokenId } = useParams();
   const { index, canisterId } = decodeTokenId(tokenId);
 
   // So far we only accept GenerativeArtNFT canister
-  if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
+  if (canisterId && canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
     return <NotFound />;
   }
 
-  const Stack = getStack();
-
   return (
     <>
-      <Stack maxW='1300px' mx='auto' alignItems='flex-start'>
+      <Stack
+        maxW='1300px'
+        mx='auto'
+        alignItems={{ base: 'center', sm: 'flex-start' }}
+      >
         <Center
           width={{ base: '100%', sm: '40%' }}
           borderRadius='lg'
           overflow='hidden'
           my={{ base: '20px', md: '40px' }}
-          mx={{ base: '0px', sm: '20px', md: '40px' }}
+          mx={{ base: '0px', sm: '20px' }}
         >
           <Image
             fit={'cover'}
@@ -62,14 +60,13 @@ export const NFTDetail = () => {
         </Center>
         <VStack>
           <Text
-            ml={{ base: '10vw', sm: '0px', md: '20px' }}
-            mt={{ base: '10px', sm: '20px', md: '40px' }}
-            fontSize={{ base: 'xl', sm: '2xl', md: '4xl' }}
+            mx={{ base: '0px', md: '20px' }}
+            mt={{ base: '20px', md: '40px' }}
+            fontSize={{ base: '2xl', md: '3xl' }}
             fontWeight='bold'
           >
             Generave Art NFT #{index}
           </Text>
-          <Spacer />
         </VStack>
       </Stack>
     </>
