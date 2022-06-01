@@ -1,7 +1,7 @@
 import { toHexString } from '@dfinity/candid/lib/cjs/utils/buffer';
 import { Principal } from '@dfinity/principal';
-import { sha224 } from '@dfinity/principal/lib/esm/utils/sha224';
-import { getCrc32 } from '@dfinity/principal/lib/esm/utils/getCrc';
+import { sha224 } from '@dfinity/principal/lib/cjs/utils/sha224';
+import { getCrc32 } from '@dfinity/principal/lib/cjs/utils/getCrc';
 
 export type TokenProps = {
   index: number;
