@@ -37,7 +37,7 @@ export const NFTDetail = () => {
   const { index, canisterId } = decodeTokenId(tokenId);
 
   // So far we only accept GenerativeArtNFT canister
-  if (canisterId && canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
+  if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
     return <NotFound />;
   }
 
