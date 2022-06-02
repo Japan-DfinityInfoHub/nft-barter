@@ -18,7 +18,7 @@ export const MintButton = () => {
     <Button
       color='white'
       px='1em'
-      fontSize='md'
+      fontSize={{ base: 'md', md: 'xl' }}
       height='2.5em'
       bgGradient='linear(to-r, blue.300, green.200)'
       borderRadius='2xl'
@@ -26,7 +26,7 @@ export const MintButton = () => {
       disabled={loading}
       onClick={handleClick}
     >
-      <Text fontWeight='semibold'>Mint</Text>
+      <Text fontWeight='semibold'>Free Mint</Text>
     </Button>
   );
 };
