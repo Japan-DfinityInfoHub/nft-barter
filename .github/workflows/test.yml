@@ -36,6 +36,9 @@ jobs:
           dfx --version
           moc --version
           vessel --version
+      - name: Motoko type checking
+        run: |
+          ./scripts/motoko_type_check.sh
       - name: Local deploy
         run: |
           dfx start --background
