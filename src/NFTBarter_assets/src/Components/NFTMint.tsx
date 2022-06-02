@@ -82,25 +82,27 @@ export const NFTMint = () => {
               </Text>
             )}
           </VStack>
-          {tokenIndex ? (
-            <Image
-              maxHeight='340px'
-              maxWidth={{ base: '90%', md: '340px' }}
-              fit={'cover'}
-              boxShadow='xl'
-              src={`${baseUrl}/?tokenid=${tokenId}`}
-              alt={`${tokenId}`}
-            />
-          ) : (
-            <Image
-              maxHeight='340px'
-              maxWidth={{ base: '90%', md: '340px' }}
-              fit={'cover'}
-              boxShadow='xl'
-              src='/sample-nft.svg'
-              alt='sample-nft'
-            />
-          )}
+          <Box>
+            {tokenIndex ? (
+              <Image
+                maxHeight='340px'
+                maxWidth={{ base: '90%', md: '340px' }}
+                fit={'cover'}
+                boxShadow='xl'
+                src={`${baseUrl}/?tokenid=${tokenId}`}
+                alt={`${tokenId}`}
+              />
+            ) : (
+              <Image
+                maxHeight='340px'
+                maxWidth={{ base: '90%', md: '340px' }}
+                fit={'cover'}
+                boxShadow='xl'
+                src='/sample-nft.svg'
+                alt='sample-nft'
+              />
+            )}
+          </Box>
         </Stack>
       </Box>
     </>
