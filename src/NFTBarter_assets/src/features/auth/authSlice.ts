@@ -9,6 +9,7 @@ import {
   Result,
   Error,
 } from '../../../../declarations/NFTBarter/NFTBarter.did';
+import { principalToAccountIdentifier } from '../../utils/ext';
 
 const DAYS = BigInt(1);
 const HOURSPERDAY = BigInt(24);
@@ -17,6 +18,7 @@ const NANOSECONDSPERHOUR = BigInt(3600000000000);
 export interface AuthState {
   isLogin: boolean;
   principal?: string;
+  accountId?: string;
   userProfile?: UserProfile;
   error?: Error;
 }
@@ -40,6 +42,7 @@ const promisedLogin = (authClient: AuthClient) =>
           if (!isAnonymous && (await authClient.isAuthenticated())) {
             const actor = createNFTBarterActor({ agentOptions: { identity } });
             const isRegistered = await actor.isRegistered();
+            const principal = identity.getPrincipal().toText();
 
             // Return `{ res: Result; principal: string }` here because
             // `UserProfile` currently does not contain principal id.
@@ -48,12 +51,12 @@ const promisedLogin = (authClient: AuthClient) =>
             if (!isRegistered) {
               resolve({
                 res: await actor.register(),
-                principal: identity.getPrincipal().toText(),
+                principal,
               });
             } else {
               resolve({
                 res: await getMyProfile(identity),
-                principal: identity.getPrincipal().toText(),
+                principal,
               });
             }
           }
@@ -80,9 +83,13 @@ export const checkAuth = createAsyncThunk<
     const identity = authClient.getIdentity();
     const res = await getMyProfile(identity);
     if ('ok' in res) {
+      const principal = identity.getPrincipal().toText();
+      const accountId = principalToAccountIdentifier(principal, 0);
+
       return {
         isLogin: true,
-        principal: identity.getPrincipal().toText(),
+        principal,
+        accountId,
         userProfile: res.ok,
       };
     } else {
@@ -104,10 +111,12 @@ export const login = createAsyncThunk<
     throw new Error('Failed to use auth client.');
   }
   const { res, principal } = await promisedLogin(authClient);
+  const accountId = principalToAccountIdentifier(principal, 0);
   if ('ok' in res) {
     return {
       isLogin: true,
       principal,
+      accountId,
     };
   } else {
     return rejectWithValue({ error: res.err });
@@ -121,6 +130,7 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.isLogin = false;
       state.principal = undefined;
+      state.accountId = undefined;
       localStorage.removeItem('ic-identity');
       localStorage.removeItem('ic-delegation');
     },
@@ -129,6 +139,7 @@ export const authSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.isLogin = action.payload.isLogin;
       state.principal = action.payload.principal;
+      state.accountId = action.payload.accountId;
       state.userProfile = action.payload.userProfile;
     });
     builder.addCase(login.rejected, (state, action) => {
@@ -137,6 +148,7 @@ export const authSlice = createSlice({
     builder.addCase(checkAuth.fulfilled, (state, action) => {
       state.isLogin = action.payload.isLogin;
       state.principal = action.payload.principal;
+      state.accountId = action.payload.accountId;
       state.userProfile = action.payload.userProfile;
     });
     builder.addCase(checkAuth.rejected, (state, action) => {
@@ -149,6 +161,7 @@ export const { logout } = authSlice.actions;
 
 export const selectIsLogin = (state: RootState) => state.auth.isLogin;
 export const selectPrincipal = (state: RootState) => state.auth.principal;
+export const selectAccountId = (state: RootState) => state.auth.accountId;
 export const selectUserProfile = (state: RootState) => state.auth.userProfile;
 export const selectError = (state: RootState) => state.auth.error;
 

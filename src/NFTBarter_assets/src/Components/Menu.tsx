@@ -13,12 +13,13 @@ import logoutIcon from '@iconify/icons-material-symbols/logout';
 import createIcon from '@iconify/icons-gridicons/create';
 import userOutlined from '@iconify/icons-ant-design/user-outlined';
 
-import { useAppDispatch } from '../app/hooks';
-import { logout } from '../features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { logout, selectAccountId } from '../features/auth/authSlice';
 import { UserIcon } from './UserIcon';
 
 export const Menu = () => {
   const dispatch = useAppDispatch();
+  const accountId = useAppSelector(selectAccountId);
 
   const iconSize = 28;
   const fontSize = 'md';
@@ -30,7 +31,7 @@ export const Menu = () => {
   return (
     <MenuChakra>
       <MenuButton>
-        <UserIcon diameter={40} />
+        <UserIcon diameter={40} accountId={accountId} />
       </MenuButton>
       <MenuList>
         <Link to='/profile'>
