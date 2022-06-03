@@ -46,8 +46,16 @@ module {
   
   public type NftStatus = {
     #Stay : Nft;
-    #BidOffered : Nft;
-    #BidOffering : Nft;
+    #BidOffered : {
+      nft : Nft;
+      from : Text;
+      exhibitNftIndex : Nat;
+    };
+    #BidOffering : {
+      nft : Nft;
+      to : Text;
+      exhibitNftIndex : Nat;
+    };
     #Exhibit : Nft;
     #Pending : Nft;
   };
@@ -69,6 +77,12 @@ module {
   // };
   public type MyExtStandartNftCanisterIF = actor {
     transfer : ExtTypes.TransferRequest -> async ExtTypes.TransferResponse;
+  };
+
+  public type ChildCanisterIF = actor {
+    acceptOffer : () -> async Result.Result<(), Error>;
+    sendToMe : Nat -> async Result.Result<(Nft, UserId), Error>;
   }
+
 
 }
