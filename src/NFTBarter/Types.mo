@@ -47,7 +47,8 @@ module {
   public type NftStatus = {
     #Stay : Nft;
     #Bid : Nft;
-    #Exhibit : Nft
+    #Exhibit : Nft;
+    #Pending : Nft;
   };
 
   // Import Request
