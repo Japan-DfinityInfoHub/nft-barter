@@ -34,6 +34,10 @@ module {
     // isBrother : CanisterID -> async Bool;
   };
 
+  public type CanisterIdList = {
+    myExtStandartNft : Text;
+  };
+
   // All Nft Type
   public type Nft = {
     // #SampleNft;

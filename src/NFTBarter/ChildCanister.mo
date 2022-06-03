@@ -10,7 +10,7 @@ import Principal "mo:base/Principal";
 import Blob "mo:base/Blob";
 import Iter "mo:base/Iter";
 
-shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal) = this {
+shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal, _canisterIdList : Types.CanisterIdList) = this {
   /* Local Types */
   type Error = Types.Error;
   type Result<T, E> = Result.Result<T, E>;
@@ -65,7 +65,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
 
       case (#MyExtStandartNft(token)) 
         switch (
-          await (actor("r7inp-6aaaa-aaaaa-aaabq-cai"): MyExtStandartNftCanisterIF)
+          await (actor(_canisterIdList.myExtStandartNft): MyExtStandartNftCanisterIF)
             .transfer({
               from = #principal(Principal.fromActor(this));
               to = #principal(Principal.fromActor(this));
