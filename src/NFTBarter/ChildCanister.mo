@@ -54,6 +54,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
             case (#Stay(v)) v;
             case (#Bid(v)) v;
             case (#Exhibit(v)) v;
+            case (#Pending(v)) v;
           };
           nft==_nft
         }
@@ -122,6 +123,40 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
   };
 
   /* Bid Methods */
+  // public shared ({caller}) func offerBidMyNft({bidToken : Nat; exhibitToken : Nat; famliyId : CanisterID}) : async Result<(), Error> {
+  //   // Check Auth
+  //   if (Principal.isAnonymous(caller) or (caller != _canisterOwner)) 
+  //     { return #err(#unauthorized(Principal.toText(caller))) };
+
+  //   // Check Owner
+  //   switch (_assetOwners.get(bidToken)) {
+  //     case (null) return #err(#notYetRegistered(""));
+  //     case (?owner) {
+  //       if (owner != _canisterOwner) return #err(#unauthorized(""));
+  //     }
+  //   };
+
+  //   // Check it is famliy
+
+
+  //   // peddingにする必要がある．
+
+
+  //   // Call AcceptOffer Function
+  //   let famliyCanister = actor(famliyId) : {
+  //     acceptOffer : () -> async ();
+  //   };
+  //   switch (await famliyCanister.acceptOffer()) {
+  //     case (#err(_)) return #err(#other("Error In famliyCanister.acceptOffer"));
+  //     case (#ok(_)) {};
+  //   };
+
+  //   // 
+
+
+
+
+  // };
 
 
   /* Helper Methods */
