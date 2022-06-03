@@ -70,7 +70,7 @@ shared (install) actor class NFTBarter() = this {
 
   /* child canister functions */
   public shared ({ caller }) func mintChildCanister(): async Principal {
-    let child = await ChildCanister.ChildCanister(caller);
+    let child = await ChildCanister.ChildCanister(caller, {myExtStandartNft="r7inp-6aaaa-aaaaa-aaabq-cai"});
     _childCanisters.put(Principal.fromActor(child), caller);
     Principal.fromActor(child);
   };
