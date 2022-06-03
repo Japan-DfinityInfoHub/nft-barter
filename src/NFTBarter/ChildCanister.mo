@@ -52,7 +52,8 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
         _assets.entries(), func(index, nftStatus) {
           let _nft = switch (nftStatus) {
             case (#Stay(v)) v;
-            case (#Bid(v)) v;
+            case (#BidOffered(v)) v;
+            case (#BidOffering(v)) v;
             case (#Exhibit(v)) v;
             case (#Pending(v)) v;
           };
@@ -95,21 +96,10 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       { return #err(#unauthorized(Principal.toText(caller))) };
     
     // Check Owner
-    switch (_assetOwners.get(token)) {
-      case (null) return #err(#notYetRegistered(""));
-      case (?owner) {
-        if (owner != _canisterOwner) return #err(#unauthorized(""));
-      }
-    };
+    if (isOwner(token) == false) return #err(#unauthorized(""));
 
     // Change Nft Status
-    switch (_assets.get(token)) {
-      case (null) assert(false);
-      case (?nftStatus) switch (nftStatus) {
-        case (#Stay(nft)) _assets.put(token, #Exhibit(nft));
-        case (_) return #err(#alreadyRegistered(""));
-      }
-    };
+    changeNftStatus(token, returnExhibit);
 
     // Start Bater Auction
     switch (_auctions.get(token)) {
@@ -123,43 +113,72 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
   };
 
   /* Bid Methods */
-  // public shared ({caller}) func offerBidMyNft({bidToken : Nat; exhibitToken : Nat; famliyId : CanisterID}) : async Result<(), Error> {
-  //   // Check Auth
-  //   if (Principal.isAnonymous(caller) or (caller != _canisterOwner)) 
-  //     { return #err(#unauthorized(Principal.toText(caller))) };
+  public shared ({caller}) func offerBidMyNft({bidToken : Nat; exhibitToken : Nat; famliyId : Text}) : async Result<(), Error> {
+    // Check Auth
+    if (Principal.isAnonymous(caller) or (caller != _canisterOwner)) 
+      { return #err(#unauthorized(Principal.toText(caller))) };
 
-  //   // Check Owner
-  //   switch (_assetOwners.get(bidToken)) {
-  //     case (null) return #err(#notYetRegistered(""));
-  //     case (?owner) {
-  //       if (owner != _canisterOwner) return #err(#unauthorized(""));
-  //     }
-  //   };
+    // Check Owner
+    if (isOwner(bidToken) == false) return #err(#unauthorized(""));
 
-  //   // Check it is famliy
+    // Check it is famliy
+    let parentCanister = actor(Principal.toText(installer)) : actor {
+      isFamliy : Text -> async Bool;
+    };
+    if ((await parentCanister.isFamliy(famliyId)) == false) return #err(#unauthorized(""));
+
+    // Change NftStatus to #Pending
+    changeNftStatus(bidToken, returnPending);
+
+    // Call AcceptOffer Function
+    let famliyCanister = actor(famliyId) : actor {
+      acceptOffer : () -> async Result<(), Error>;
+    };
+    switch (await famliyCanister.acceptOffer()) {
+      case (#err(_)) { // fail sendToMe
+        changeNftStatus(bidToken, returnStay);
+        return #err(#other("Error In famliyCanister.acceptOffer"))
+      };
+      case (#ok(_)) {};
+    };
+
+    // Change NftStatus to #BidOffering
+    changeNftStatus(bidToken, returnBidOffering);
+    
+    return #ok;
+
+  };
 
 
-  //   // peddingにする必要がある．
+  /* Helper Functions */
+  // Check Owner
+  func isOwner(token : Nat) : Bool {
+    switch (_assetOwners.get(token)) {
+      case (null) return false;
+      case (?owner) {
+        if (owner != _canisterOwner) return false;
+      }
+    };
+    return true;
+  };
+  // Change Nft Status
+  func changeNftStatus(token : Nat, returnStatus : Nft -> NftStatus) {
+    switch (_assets.get(token)) {
+      case (null) assert(false);
+      case (?nftStatus) switch (nftStatus) {
+        case (#Stay(nft)) _assets.put(token, returnStatus(nft));
+        case (_) assert(false);
+      }
+    }
+  };
+  func returnStay(nft : Nft)    : NftStatus {#Stay(nft)};
+  func returnExhibit(nft : Nft) : NftStatus {#Exhibit(nft)};
+  func returnBidOffered(nft : Nft)  : NftStatus {#BidOffered(nft)};
+  func returnBidOffering(nft : Nft) : NftStatus {#BidOffering(nft)};
+  func returnPending(nft : Nft) : NftStatus {#Pending(nft)};
 
 
-  //   // Call AcceptOffer Function
-  //   let famliyCanister = actor(famliyId) : {
-  //     acceptOffer : () -> async ();
-  //   };
-  //   switch (await famliyCanister.acceptOffer()) {
-  //     case (#err(_)) return #err(#other("Error In famliyCanister.acceptOffer"));
-  //     case (#ok(_)) {};
-  //   };
-
-  //   // 
-
-
-
-
-  // };
-
-
-  /* Helper Methods */
+  // query
   public query func getAssets() : async [(Nat, NftStatus)] {
     Iter.toArray(_assets.entries())
   };
