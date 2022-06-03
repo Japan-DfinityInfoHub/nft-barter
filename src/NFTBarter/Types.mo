@@ -46,7 +46,8 @@ module {
   
   public type NftStatus = {
     #Stay : Nft;
-    #Bid : Nft;
+    #BidOffered : Nft;
+    #BidOffering : Nft;
     #Exhibit : Nft;
     #Pending : Nft;
   };
