@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AuthClient } from '@dfinity/auth-client';
-import { Principal } from '@dfinity/principal';
 
 import { RootState, AsyncThunkConfig } from '../../app/store';
 import { createNFTBarterActor } from '../../utils/createNFTBarterActor';
 import { Error } from '../../../../declarations/NFTBarter/NFTBarter.did';
 
 export interface ChildCanisterState {
-  canisterIds: Principal[];
+  canisterIds: string[];
   error?: Error;
 }
 
@@ -35,9 +34,8 @@ export const getChildCanisters = createAsyncThunk<
 
   const res = await actor.getMyChildCanisters();
   if ('ok' in res) {
-    const canisterIds = res.ok;
     return {
-      canisterIds,
+      canisterIds: res.ok.map((p) => p.toText()),
     };
   } else {
     return rejectWithValue({
@@ -66,7 +64,7 @@ export const createChildCanister = createAsyncThunk<
 
   const res = await actor.mintChildCanister();
   if ('ok' in res) {
-    return { canisterIds: [res.ok] };
+    return { canisterIds: [res.ok.toText()] };
   } else {
     return rejectWithValue({
       error: res.err,

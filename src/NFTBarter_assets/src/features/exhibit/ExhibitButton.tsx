@@ -15,7 +15,8 @@ import {
   Box,
 } from '@chakra-ui/react';
 
-import { useAppDispatch } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { exhibit, selectChildCanisterId } from './exhibitSlice';
 
 interface Props {
   tokenId: string;
@@ -26,9 +27,15 @@ interface Props {
 export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const childChildCanisterId = useAppSelector(selectChildCanisterId);
 
   const handleClickExhibitButton = () => {
     onOpen();
+  };
+
+  const handleClickYesButton = async () => {
+    await dispatch(exhibit());
+    onClose();
   };
 
   return (
@@ -51,6 +58,10 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
               <Text fontSize='md' fontWeight='bold'>
                 Do you wish to exhibit your NFT?
               </Text>
+              {/* Just for test purpose */}
+              <Text fontSize='md' fontWeight='bold'>
+                {childChildCanisterId}
+              </Text>
             </VStack>
           </ModalBody>
 
@@ -59,7 +70,7 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
               color='white'
               bgGradient='linear(to-r, blue.300, green.200)'
               mr={3}
-              onClick={onClose}
+              onClick={handleClickYesButton}
             >
               YES
             </Button>

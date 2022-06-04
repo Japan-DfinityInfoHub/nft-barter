@@ -30,6 +30,6 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 >;
 export type AsyncThunkConfig<T = unknown> = {
   state: RootState;
-  dispatch: Dispatch;
+  dispatch: AppDispatch;
   rejectValue: T;
 };
