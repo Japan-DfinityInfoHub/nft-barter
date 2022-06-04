@@ -77,13 +77,14 @@ export const exhibit = createAsyncThunk<
     });
   }
 
+  const actor = createChildCanisterActorByCanisterId(childCanisterId)({
+    agentOptions: { identity },
+  });
+  const nft: Nft = { myExtStandardNft: tokenId };
+
   // Import NFT into child canister
   let tokenIndexOnChildCanister: bigint;
   try {
-    const actor = createChildCanisterActorByCanisterId(childCanisterId)({
-      agentOptions: { identity },
-    });
-    const nft: Nft = { myExtStandardNft: tokenId };
     const res = await actor.importMyNft(nft);
     if ('ok' in res) {
       tokenIndexOnChildCanister = res.ok;
@@ -96,6 +97,24 @@ export const exhibit = createAsyncThunk<
     return rejectWithValue({
       error: {
         other: 'Error occured during importing NFT to child canisters.',
+      },
+    });
+  }
+
+  // Exhibit NFT
+  try {
+    const res = await actor.exhibitMyNft(tokenIndexOnChildCanister);
+    if ('ok' in res) {
+      // do nothing
+    } else {
+      return rejectWithValue({
+        error: res.err,
+      });
+    }
+  } catch {
+    return rejectWithValue({
+      error: {
+        other: 'Error occured during exhibiting NFT to child canisters.',
       },
     });
   }

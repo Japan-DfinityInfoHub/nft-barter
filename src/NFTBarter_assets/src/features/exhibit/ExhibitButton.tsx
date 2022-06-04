@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { exhibit, selectChildCanisterId } from './exhibitSlice';
+import { exhibit, selectChildCanisterId, selectError } from './exhibitSlice';
 
 interface Props {
   tokenId: string;
@@ -28,6 +28,7 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const childCanisterId = useAppSelector(selectChildCanisterId);
+  const error = useAppSelector(selectError);
 
   const handleClickExhibitButton = () => {
     onOpen();
@@ -35,7 +36,7 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
 
   const handleClickYesButton = async () => {
     await dispatch(exhibit({ tokenId }));
-    onClose();
+    // onClose();
   };
 
   return (
@@ -62,6 +63,7 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
               <Text fontSize='md' fontWeight='bold'>
                 {childCanisterId}
               </Text>
+              {error && <Text>{error}</Text>}
             </VStack>
           </ModalBody>
 
