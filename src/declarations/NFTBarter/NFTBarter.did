@@ -1,4 +1,14 @@
 type UserProfile = variant {none;};
+type Result_2 = 
+ variant {
+   err: Error;
+   ok: vec CanisterID;
+ };
+type Result_1 = 
+ variant {
+   err: Error;
+   ok: CanisterID;
+ };
 type Result = 
  variant {
    err: Error;
@@ -6,9 +16,10 @@ type Result =
  };
 type NFTBarter = 
  service {
+   getMyChildCanisters: () -> (Result_2) query;
    getMyProfile: () -> (Result) query;
    isRegistered: () -> (bool) query;
-   mintChildCanister: () -> (principal);
+   mintChildCanister: () -> (Result_1);
    register: () -> (Result);
  };
 type Error = 
@@ -18,4 +29,5 @@ type Error =
    other: text;
    unauthorized: text;
  };
+type CanisterID = principal;
 service : () -> NFTBarter
