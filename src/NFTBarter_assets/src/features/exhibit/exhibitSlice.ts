@@ -6,12 +6,16 @@ import {
   getChildCanisters,
   createChildCanister,
 } from '../childCanister/childCanisterSlice';
-import { transfer, reset } from '../transfer/transferSlice';
+import { transfer } from '../transfer/transferSlice';
 
 import { Error } from '../../../../declarations/NFTBarter/NFTBarter.did';
+import { Nft } from '../../../../declarations/ChildCanister/ChildCanister.did';
+
+import { createChildCanisterActorByCanisterId } from '../../utils/createChildCanisterActor';
 
 export interface ExhibitState {
   childCanisterId?: string;
+  tokenIndexOnChildCanister?: bigint;
   error?: Error;
 }
 
@@ -24,9 +28,12 @@ export const exhibit = createAsyncThunk<
 >('exhibit', async ({ tokenId }, { rejectWithValue, dispatch }) => {
   const authClient = await AuthClient.create();
 
-  if (!authClient) {
-    throw new Error('Failed to use auth client.');
+  if (!authClient || !authClient.isAuthenticated()) {
+    return rejectWithValue({
+      error: { unauthorized: 'Failed to use auth client.' },
+    });
   }
+  const identity = await authClient.getIdentity();
 
   // Get user's child canister IDs.
   let childCanisterIds: string[];
@@ -70,7 +77,30 @@ export const exhibit = createAsyncThunk<
     });
   }
 
-  return { childCanisterId };
+  // Import NFT into child canister
+  let tokenIndexOnChildCanister: bigint;
+  try {
+    const actor = createChildCanisterActorByCanisterId(childCanisterId)({
+      agentOptions: { identity },
+    });
+    const nft: Nft = { myExtStandardNft: tokenId };
+    const res = await actor.importMyNft(nft);
+    if ('ok' in res) {
+      tokenIndexOnChildCanister = res.ok;
+    } else {
+      return rejectWithValue({
+        error: res.err,
+      });
+    }
+  } catch {
+    return rejectWithValue({
+      error: {
+        other: 'Error occured during importing NFT to child canisters.',
+      },
+    });
+  }
+
+  return { childCanisterId, tokenIndexOnChildCanister };
 });
 
 export const exhibitSlice = createSlice({
@@ -80,6 +110,8 @@ export const exhibitSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(exhibit.fulfilled, (state, action) => {
       state.childCanisterId = action.payload?.childCanisterId;
+      state.tokenIndexOnChildCanister =
+        action.payload?.tokenIndexOnChildCanister;
     });
     builder.addCase(exhibit.rejected, (state, action) => {
       state.error = action.payload?.error;
