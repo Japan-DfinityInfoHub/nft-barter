@@ -4,7 +4,6 @@ import { useAppSelector } from '../app/hooks';
 import { selectAccountId } from '../features/auth/authSlice';
 import { UserIcon } from './UserIcon';
 import { MyGenerativeArtNFTs } from '../features/myGenerativeArtNFT/MyGenerativeArtNFTs';
-import { selectError } from '../features/exhibit/exhibitSlice';
 
 const AccountID: FC<{ accountId: string }> = ({ accountId }) => {
   return (
@@ -38,7 +37,6 @@ const AccountID: FC<{ accountId: string }> = ({ accountId }) => {
 
 export const Profile = () => {
   const accountId = useAppSelector(selectAccountId);
-  const error = useAppSelector(selectError);
 
   return (
     <>
@@ -50,7 +48,6 @@ export const Profile = () => {
         <Box mt='20'>{accountId && <AccountID accountId={accountId} />}</Box>
       </Center>
       <MyGenerativeArtNFTs />
-      {error && <Text>{JSON.stringify(error)}</Text>}
       <Center h='60vh'></Center>
     </>
   );
