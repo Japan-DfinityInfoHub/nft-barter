@@ -8,6 +8,7 @@ import authReducer from '../features/auth/authSlice';
 import mintReducer from '../features/mint/mintSlice';
 import myGenerativeArtNFTReducer from '../features/myGenerativeArtNFT/myGenerativeArtNFTSlice';
 import exhibitReducer from '../features/exhibit/exhibitSlice';
+import childCanisterReducer from '../features/childCanister/childCanisterSlice';
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     mint: mintReducer,
     myGenerativeArtNFT: myGenerativeArtNFTReducer,
     exhibit: exhibitReducer,
+    childCanister: childCanisterReducer,
   },
 });
 
