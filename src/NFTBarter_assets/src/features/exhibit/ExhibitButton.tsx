@@ -27,14 +27,14 @@ interface Props {
 export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const childChildCanisterId = useAppSelector(selectChildCanisterId);
+  const childCanisterId = useAppSelector(selectChildCanisterId);
 
   const handleClickExhibitButton = () => {
     onOpen();
   };
 
   const handleClickYesButton = async () => {
-    await dispatch(exhibit());
+    await dispatch(exhibit({ tokenId }));
     onClose();
   };
 
@@ -60,7 +60,7 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
               </Text>
               {/* Just for test purpose */}
               <Text fontSize='md' fontWeight='bold'>
-                {childChildCanisterId}
+                {childCanisterId}
               </Text>
             </VStack>
           </ModalBody>

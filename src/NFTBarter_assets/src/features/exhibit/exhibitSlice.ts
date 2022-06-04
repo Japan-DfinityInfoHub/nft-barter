@@ -6,11 +6,9 @@ import {
   getChildCanisters,
   createChildCanister,
 } from '../childCanister/childCanisterSlice';
+import { transfer, reset } from '../transfer/transferSlice';
 
-import {
-  CanisterID,
-  Error,
-} from '../../../../declarations/NFTBarter/NFTBarter.did';
+import { Error } from '../../../../declarations/NFTBarter/NFTBarter.did';
 
 export interface ExhibitState {
   childCanisterId?: string;
@@ -21,9 +19,9 @@ const initialState: ExhibitState = {};
 
 export const exhibit = createAsyncThunk<
   ExhibitState,
-  undefined,
+  { tokenId: string },
   AsyncThunkConfig<{ error: Error }>
->('exhibit', async (_, { rejectWithValue, dispatch }) => {
+>('exhibit', async ({ tokenId }, { rejectWithValue, dispatch }) => {
   const authClient = await AuthClient.create();
 
   if (!authClient) {
@@ -60,7 +58,17 @@ export const exhibit = createAsyncThunk<
     // We will implement some logic to chose which child canister should be used.
     childCanisterId = childCanisterIds[0];
   }
-  console.log(childCanisterId);
+
+  // Transfer NFT to child canister
+  try {
+    await dispatch(transfer({ tokenId, childCanisterId }));
+  } catch {
+    return rejectWithValue({
+      error: {
+        other: 'Error occured during transfering NFT to child canisters.',
+      },
+    });
+  }
 
   return { childCanisterId };
 });
