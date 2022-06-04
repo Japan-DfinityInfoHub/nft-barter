@@ -17,11 +17,15 @@ export const MyGenerativeArtNFTs = () => {
 
   return (
     <Box maxW='1300px' mx='auto' mt='20px'>
-      <SimpleGrid mx='10px' spacing='10px' columns={{ base: 2, md: 3, lg: 4 }}>
+      <SimpleGrid
+        mx={{ base: '0px', md: '10px' }}
+        spacing='10px'
+        columns={{ base: 2, md: 3, lg: 4 }}
+      >
         {nfts.map((nft) => {
           const { tokenId, tokenIndex } = nft;
           return (
-            <Center my='10px' key={tokenIndex}>
+            <Box mx='auto' my='10px' key={tokenIndex}>
               <Link to={`/asset/${tokenId}`}>
                 <NFTCard
                   tokenId={tokenId}
@@ -29,7 +33,7 @@ export const MyGenerativeArtNFTs = () => {
                   baseUrl={baseUrl}
                 />
               </Link>
-            </Center>
+            </Box>
           );
         })}
       </SimpleGrid>
