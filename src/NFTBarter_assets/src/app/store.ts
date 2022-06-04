@@ -7,12 +7,14 @@ import {
 import authReducer from '../features/auth/authSlice';
 import mintReducer from '../features/mint/mintSlice';
 import myGenerativeArtNFTReducer from '../features/myGenerativeArtNFT/myGenerativeArtNFTSlice';
+import exhibitReducer from '../features/exhibit/exhibitSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     mint: mintReducer,
     myGenerativeArtNFT: myGenerativeArtNFTReducer,
+    exhibit: exhibitReducer,
   },
 });
 
