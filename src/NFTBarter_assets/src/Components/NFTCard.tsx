@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Image, Text, HStack, Spacer } from '@chakra-ui/react';
 
 import { ExhibitButton } from '../features/exhibit/ExhibitButton';
@@ -18,12 +19,14 @@ export const NFTCard: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
       borderWidth='1px'
       overflow='hidden'
     >
-      <Image
-        fit={'cover'}
-        width='100%'
-        alt={`${tokenId}`}
-        src={`${baseUrl}/?tokenid=${tokenId}`}
-      />
+      <Link to={`/asset/${tokenId}`}>
+        <Image
+          fit={'cover'}
+          width='100%'
+          alt={`${tokenId}`}
+          src={`${baseUrl}/?tokenid=${tokenId}`}
+        />
+      </Link>
       <HStack alignItems='center'>
         <Text
           p={{ base: 2, lg: 3 }}
@@ -31,7 +34,11 @@ export const NFTCard: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
         >{`# ${tokenIndex}`}</Text>
         <Spacer />
         <Box p='10px'>
-          <ExhibitButton />
+          <ExhibitButton
+            tokenId={tokenId}
+            tokenIndex={tokenIndex}
+            baseUrl={baseUrl}
+          />
         </Box>
       </HStack>
     </Box>

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Box, SimpleGrid, Center } from '@chakra-ui/react';
 
 import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../../utils/canisterId';
@@ -26,13 +25,11 @@ export const MyGenerativeArtNFTs = () => {
           const { tokenId, tokenIndex } = nft;
           return (
             <Box mx='auto' my='10px' key={tokenIndex}>
-              <Link to={`/asset/${tokenId}`}>
-                <NFTCard
-                  tokenId={tokenId}
-                  tokenIndex={tokenIndex}
-                  baseUrl={baseUrl}
-                />
-              </Link>
+              <NFTCard
+                tokenId={tokenId}
+                tokenIndex={tokenIndex}
+                baseUrl={baseUrl}
+              />
             </Box>
           );
         })}
