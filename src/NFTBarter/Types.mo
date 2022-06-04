@@ -35,13 +35,13 @@ module {
   };
 
   public type CanisterIdList = {
-    myExtStandartNft : Text;
+    myExtStandardNft : Text;
   };
 
   // All Nft Type
   public type Nft = {
     // #SampleNft;
-    #MyExtStandartNft : ExtTypes.TokenIdentifier;
+    #myExtStandardNft : ExtTypes.TokenIdentifier;
   };
   
   public type NftStatus = {
@@ -55,7 +55,7 @@ module {
   //   // #SampleNft : {
   //   //   canisterId : CanisterID;
   //   // };
-  //   #MyExtStandartNft : {
+  //   #myExtStandardNft : {
   //     canisterId : CanisterID;
   //     token : ExtTypes.TokenIdentifier;
   //   }
@@ -65,7 +65,7 @@ module {
   // public type SampleNftCanisterIF = actor {
   //   transfer : Principal -> async Result.Result<(), ()>;
   // };
-  public type MyExtStandartNftCanisterIF = actor {
+  public type myExtStandardNftCanisterIF = actor {
     transfer : ExtTypes.TransferRequest -> async ExtTypes.TransferResponse;
   }
 

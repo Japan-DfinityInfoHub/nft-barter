@@ -24,8 +24,8 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
   /* Nfts Types */
   // Sample Nft
   // My Ext-Standart Nft
-  // type MyExtStandartNft = Types.MyExtStandartNft;
-  type MyExtStandartNftCanisterIF = Types.MyExtStandartNftCanisterIF;
+  // type myExtStandardNft = Types.myExtStandardNft;
+  type myExtStandardNftCanisterIF = Types.myExtStandardNftCanisterIF;
 
   /* Variables */
   // this canister is never upgraded
@@ -63,9 +63,9 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     // Import Nft
     switch (nft) {
 
-      case (#MyExtStandartNft(token)) 
+      case (#myExtStandardNft(token)) 
         switch (
-          await (actor(_canisterIdList.myExtStandartNft): MyExtStandartNftCanisterIF)
+          await (actor(_canisterIdList.myExtStandardNft): myExtStandardNftCanisterIF)
             .transfer({
               from = #principal(Principal.fromActor(this));
               to = #principal(Principal.fromActor(this));
@@ -79,7 +79,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
           case (#err(_)) return #err(#other("err"));
           case (#ok(_)) {
             tokenIndex += 1;
-            _assets.put(tokenIndex, #Stay(#MyExtStandartNft(token)));
+            _assets.put(tokenIndex, #Stay(#myExtStandardNft(token)));
             _assetOwners.put(tokenIndex, _canisterOwner);
           };
         };

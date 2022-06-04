@@ -72,7 +72,7 @@ shared (install) actor class NFTBarter() = this {
   public shared ({ caller }) func mintChildCanister(): async Result<CanisterID, Error> {
     if (Principal.isAnonymous(caller)) { return #err(#unauthorized(Principal.toText(caller))) };
 
-    let child = await ChildCanister.ChildCanister(caller, {myExtStandartNft="r7inp-6aaaa-aaaaa-aaabq-cai"});
+    let child = await ChildCanister.ChildCanister(caller, {myExtStandardNft="r7inp-6aaaa-aaaaa-aaabq-cai"});
     _childCanisters.put(Principal.fromActor(child), caller);
     #ok (Principal.fromActor(child))
   };
