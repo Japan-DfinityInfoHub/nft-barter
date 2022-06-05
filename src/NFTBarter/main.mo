@@ -30,6 +30,9 @@ shared (install) actor class NFTBarter() = this {
     _stableCanisters.vals(), 10, Principal.equal, Principal.hash
   );
 
+  // The target NFT (GenerativeArtNFT) caniter id.
+  stable var _targetNftCanisterId : CanisterID = Principal.fromText("r7inp-6aaaa-aaaaa-aaabq-cai");
+
   // Register `caller` as a new user.
   // Returns `caller` if the registration process successfully finishes.
   // Traps if:
@@ -72,7 +75,7 @@ shared (install) actor class NFTBarter() = this {
   public shared ({ caller }) func mintChildCanister(): async Result<CanisterID, Error> {
     if (Principal.isAnonymous(caller)) { return #err(#unauthorized(Principal.toText(caller))) };
 
-    let child = await ChildCanister.ChildCanister(caller, {myExtStandardNft="r7inp-6aaaa-aaaaa-aaabq-cai"});
+    let child = await ChildCanister.ChildCanister(caller, {myExtStandardNft=Principal.toText(_targetNftCanisterId)});
     _childCanisters.put(Principal.fromActor(child), caller);
     #ok (Principal.fromActor(child))
   };
@@ -87,6 +90,18 @@ shared (install) actor class NFTBarter() = this {
     #ok (Iter.toArray(Iter.map<(CanisterID, UserId), CanisterID>(canisterIdsOfUser, func (entry) {
       entry.0
     })))
+  };
+
+  // Set the target NFT canister id.
+  public shared ({ caller }) func updateTargetNftCanisterId(newCanisterId: CanisterID): async Result<CanisterID, Error> {
+    if (caller != installer) { return #err(#unauthorized(Principal.toText(caller))) };
+
+    _targetNftCanisterId := newCanisterId;
+    #ok (_targetNftCanisterId)
+  };
+
+  public query func getTargetNftCanisterId(): async CanisterID {
+    _targetNftCanisterId
   };
 
   /* system functions */

@@ -7,20 +7,22 @@ type Result_2 =
 type Result_1 = 
  variant {
    err: Error;
-   ok: CanisterID;
+   ok: UserProfile;
  };
 type Result = 
  variant {
    err: Error;
-   ok: UserProfile;
+   ok: CanisterID;
  };
 type NFTBarter = 
  service {
    getMyChildCanisters: () -> (Result_2) query;
-   getMyProfile: () -> (Result) query;
+   getMyProfile: () -> (Result_1) query;
+   getTargetNftCanisterId: () -> (CanisterID) query;
    isRegistered: () -> (bool) query;
-   mintChildCanister: () -> (Result_1);
-   register: () -> (Result);
+   mintChildCanister: () -> (Result);
+   register: () -> (Result_1);
+   updateTargetNftCanisterId: (CanisterID) -> (Result);
  };
 type Error = 
  variant {

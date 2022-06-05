@@ -6,14 +6,16 @@ export type Error = { 'other' : string } |
   { 'notYetRegistered' : string };
 export interface NFTBarter {
   'getMyChildCanisters' : () => Promise<Result_2>,
-  'getMyProfile' : () => Promise<Result>,
+  'getMyProfile' : () => Promise<Result_1>,
+  'getTargetNftCanisterId' : () => Promise<CanisterID>,
   'isRegistered' : () => Promise<boolean>,
-  'mintChildCanister' : () => Promise<Result_1>,
-  'register' : () => Promise<Result>,
+  'mintChildCanister' : () => Promise<Result>,
+  'register' : () => Promise<Result_1>,
+  'updateTargetNftCanisterId' : (arg_0: CanisterID) => Promise<Result>,
 }
-export type Result = { 'ok' : UserProfile } |
+export type Result = { 'ok' : CanisterID } |
   { 'err' : Error };
-export type Result_1 = { 'ok' : CanisterID } |
+export type Result_1 = { 'ok' : UserProfile } |
   { 'err' : Error };
 export type Result_2 = { 'ok' : Array<CanisterID> } |
   { 'err' : Error };
