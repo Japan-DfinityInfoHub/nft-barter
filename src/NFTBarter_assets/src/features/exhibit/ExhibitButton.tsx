@@ -9,7 +9,7 @@ import {
 
 import { useAppDispatch } from '../../app/hooks';
 import { exhibit, reset } from './exhibitSlice';
-import { removeTokenById } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
+import { updateNft } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
 import { ConfirmationModalContent } from './ConfirmationModalContent';
 import { ProgressModalContent } from './ProgressModalContent';
 
@@ -33,7 +33,7 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
     setIsProgress(true);
     await dispatch(exhibit({ tokenId }));
     await new Promise((resolve) => setTimeout(resolve, 500));
-    dispatch(removeTokenById(tokenId));
+    dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
     setIsProgress(false);
   };
 
