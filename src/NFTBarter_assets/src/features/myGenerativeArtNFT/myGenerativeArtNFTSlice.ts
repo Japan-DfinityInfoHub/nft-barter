@@ -10,9 +10,19 @@ import {
 } from '../../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
 import { createActor } from '../../../../declarations/GenerativeArtNFT';
 
+const NftStatus = {
+  WALLET: 'wallet',
+  EXHIBIT: 'exhibit',
+  BIT: 'bit',
+} as const;
+
+// type NftStatus = "wallet" | "exhibit" | "bit"
+type NftStatus = typeof NftStatus[keyof typeof NftStatus];
+
 export interface GenerativeArtNFT {
   tokenId: string;
   tokenIndex: number;
+  status: NftStatus;
 }
 
 export interface MyGenerativeArtNFTState {
@@ -24,11 +34,11 @@ const initialState: MyGenerativeArtNFTState = {
   nfts: [],
 };
 
-export const fetchNFTs = createAsyncThunk<
+export const fetchNFTsOnWallet = createAsyncThunk<
   MyGenerativeArtNFTState,
   undefined,
   AsyncThunkConfig<{ error: string }>
->('myGenerativeArtNFT/fetchNFTs', async (_, { rejectWithValue }) => {
+>('myGenerativeArtNFT/fetchNFTsOnWallet', async (_, { rejectWithValue }) => {
   const authClient = await AuthClient.create();
 
   if (!authClient || !authClient.isAuthenticated()) {
@@ -49,7 +59,7 @@ export const fetchNFTs = createAsyncThunk<
     return {
       nfts: (await actor.getTokenIndexOwnedByUser(user)).map((tokenIndex) => {
         const tokenId = generateTokenIdentifier(canisterId, tokenIndex);
-        return { tokenId, tokenIndex };
+        return { tokenId, tokenIndex, status: 'wallet' };
       }),
     };
   } catch {
@@ -67,10 +77,10 @@ export const myGenerativeArtNFTSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchNFTs.fulfilled, (state, action) => {
+    builder.addCase(fetchNFTsOnWallet.fulfilled, (state, action) => {
       state.nfts = action.payload?.nfts;
     });
-    builder.addCase(fetchNFTs.rejected, (state, action) => {
+    builder.addCase(fetchNFTsOnWallet.rejected, (state, action) => {
       state.error = action.payload?.error;
     });
   },

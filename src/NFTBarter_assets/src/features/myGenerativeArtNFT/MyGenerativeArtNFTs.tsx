@@ -4,14 +4,14 @@ import { Box, SimpleGrid, Center } from '@chakra-ui/react';
 import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../../utils/canisterId';
 import { NFTCard } from './../../Components/NFTCard';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { fetchNFTs, selectNfts } from './myGenerativeArtNFTSlice';
+import { fetchNFTsOnWallet, selectNfts } from './myGenerativeArtNFTSlice';
 
 export const MyGenerativeArtNFTs = () => {
   const dispatch = useAppDispatch();
   const nfts = useAppSelector(selectNfts);
 
   useEffect(() => {
-    dispatch(fetchNFTs());
+    dispatch(fetchNFTsOnWallet());
   }, []);
 
   return (
