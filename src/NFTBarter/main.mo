@@ -69,11 +69,26 @@ shared (install) actor class NFTBarter() = this {
   };
 
   /* child canister functions */
-  public shared ({ caller }) func mintChildCanister(): async Principal {
-    let child = await ChildCanister.ChildCanister(caller, {myExtStandartNft="r7inp-6aaaa-aaaaa-aaabq-cai"});
+  public shared ({ caller }) func mintChildCanister(): async Result<CanisterID, Error> {
+    if (Principal.isAnonymous(caller)) { return #err(#unauthorized(Principal.toText(caller))) };
+
+    let child = await ChildCanister.ChildCanister(caller, {myExtStandardNft="r7inp-6aaaa-aaaaa-aaabq-cai"});
     _childCanisters.put(Principal.fromActor(child), caller);
-    Principal.fromActor(child);
+    #ok (Principal.fromActor(child))
   };
+
+  // Returns array of canister ids of `caller`.
+  public query ({ caller }) func getMyChildCanisters(): async Result<[CanisterID], Error> {
+    if (Principal.isAnonymous(caller)) { return #err(#unauthorized(Principal.toText(caller))) };
+
+    let canisterIdsOfUser = Iter.filter<(CanisterID, UserId)>(_childCanisters.entries(), func (entry) {
+      entry.1 == caller
+    });
+    #ok (Iter.toArray(Iter.map<(CanisterID, UserId), CanisterID>(canisterIdsOfUser, func (entry) {
+      entry.0
+    })))
+  };
+
   /* system functions */
   // The work required before a canister upgrade begins.
   system func preupgrade() {

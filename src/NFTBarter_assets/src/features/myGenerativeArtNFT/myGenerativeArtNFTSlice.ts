@@ -4,7 +4,10 @@ import { RootState, AsyncThunkConfig } from '../../app/store';
 import { generateTokenIdentifier } from '../../utils/ext';
 import { GENERATIVE_ART_NFT_CANISTER_ID as canisterId } from '../../utils/canisterId';
 
-import { User } from '../../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
+import {
+  User,
+  TokenIdentifier,
+} from '../../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
 import { createActor } from '../../../../declarations/GenerativeArtNFT';
 
 export interface GenerativeArtNFT {
@@ -57,7 +60,12 @@ export const fetchNFTs = createAsyncThunk<
 export const myGenerativeArtNFTSlice = createSlice({
   name: 'myGenerativeArtNFT',
   initialState,
-  reducers: {},
+  reducers: {
+    removeTokenById: (state, action) => {
+      const tokenId: TokenIdentifier = action.payload;
+      state.nfts = [...state.nfts.filter((t) => t.tokenId !== tokenId)];
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchNFTs.fulfilled, (state, action) => {
       state.nfts = action.payload?.nfts;
@@ -68,6 +76,7 @@ export const myGenerativeArtNFTSlice = createSlice({
   },
 });
 
+export const { removeTokenById } = myGenerativeArtNFTSlice.actions;
 export const selectError = (state: RootState) => state.myGenerativeArtNFT.error;
 export const selectNfts = (state: RootState) => state.myGenerativeArtNFT.nfts;
 

@@ -1,0 +1,49 @@
+type UserId = principal;
+type TokenIdentifier = text;
+type Result_1 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result = 
+ variant {
+   err: Error;
+   ok: nat;
+ };
+type Nft__1 = variant {myExtStandardNft: TokenIdentifier;};
+type NftStatus = 
+ variant {
+   Bid: Nft__1;
+   Exhibit: Nft__1;
+   Stay: Nft__1;
+ };
+type Nft = variant {myExtStandardNft: TokenIdentifier;};
+type Error = 
+ variant {
+   alreadyRegistered: text;
+   notYetRegistered: text;
+   other: text;
+   unauthorized: text;
+ };
+type ChildCanister = 
+ service {
+   exhibitMyNft: (nat) -> (Result_1);
+   getAssetOwners: () -> (vec record {
+                                nat;
+                                UserId;
+                              }) query;
+   getAssets: () -> (vec record {
+                           nat;
+                           NftStatus;
+                         }) query;
+   getAuctions: () -> (vec record {
+                             nat;
+                             vec record {
+                                   UserId;
+                                   nat;
+                                 };
+                           }) query;
+   importMyNft: (Nft) -> (Result);
+ };
+type CanisterIdList = record {myExtStandardNft: text;};
+service : (principal, CanisterIdList) -> ChildCanister
