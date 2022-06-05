@@ -1,22 +1,17 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import {
-  ModalHeader,
-  ModalBody,
   Modal,
   ModalOverlay,
-  ModalContent,
-  Image,
-  Spacer,
-  VStack,
-  ModalFooter,
   useDisclosure,
   Button,
   Text,
-  Box,
 } from '@chakra-ui/react';
 
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { exhibit, selectChildCanisterId, selectError } from './exhibitSlice';
+import { useAppDispatch } from '../../app/hooks';
+import { exhibit, reset } from './exhibitSlice';
+import { removeTokenById } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
+import { ConfirmationModalContent } from './ConfirmationModalContent';
+import { ProgressModalContent } from './ProgressModalContent';
 
 interface Props {
   tokenId: string;
@@ -27,61 +22,41 @@ interface Props {
 export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const childCanisterId = useAppSelector(selectChildCanisterId);
-  const error = useAppSelector(selectError);
+  const [isProgress, setIsProgress] = useState(false);
 
   const handleClickExhibitButton = () => {
     onOpen();
   };
 
   const handleClickYesButton = async () => {
+    dispatch(reset());
+    setIsProgress(true);
     await dispatch(exhibit({ tokenId }));
-    // onClose();
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    dispatch(removeTokenById(tokenId));
+    setIsProgress(false);
   };
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        closeOnOverlayClick={!isProgress}
+        isOpen={isOpen}
+        onClose={onClose}
+        size='2xl'
+      >
         <ModalOverlay />
-        <ModalContent mx='4px'>
-          <ModalHeader mx='auto'>Confirmation</ModalHeader>
-          <ModalBody>
-            <VStack>
-              <Text fontSize='md'># {tokenIndex}</Text>
-              <Box minWidth='150px' maxWidth='200px'>
-                <Image
-                  fit={'cover'}
-                  width='100%'
-                  alt={`${tokenId}`}
-                  src={`${baseUrl}/?tokenid=${tokenId}`}
-                />
-              </Box>
-              <Text fontSize='md' fontWeight='bold'>
-                Do you wish to exhibit your NFT?
-              </Text>
-              {/* Just for test purpose */}
-              <Text fontSize='md' fontWeight='bold'>
-                {childCanisterId}
-              </Text>
-              {error && <Text>{error}</Text>}
-            </VStack>
-          </ModalBody>
-
-          <ModalFooter justifyContent='center'>
-            <Button
-              color='white'
-              bgGradient='linear(to-r, blue.300, green.200)'
-              mr={3}
-              onClick={handleClickYesButton}
-            >
-              YES
-            </Button>
-            <Spacer />
-            <Button onClick={onClose} color='white' bgColor='gray.300'>
-              NO
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+        {isProgress ? (
+          <ProgressModalContent />
+        ) : (
+          <ConfirmationModalContent
+            tokenId={tokenId}
+            tokenIndex={tokenIndex}
+            baseUrl={baseUrl}
+            onClick={handleClickYesButton}
+            onClose={onClose}
+          />
+        )}
       </Modal>
 
       <Button

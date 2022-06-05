@@ -15,26 +15,26 @@ import { createChildCanisterActorByCanisterId } from '../../utils/createChildCan
 
 export interface ExhibitState {
   childCanisterId?: string;
-  tokenIndexOnChildCanister?: bigint;
+  tokenIndexOnChildCanister?: number;
   status: {
-    fetchChildCanisters?: boolean;
-    createChildCanister?: boolean;
-    transferNft?: boolean;
-    importNft?: boolean;
-    exhibitNft?: boolean;
-    all?: boolean;
+    isFetchingChildCanistersFinished: boolean;
+    isCreatingChildCanisterFinished: boolean;
+    isTransferNftFinished: boolean;
+    isImportingNftFinished: boolean;
+    isExhibitingNftFinished: boolean;
+    allFinished: boolean;
   };
   error?: Error;
 }
 
 const initialState: ExhibitState = {
   status: {
-    fetchChildCanisters: false,
-    createChildCanister: false,
-    transferNft: false,
-    importNft: false,
-    exhibitNft: false,
-    all: false,
+    isFetchingChildCanistersFinished: false,
+    isCreatingChildCanisterFinished: false,
+    isTransferNftFinished: false,
+    isImportingNftFinished: false,
+    isExhibitingNftFinished: false,
+    allFinished: false,
   },
 };
 
@@ -43,8 +43,6 @@ export const exhibit = createAsyncThunk<
   { tokenId: string },
   AsyncThunkConfig<{ error: Error }>
 >('exhibit', async ({ tokenId }, { rejectWithValue, dispatch }) => {
-  dispatch(reset());
-
   const authClient = await AuthClient.create();
 
   if (!authClient || !authClient.isAuthenticated()) {
@@ -143,7 +141,18 @@ export const exhibit = createAsyncThunk<
   }
   dispatch(finishExhibitingNft());
 
-  return { childCanisterId, tokenIndexOnChildCanister, status: { all: true } };
+  return {
+    childCanisterId,
+    tokenIndexOnChildCanister: Number(tokenIndexOnChildCanister),
+    status: {
+      isFetchingChildCanistersFinished: true,
+      isCreatingChildCanisterFinished: true,
+      isTransferNftFinished: true,
+      isImportingNftFinished: true,
+      isExhibitingNftFinished: true,
+      allFinished: true,
+    },
+  };
 });
 
 export const exhibitSlice = createSlice({
@@ -151,22 +160,32 @@ export const exhibitSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => {
-      state = initialState;
+      state.status = {
+        isFetchingChildCanistersFinished: false,
+        isCreatingChildCanisterFinished: false,
+        isTransferNftFinished: false,
+        isImportingNftFinished: false,
+        isExhibitingNftFinished: false,
+        allFinished: false,
+      };
     },
     finishFetchingChildCanisterIds: (state) => {
-      state.status = { ...state.status, fetchChildCanisters: true };
+      state.status = {
+        ...state.status,
+        isFetchingChildCanistersFinished: true,
+      };
     },
     finishCreatingChildCanister: (state) => {
-      state.status = { ...state.status, createChildCanister: true };
+      state.status = { ...state.status, isCreatingChildCanisterFinished: true };
     },
     finishTransferingNft: (state) => {
-      state.status = { ...state.status, transferNft: true };
+      state.status = { ...state.status, isTransferNftFinished: true };
     },
     finishImportingNft: (state) => {
-      state.status = { ...state.status, importNft: true };
+      state.status = { ...state.status, isImportingNftFinished: true };
     },
     finishExhibitingNft: (state) => {
-      state.status = { ...state.status, exhibitNft: true };
+      state.status = { ...state.status, isExhibitingNftFinished: true };
     },
   },
   extraReducers: (builder) => {

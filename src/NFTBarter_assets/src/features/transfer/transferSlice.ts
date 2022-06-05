@@ -3,7 +3,6 @@ import { AuthClient } from '@dfinity/auth-client';
 import { Principal } from '@dfinity/principal';
 
 import { RootState, AsyncThunkConfig } from '../../app/store';
-import { removeTokenById } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
 import { GENERATIVE_ART_NFT_CANISTER_ID as canisterId } from '../../utils/canisterId';
 
 import {
@@ -95,8 +94,6 @@ export const transfer = createAsyncThunk<
     };
     const res = await actor.transfer(transferRequest);
     if ('ok' in res) {
-      // Delist NFT card
-      dispatch(removeTokenById(tokenId));
       return { success: true };
     } else {
       return rejectWithValue({ error: res.err });
@@ -113,7 +110,9 @@ export const transferSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(transfer.fulfilled, (state, action) => {});
+    builder.addCase(transfer.fulfilled, (state, action) => {
+      state.success = action.payload?.success;
+    });
     builder.addCase(transfer.rejected, (state, action) => {
       state.error = action.payload?.error;
     });
