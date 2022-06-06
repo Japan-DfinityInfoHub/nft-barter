@@ -7,6 +7,7 @@ declare module '../../declarations/NFTBarter/NFTBarter.did.js' {
 }
 import {
   CanisterID,
+  UserId,
   _SERVICE as INFTBarter,
   idlFactory,
 } from '../../declarations/NFTBarter/NFTBarter.did.js';
@@ -60,6 +61,13 @@ describe('Mint child canister test', () => {
     expect(res).toStrictEqual({
       ok: [childCanisterId],
     });
+  });
+
+  it('The child canister of Alice is in the list of all child canister', async () => {
+    let principal = identityOptionOfAlice.agentOptions.identity.getPrincipal();
+    let allChildCanisters: [CanisterID, UserId][] =
+      await actorOfAlice.getAllChildCanisters();
+    expect(allChildCanisters).toContainEqual([childCanisterId, principal]);
   });
 });
 

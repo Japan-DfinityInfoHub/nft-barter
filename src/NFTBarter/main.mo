@@ -104,6 +104,11 @@ shared (install) actor class NFTBarter() = this {
     _targetNftCanisterId
   };
 
+  // Returns all child canisters.
+  public query ({ caller }) func getAllChildCanisters(): async [(CanisterID, UserId)] {
+    Iter.toArray(_childCanisters.entries())
+  };
+
   /* system functions */
   // The work required before a canister upgrade begins.
   system func preupgrade() {

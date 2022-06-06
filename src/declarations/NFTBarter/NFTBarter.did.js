@@ -1,5 +1,6 @@
 export const idlFactory = ({ IDL }) => {
   const CanisterID = IDL.Principal;
+  const UserId = IDL.Principal;
   const Error = IDL.Variant({
     'other' : IDL.Text,
     'alreadyRegistered' : IDL.Text,
@@ -11,6 +12,11 @@ export const idlFactory = ({ IDL }) => {
   const Result_1 = IDL.Variant({ 'ok' : UserProfile, 'err' : Error });
   const Result = IDL.Variant({ 'ok' : CanisterID, 'err' : Error });
   const NFTBarter = IDL.Service({
+    'getAllChildCanisters' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(CanisterID, UserId))],
+        ['query'],
+      ),
     'getMyChildCanisters' : IDL.Func([], [Result_2], ['query']),
     'getMyProfile' : IDL.Func([], [Result_1], ['query']),
     'getTargetNftCanisterId' : IDL.Func([], [CanisterID], ['query']),

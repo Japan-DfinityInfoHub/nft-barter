@@ -1,4 +1,5 @@
 type UserProfile = variant {none;};
+type UserId = principal;
 type Result_2 = 
  variant {
    err: Error;
@@ -16,6 +17,10 @@ type Result =
  };
 type NFTBarter = 
  service {
+   getAllChildCanisters: () -> (vec record {
+                                      CanisterID;
+                                      UserId;
+                                    }) query;
    getMyChildCanisters: () -> (Result_2) query;
    getMyProfile: () -> (Result_1) query;
    getTargetNftCanisterId: () -> (CanisterID) query;
