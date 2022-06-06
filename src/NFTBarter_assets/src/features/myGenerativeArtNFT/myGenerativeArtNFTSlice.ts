@@ -1,36 +1,15 @@
 import { createSlice, createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
+import { Principal } from '@dfinity/principal';
 import { AuthClient } from '@dfinity/auth-client';
 import { RootState, AsyncThunkConfig } from '../../app/store';
-import { generateTokenIdentifier, decodeTokenId } from '../../utils/ext';
+import { generateTokenIdentifier } from '../../utils/ext';
 import { GENERATIVE_ART_NFT_CANISTER_ID as canisterId } from '../../utils/canisterId';
-import { createChildCanisterActorByCanisterId } from '../../utils/createChildCanisterActor';
-
+import { fetchAllNftsOnChildCanister } from '../../utils/nft';
+import { compareNft, GenerativeArtNFT } from '../../models/NftModel';
 import { getMyChildCanisters } from '../childCanister/childCanisterSlice';
 
-import {
-  User,
-  TokenIdentifier,
-} from '../../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
+import { User } from '../../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
 import { createActor } from '../../../../declarations/GenerativeArtNFT';
-
-const NftStatus = {
-  WALLET: 'wallet',
-  STAY: 'stay',
-  EXHIBIT: 'exhibit',
-  BID: 'bid',
-} as const;
-
-// type NftStatus = "wallet" | "stay" | "exhibit" | "bid"
-export type NftStatus = typeof NftStatus[keyof typeof NftStatus];
-
-const compareNft = (a: GenerativeArtNFT, b: GenerativeArtNFT) =>
-  a.tokenIndex - b.tokenIndex;
-
-export interface GenerativeArtNFT {
-  tokenId: string;
-  tokenIndex: number;
-  status: NftStatus;
-}
 
 export interface MyGenerativeArtNFTState {
   nftsOnWallet: GenerativeArtNFT[];
@@ -71,34 +50,10 @@ export const fetchNFTsOnChildCanister = createAsyncThunk<
 
     const nfts = await Promise.all(
       childCanisterIds.map(async (childCanisterId) => {
-        const actor = createChildCanisterActorByCanisterId(childCanisterId)({
-          agentOptions: { identity },
-        });
-        const assets = await actor.getAssets();
-        const nfts: GenerativeArtNFT[] = assets.map((asset) => {
-          const [_, stat] = asset;
-          let tokenId: TokenIdentifier;
-          let nftStatus: NftStatus;
-          if ('Stay' in stat) {
-            tokenId = stat.Stay.myExtStandardNft;
-            nftStatus = 'stay';
-          } else if ('Exhibit' in stat) {
-            tokenId = stat.Exhibit.myExtStandardNft;
-            nftStatus = 'exhibit';
-          } else if ('Bid' in stat) {
-            tokenId = stat.Bid.myExtStandardNft;
-            nftStatus = 'bid';
-          } else {
-            throw new Error('Invalid token');
-          }
-          const { index } = decodeTokenId(tokenId);
-          return {
-            tokenId,
-            tokenIndex: index,
-            status: nftStatus,
-          };
-        });
-        return nfts;
+        return await fetchAllNftsOnChildCanister(
+          Principal.fromText(childCanisterId),
+          identity
+        );
       })
     );
     return { nftsOnChildCanisters: nfts.flat(), nftsOnWallet: [] };

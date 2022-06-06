@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Box, Image, Text, HStack, Spacer, Center } from '@chakra-ui/react';
 
 import { ExhibitButton } from '../features/exhibit/ExhibitButton';
-import { NftStatus } from '../features/myGenerativeArtNFT/myGenerativeArtNFTSlice';
+import { NftStatus } from '../models/NftModel';
 
 interface Props {
   tokenId: string;
