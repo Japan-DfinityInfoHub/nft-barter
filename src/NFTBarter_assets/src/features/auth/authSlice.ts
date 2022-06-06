@@ -6,7 +6,7 @@ import { RootState, AsyncThunkConfig } from '../../app/store';
 import { createNFTBarterActor } from '../../utils/createNFTBarterActor';
 import {
   UserProfile,
-  Result,
+  Result_1,
   Error,
 } from '../../../../declarations/NFTBarter/NFTBarter.did';
 import { principalToAccountIdentifier } from '../../utils/ext';
@@ -33,7 +33,7 @@ const getMyProfile = async (identity: Identity) => {
 };
 
 const promisedLogin = (authClient: AuthClient) =>
-  new Promise<{ res: Result; principal: string }>(async (resolve, reject) => {
+  new Promise<{ res: Result_1; principal: string }>(async (resolve, reject) => {
     try {
       await authClient.login({
         onSuccess: async () => {
@@ -44,10 +44,10 @@ const promisedLogin = (authClient: AuthClient) =>
             const isRegistered = await actor.isRegistered();
             const principal = identity.getPrincipal().toText();
 
-            // Return `{ res: Result; principal: string }` here because
+            // Return `{ res: Result_1; principal: string }` here because
             // `UserProfile` currently does not contain principal id.
             // We may add `id: Principal` to `UserProfile` in the backend canister
-            // so that this function can simply return `Result`.
+            // so that this function can simply return `Result_1`.
             if (!isRegistered) {
               resolve({
                 res: await actor.register(),
