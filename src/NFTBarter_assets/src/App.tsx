@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { PrivateRoute } from './features/auth/PrivateRoute';
 import { PublicRoute } from './features/auth/PublicRoute';
