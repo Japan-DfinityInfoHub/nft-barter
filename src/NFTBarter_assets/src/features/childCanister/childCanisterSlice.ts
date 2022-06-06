@@ -14,7 +14,7 @@ const initialState: ChildCanisterState = {
   canisterIds: [],
 };
 
-export const getChildCanisters = createAsyncThunk<
+export const getMyChildCanisters = createAsyncThunk<
   ChildCanisterState,
   undefined,
   AsyncThunkConfig<{ error: Error }>
@@ -77,10 +77,10 @@ export const childCanisterSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getChildCanisters.fulfilled, (state, action) => {
+    builder.addCase(getMyChildCanisters.fulfilled, (state, action) => {
       state.canisterIds = action.payload?.canisterIds;
     });
-    builder.addCase(getChildCanisters.rejected, (state, action) => {
+    builder.addCase(getMyChildCanisters.rejected, (state, action) => {
       state.error = action.payload?.error;
     });
     builder.addCase(createChildCanister.fulfilled, (state, action) => {

@@ -5,7 +5,7 @@ import { generateTokenIdentifier, decodeTokenId } from '../../utils/ext';
 import { GENERATIVE_ART_NFT_CANISTER_ID as canisterId } from '../../utils/canisterId';
 import { createChildCanisterActorByCanisterId } from '../../utils/createChildCanisterActor';
 
-import { getChildCanisters } from '../childCanister/childCanisterSlice';
+import { getMyChildCanisters } from '../childCanister/childCanisterSlice';
 
 import {
   User,
@@ -60,7 +60,7 @@ export const fetchNFTsOnChildCanister = createAsyncThunk<
 
     let childCanisterIds: string[];
     try {
-      const action = await dispatch(getChildCanisters());
+      const action = await dispatch(getMyChildCanisters());
       const state = unwrapResult(action);
       childCanisterIds = state.canisterIds;
     } catch (rejectedValueOrSerializedError) {
