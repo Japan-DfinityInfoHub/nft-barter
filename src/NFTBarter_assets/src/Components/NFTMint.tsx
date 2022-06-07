@@ -87,6 +87,7 @@ export const NFTMint = () => {
               <Image
                 maxHeight='340px'
                 maxWidth={{ base: '90%', md: '340px' }}
+                width='100%'
                 fit={'cover'}
                 boxShadow='xl'
                 src={`${baseUrl}/?tokenid=${tokenId}`}

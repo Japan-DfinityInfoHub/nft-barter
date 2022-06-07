@@ -3,7 +3,7 @@ import { AuthClient } from '@dfinity/auth-client';
 
 import { RootState, AsyncThunkConfig } from '../../app/store';
 import {
-  getChildCanisters,
+  getMyChildCanisters,
   createChildCanister,
 } from '../childCanister/childCanisterSlice';
 import { transfer } from '../transfer/transferSlice';
@@ -55,7 +55,7 @@ export const exhibit = createAsyncThunk<
   // Get user's child canister IDs.
   let childCanisterIds: string[];
   try {
-    const action = await dispatch(getChildCanisters());
+    const action = await dispatch(getMyChildCanisters());
     const state = unwrapResult(action);
     childCanisterIds = state.canisterIds;
   } catch (rejectedValueOrSerializedError) {

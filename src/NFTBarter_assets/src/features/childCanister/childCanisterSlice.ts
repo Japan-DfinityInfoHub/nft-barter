@@ -3,18 +3,45 @@ import { AuthClient } from '@dfinity/auth-client';
 
 import { RootState, AsyncThunkConfig } from '../../app/store';
 import { createNFTBarterActor } from '../../utils/createNFTBarterActor';
-import { Error } from '../../../../declarations/NFTBarter/NFTBarter.did';
+import {
+  CanisterID,
+  UserId,
+  Error,
+} from '../../../../declarations/NFTBarter/NFTBarter.did';
 
 export interface ChildCanisterState {
   canisterIds: string[];
+  allChildCanisters: [CanisterID, UserId][];
   error?: Error;
 }
 
 const initialState: ChildCanisterState = {
   canisterIds: [],
+  allChildCanisters: [],
 };
 
-export const getChildCanisters = createAsyncThunk<
+export const getAllChildCanisters = createAsyncThunk<
+  ChildCanisterState,
+  undefined,
+  AsyncThunkConfig<{ error: Error }>
+>('childCanister/getAll', async (_, { rejectWithValue }) => {
+  const actor = createNFTBarterActor({});
+
+  try {
+    const allChildCanisters: [CanisterID, UserId][] =
+      await actor.getAllChildCanisters();
+    return {
+      canisterIds: [],
+      allChildCanisters,
+    };
+  } catch {
+    return rejectWithValue({
+      error: { other: 'Failed to fetch.' },
+    });
+  }
+});
+
+export const getMyChildCanisters = createAsyncThunk<
   ChildCanisterState,
   undefined,
   AsyncThunkConfig<{ error: Error }>
@@ -36,6 +63,7 @@ export const getChildCanisters = createAsyncThunk<
   if ('ok' in res) {
     return {
       canisterIds: res.ok.map((p) => p.toText()),
+      allChildCanisters: [],
     };
   } else {
     return rejectWithValue({
@@ -64,7 +92,7 @@ export const createChildCanister = createAsyncThunk<
 
   const res = await actor.mintChildCanister();
   if ('ok' in res) {
-    return { canisterIds: [res.ok.toText()] };
+    return { canisterIds: [res.ok.toText()], allChildCanisters: [] };
   } else {
     return rejectWithValue({
       error: res.err,
@@ -77,10 +105,16 @@ export const childCanisterSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getChildCanisters.fulfilled, (state, action) => {
+    builder.addCase(getMyChildCanisters.fulfilled, (state, action) => {
       state.canisterIds = action.payload?.canisterIds;
     });
-    builder.addCase(getChildCanisters.rejected, (state, action) => {
+    builder.addCase(getMyChildCanisters.rejected, (state, action) => {
+      state.error = action.payload?.error;
+    });
+    builder.addCase(getAllChildCanisters.fulfilled, (state, action) => {
+      state.allChildCanisters = action.payload?.allChildCanisters;
+    });
+    builder.addCase(getAllChildCanisters.rejected, (state, action) => {
       state.error = action.payload?.error;
     });
     builder.addCase(createChildCanister.fulfilled, (state, action) => {
@@ -97,6 +131,8 @@ export const childCanisterSlice = createSlice({
 
 export const selectCanisterIds = (state: RootState) =>
   state.childCanister.canisterIds;
+export const selectAllChildCanisters = (state: RootState) =>
+  state.childCanister.allChildCanisters;
 export const selectError = (state: RootState) => state.childCanister.error;
 
 export default childCanisterSlice.reducer;
