@@ -12,6 +12,7 @@ import { Icon } from '@iconify/react';
 import logoutIcon from '@iconify/icons-material-symbols/logout';
 import createIcon from '@iconify/icons-gridicons/create';
 import userOutlined from '@iconify/icons-ant-design/user-outlined';
+import smallShopAlt from '@iconify/icons-iconoir/small-shop-alt';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { logout, selectAccountId } from '../features/auth/authSlice';
@@ -34,6 +35,11 @@ export const Menu = () => {
         <UserIcon diameter={40} accountId={accountId} />
       </MenuButton>
       <MenuList>
+        <Link to='/marketplace'>
+          <MenuItem icon={<Icon icon={smallShopAlt} height={iconSize} />}>
+            <Text fontSize={fontSize}>Marketplace</Text>
+          </MenuItem>
+        </Link>
         <Link to='/profile'>
           <MenuItem icon={<Icon icon={userOutlined} height={iconSize} />}>
             <Text fontSize={fontSize}>Profile</Text>
