@@ -11,6 +11,7 @@ import { Profile } from './Components/Profile';
 import { NFTMint } from './Components/NFTMint';
 import { NFTDetail } from './Components/NFTDetail';
 import { NotFound } from './Components/NotFound';
+import { Marketplace } from './features/marketplace/Marketplace';
 
 export const App = () => {
   return (
@@ -27,6 +28,9 @@ export const App = () => {
         </Route>
         <Route path='/asset' element={<PublicRoute />}>
           <Route path=':tokenId' element={<NFTDetail />} />
+        </Route>
+        <Route path='/marketplace' element={<PublicRoute />}>
+          <Route path='' element={<Marketplace />} />
         </Route>
         <Route path='*' element={<PublicRoute />}>
           <Route path='' element={<NotFound />} />
