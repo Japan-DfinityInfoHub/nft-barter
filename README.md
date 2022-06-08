@@ -98,10 +98,13 @@ LOCAL_II_CANISTER_ID=rkp4c-7iaaa-aaaaa-aaaca-cai
 LOCAL_NFT_CANISTER_ID=qaa6y-5yaaa-aaaaa-aaafa-cai
 ```
 
-Deploy canisters locally:
+Deploy canisters locally and update the target NFT canister id:
 
 ```
 sh ./scripts/install_local.sh
+
+# Update the target NFT canister id with the local GenerativeArtNFT canister
+./scripts/update_nft_canister_id.sh qaa6y-5yaaa-aaaaa-aaafa-cai
 ```
 
 Once the job completes, your application will be available at `http://localhost:8000?canisterId={asset_canister_id}`.
