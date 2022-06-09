@@ -80,8 +80,8 @@ module {
   };
 
   public type ChildCanisterIF = actor {
-    acceptOffer : () -> async Result.Result<(), Error>;
-    sendToMe : Nat -> async Result.Result<(Nft, UserId), Error>;
+    acceptBidOffer : () -> async Result.Result<(), Error>;
+    sendToMe : Nat -> async Result.Result<Nft, Error>;
   }
 
 
