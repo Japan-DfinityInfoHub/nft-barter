@@ -15,17 +15,25 @@ jobs:
       DFX_VERSION: 0.9.3
       WASMTIME_VERSION: 0.37.0
       NODE_VERSION: 16
+      NFT_BARTER_DIR: nft-barter
+      GENERATIVE_ART_NFT_DIR: generative-art-nft
 
     steps:
-      - uses: actions/checkout@v2
+      # Setups
+      - name: Checkout nft-barter
+        uses: actions/checkout@v3
+        with:
+          path: ${{ env.NFT_BARTER_DIR }}
+      - name: Checkout generative-art-nft
+        uses: actions/checkout@v3
+        with:
+          repository: Japan-DfinityInfoHub/generative-art-nft
+          path: ${{ env.GENERATIVE_ART_NFT_DIR }}
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm install -g npm
-      - name: Install npm packages
-        run: |
-          npm install
       - name: Install dfx/moc/vessel
         uses:  aviate-labs/setup-dfx@v0.2.3
         with:
@@ -42,19 +50,37 @@ jobs:
           moc --version
           vessel --version
           wasmtime --version
+
+      # Motoko tests
       - name: Motoko type checking
-        run: |
-          ./scripts/motoko_type_check.sh
+        working-directory: ${{ env.NFT_BARTER_DIR }}
+        run: ./scripts/motoko_type_check.sh
       - name: Motoko unit tests
+        working-directory: ${{ env.NFT_BARTER_DIR }}
+        run: ./scripts/motoko_tests.sh
+
+      # e2e tests
+      - name: Start the local replica
+        working-directory: ${{ env.NFT_BARTER_DIR }}
+        run: dfx start --background
+      - name: Setup generative-art-nft
+        working-directory: ${{ env.GENERATIVE_ART_NFT_DIR }}
         run: |
-          ./scripts/motoko_tests.sh
-      - name: Local deploy
+          npm i
+          ./scripts/install_local.sh
+          echo "GENERATIVE_ART_NFT_ID=$(dfx canister id GenerativeArtNFT)" >> $GITHUB_ENV
+      - name: Setup nft-barter
+        working-directory: ${{ env.NFT_BARTER_DIR }}
         run: |
-          dfx start --background
-          sh ./scripts/install_local.sh
+          echo "LOCAL_NFT_CANISTER_ID=${{ env.GENERATIVE_ART_NFT_ID }}" >> .env
+          npm i
+          ./scripts/install_local.sh
+          ./scripts/update_nft_canister_id.sh ${{ env.GENERATIVE_ART_NFT_ID }}
       - name: Run e2e tests
+        working-directory: ${{ env.NFT_BARTER_DIR }}
         run: |
           npm run test
       - name: Stop dfx
+        working-directory: ${{ env.NFT_BARTER_DIR }}
         run: |
           dfx stop
