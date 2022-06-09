@@ -100,7 +100,7 @@ export const exhibit = createAsyncThunk<
   const actor = createChildCanisterActorByCanisterId(childCanisterId)({
     agentOptions: { identity },
   });
-  const nft: Nft = { myExtStandardNft: tokenId };
+  const nft: Nft = { MyExtStandardNft: tokenId };
 
   // Import NFT into child canister
   let tokenIndexOnChildCanister: bigint;

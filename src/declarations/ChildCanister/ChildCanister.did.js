@@ -9,13 +9,13 @@ export const idlFactory = ({ IDL }) => {
   const Result_1 = IDL.Variant({ 'ok' : IDL.Null, 'err' : Error });
   const UserId = IDL.Principal;
   const TokenIdentifier = IDL.Text;
-  const Nft__1 = IDL.Variant({ 'myExtStandardNft' : TokenIdentifier });
+  const Nft__1 = IDL.Variant({ 'MyExtStandardNft' : TokenIdentifier });
   const NftStatus = IDL.Variant({
     'Bid' : Nft__1,
     'Stay' : Nft__1,
     'Exhibit' : Nft__1,
   });
-  const Nft = IDL.Variant({ 'myExtStandardNft' : TokenIdentifier });
+  const Nft = IDL.Variant({ 'MyExtStandardNft' : TokenIdentifier });
   const Result = IDL.Variant({ 'ok' : IDL.Nat, 'err' : Error });
   const ChildCanister = IDL.Service({
     'exhibitMyNft' : IDL.Func([IDL.Nat], [Result_1], []),

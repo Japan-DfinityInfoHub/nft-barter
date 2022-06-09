@@ -11,11 +11,11 @@ export type Error = { 'other' : string } |
   { 'alreadyRegistered' : string } |
   { 'unauthorized' : string } |
   { 'notYetRegistered' : string };
-export type Nft = { 'myExtStandardNft' : TokenIdentifier };
+export type Nft = { 'MyExtStandardNft' : TokenIdentifier };
 export type NftStatus = { 'Bid' : Nft__1 } |
   { 'Stay' : Nft__1 } |
   { 'Exhibit' : Nft__1 };
-export type Nft__1 = { 'myExtStandardNft' : TokenIdentifier };
+export type Nft__1 = { 'MyExtStandardNft' : TokenIdentifier };
 export type Result = { 'ok' : bigint } |
   { 'err' : Error };
 export type Result_1 = { 'ok' : null } |

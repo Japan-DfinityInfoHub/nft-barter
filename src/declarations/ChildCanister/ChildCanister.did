@@ -10,14 +10,14 @@ type Result =
    err: Error;
    ok: nat;
  };
-type Nft__1 = variant {myExtStandardNft: TokenIdentifier;};
+type Nft__1 = variant {MyExtStandardNft: TokenIdentifier;};
 type NftStatus = 
  variant {
    Bid: Nft__1;
    Exhibit: Nft__1;
    Stay: Nft__1;
  };
-type Nft = variant {myExtStandardNft: TokenIdentifier;};
+type Nft = variant {MyExtStandardNft: TokenIdentifier;};
 type Error = 
  variant {
    alreadyRegistered: text;
