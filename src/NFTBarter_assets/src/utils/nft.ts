@@ -20,13 +20,13 @@ export const fetchAllNftsOnChildCanister = async (
     let tokenId: TokenIdentifier;
     let nftStatus: NftStatus;
     if ('Stay' in stat) {
-      tokenId = stat.Stay.myExtStandardNft;
+      tokenId = stat.Stay.MyExtStandardNft;
       nftStatus = 'stay';
     } else if ('Exhibit' in stat) {
-      tokenId = stat.Exhibit.myExtStandardNft;
+      tokenId = stat.Exhibit.MyExtStandardNft;
       nftStatus = 'exhibit';
     } else if ('Bid' in stat) {
-      tokenId = stat.Bid.myExtStandardNft;
+      tokenId = stat.Bid.MyExtStandardNft;
       nftStatus = 'bid';
     } else {
       throw new Error('Invalid token');
