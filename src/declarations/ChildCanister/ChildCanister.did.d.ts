@@ -5,13 +5,15 @@ export interface CanisterIdList { 'myExtStandardNft' : CanisterIDText }
 export interface ChildCanister {
   'acceptBidOffer' : (
       arg_0: { 'bidToken' : TokenIndex, 'exhibitToken' : TokenIndex },
-    ) => Promise<Result_1>,
+    ) => Promise<Result_2>,
   'exhibitMyNft' : (arg_0: TokenIndex) => Promise<Result_1>,
-  'getAssetOwnerByTokenIndex' : (arg_0: TokenIndex) => Promise<Result_3>,
+  'getAssetByTokenIndex' : (arg_0: TokenIndex) => Promise<Result_5>,
+  'getAssetOwnerByTokenIndex' : (arg_0: TokenIndex) => Promise<Result_4>,
   'getAssetOwners' : () => Promise<Array<[TokenIndex, UserId]>>,
   'getAssets' : () => Promise<Array<[TokenIndex, NftStatus]>>,
+  'getAuctionByTokenIndex' : (arg_0: TokenIndex) => Promise<Result_3>,
   'getAuctions' : () => Promise<
-      Array<[TokenIndex, Array<[UserId, TokenIndex]>]>
+      Array<[TokenIndex, Array<[TokenIndex, UserId]>]>
     >,
   'importMyNft' : (arg_0: Nft) => Promise<Result_2>,
   'offerBidMyNft' : (
@@ -20,6 +22,9 @@ export interface ChildCanister {
         'bidToken' : TokenIndex,
         'exhibitToken' : TokenIndex,
       },
+    ) => Promise<Result_2>,
+  'selectTokenInAuction' : (
+      arg_0: { 'selectedToken' : TokenIndex, 'exhibitToken' : TokenIndex },
     ) => Promise<Result_1>,
   'sendToMe' : (arg_0: TokenIndex) => Promise<Result>,
 }
@@ -37,6 +42,9 @@ export type NftStatus = {
   } |
   { 'Stay' : Nft__1 } |
   { 'Exhibit' : Nft__1 } |
+  { 'Selected' : Nft__1 } |
+  { 'NotSelected' : Nft__1 } |
+  { 'ExhibitEnd' : Nft__1 } |
   {
     'BidOffering' : {
       'to' : CanisterIDText,
@@ -52,7 +60,11 @@ export type Result_1 = { 'ok' : null } |
   { 'err' : Error };
 export type Result_2 = { 'ok' : TokenIndex } |
   { 'err' : Error };
-export type Result_3 = { 'ok' : UserId } |
+export type Result_3 = { 'ok' : Array<[TokenIndex, UserId]> } |
+  { 'err' : Error };
+export type Result_4 = { 'ok' : UserId } |
+  { 'err' : Error };
+export type Result_5 = { 'ok' : NftStatus } |
   { 'err' : Error };
 export type TokenIdentifier = string;
 export type TokenIndex = bigint;

@@ -2,10 +2,23 @@ type UserId = principal;
 type TokenIndex__1 = nat;
 type TokenIndex = nat;
 type TokenIdentifier = text;
-type Result_3 = 
+type Result_5 = 
+ variant {
+   err: Error;
+   ok: NftStatus;
+ };
+type Result_4 = 
  variant {
    err: Error;
    ok: UserId;
+ };
+type Result_3 = 
+ variant {
+   err: Error;
+   ok: vec record {
+             TokenIndex;
+             UserId;
+           };
  };
 type Result_2 = 
  variant {
@@ -38,10 +51,13 @@ type NftStatus =
       to: CanisterIDText;
     };
    Exhibit: Nft__1;
+   ExhibitEnd: Nft__1;
+   NotSelected: Nft__1;
    Pending: record {
               nft: Nft__1;
               recipient: CanisterIDText;
             };
+   Selected: Nft__1;
    Stay: Nft__1;
  };
 type Nft = variant {MyExtStandardNft: TokenIdentifier;};
@@ -58,9 +74,10 @@ type ChildCanister =
     (record {
        bidToken: TokenIndex;
        exhibitToken: TokenIndex;
-     }) -> (Result_1);
+     }) -> (Result_2);
    exhibitMyNft: (TokenIndex) -> (Result_1);
-   getAssetOwnerByTokenIndex: (TokenIndex) -> (Result_3) query;
+   getAssetByTokenIndex: (TokenIndex) -> (Result_5) query;
+   getAssetOwnerByTokenIndex: (TokenIndex) -> (Result_4) query;
    getAssetOwners: () -> (vec record {
                                 TokenIndex;
                                 UserId;
@@ -69,12 +86,13 @@ type ChildCanister =
                            TokenIndex;
                            NftStatus;
                          }) query;
+   getAuctionByTokenIndex: (TokenIndex) -> (Result_3) query;
    getAuctions: () ->
     (vec record {
            TokenIndex;
            vec record {
-                 UserId;
                  TokenIndex;
+                 UserId;
                };
          }) query;
    importMyNft: (Nft) -> (Result_2);
@@ -83,6 +101,11 @@ type ChildCanister =
        bidToken: TokenIndex;
        exhibitCanisterId: CanisterIDText__1;
        exhibitToken: TokenIndex;
+     }) -> (Result_2);
+   selectTokenInAuction:
+    (record {
+       exhibitToken: TokenIndex;
+       selectedToken: TokenIndex;
      }) -> (Result_1);
    sendToMe: (TokenIndex) -> (Result);
  };

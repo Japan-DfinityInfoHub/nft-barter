@@ -56,10 +56,13 @@ module {
       exhibitNftIndex : TokenIndex;
     };
     #Exhibit : Nft;
+    #ExhibitEnd: Nft;
     #Pending : {
       recipient : CanisterIDText;
       nft : Nft;
     };
+    #Selected : Nft;
+    #NotSelected : Nft;
   };
 
   // Import Request
@@ -80,10 +83,5 @@ module {
   public type MyExtStandardNftCanisterIF = actor {
     transfer : ExtTypes.TransferRequest -> async ExtTypes.TransferResponse;
   };
-
-  public type ChildCanisterIF = actor {
-    acceptBidOffer : ({ bidToken: TokenIndex; exhibitToken : TokenIndex;}) -> async Result.Result<(), Error>;
-    sendToMe : TokenIndex -> async Result.Result<Nft, Error>;
-  }
 
 }

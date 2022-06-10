@@ -8,9 +8,8 @@ export const idlFactory = ({ IDL }) => {
     'unauthorized' : IDL.Text,
     'notYetRegistered' : IDL.Text,
   });
+  const Result_2 = IDL.Variant({ 'ok' : TokenIndex, 'err' : Error });
   const Result_1 = IDL.Variant({ 'ok' : IDL.Null, 'err' : Error });
-  const UserId = IDL.Principal;
-  const Result_3 = IDL.Variant({ 'ok' : UserId, 'err' : Error });
   const TokenIdentifier = IDL.Text;
   const Nft__1 = IDL.Variant({ 'MyExtStandardNft' : TokenIdentifier });
   const TokenIndex__1 = IDL.Nat;
@@ -22,6 +21,9 @@ export const idlFactory = ({ IDL }) => {
     }),
     'Stay' : Nft__1,
     'Exhibit' : Nft__1,
+    'Selected' : Nft__1,
+    'NotSelected' : Nft__1,
+    'ExhibitEnd' : Nft__1,
     'BidOffering' : IDL.Record({
       'to' : CanisterIDText,
       'nft' : Nft__1,
@@ -29,18 +31,25 @@ export const idlFactory = ({ IDL }) => {
     }),
     'Pending' : IDL.Record({ 'nft' : Nft__1, 'recipient' : CanisterIDText }),
   });
+  const Result_5 = IDL.Variant({ 'ok' : NftStatus, 'err' : Error });
+  const UserId = IDL.Principal;
+  const Result_4 = IDL.Variant({ 'ok' : UserId, 'err' : Error });
+  const Result_3 = IDL.Variant({
+    'ok' : IDL.Vec(IDL.Tuple(TokenIndex, UserId)),
+    'err' : Error,
+  });
   const Nft = IDL.Variant({ 'MyExtStandardNft' : TokenIdentifier });
-  const Result_2 = IDL.Variant({ 'ok' : TokenIndex, 'err' : Error });
   const CanisterIDText__1 = IDL.Text;
   const Result = IDL.Variant({ 'ok' : Nft, 'err' : Error });
   const ChildCanister = IDL.Service({
     'acceptBidOffer' : IDL.Func(
         [IDL.Record({ 'bidToken' : TokenIndex, 'exhibitToken' : TokenIndex })],
-        [Result_1],
+        [Result_2],
         [],
       ),
     'exhibitMyNft' : IDL.Func([TokenIndex], [Result_1], []),
-    'getAssetOwnerByTokenIndex' : IDL.Func([TokenIndex], [Result_3], ['query']),
+    'getAssetByTokenIndex' : IDL.Func([TokenIndex], [Result_5], ['query']),
+    'getAssetOwnerByTokenIndex' : IDL.Func([TokenIndex], [Result_4], ['query']),
     'getAssetOwners' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(TokenIndex, UserId))],
@@ -51,11 +60,12 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(TokenIndex, NftStatus))],
         ['query'],
       ),
+    'getAuctionByTokenIndex' : IDL.Func([TokenIndex], [Result_3], ['query']),
     'getAuctions' : IDL.Func(
         [],
         [
           IDL.Vec(
-            IDL.Tuple(TokenIndex, IDL.Vec(IDL.Tuple(UserId, TokenIndex)))
+            IDL.Tuple(TokenIndex, IDL.Vec(IDL.Tuple(TokenIndex, UserId)))
           ),
         ],
         ['query'],
@@ -66,6 +76,16 @@ export const idlFactory = ({ IDL }) => {
           IDL.Record({
             'exhibitCanisterId' : CanisterIDText__1,
             'bidToken' : TokenIndex,
+            'exhibitToken' : TokenIndex,
+          }),
+        ],
+        [Result_2],
+        [],
+      ),
+    'selectTokenInAuction' : IDL.Func(
+        [
+          IDL.Record({
+            'selectedToken' : TokenIndex,
             'exhibitToken' : TokenIndex,
           }),
         ],
