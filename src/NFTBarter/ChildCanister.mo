@@ -52,15 +52,8 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     // Check Double Import
     if(
       Iter.filter<(TokenIndex, NftStatus)>(
-        _assets.entries(), func(index, nftStatus) {
-          let _nft = switch (nftStatus) {
-            case (#Stay(v)) v;
-            case (#BidOffered(v)) v.nft;
-            case (#BidOffering(v)) v.nft;
-            case (#Exhibit(v)) v;
-            case (#Pending(v)) v;
-          };
-          nft==_nft
+        _assets.entries(), func(_, nftStatus) {
+          nft == getNftFromNftStatus(nftStatus)
         }
       ).next() != null
     ) return #err(#alreadyRegistered("This NFT is already registered."));
@@ -102,6 +95,9 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     // Check Owner
     if (isOwner(tokenIndex) == false) return #err(#unauthorized("You are not the owner of this NFT"));
 
+    // Prevents the NFT owner from initiating an exhibit at the time of the invalid status of NFT.
+    if (isStay(tokenIndex) == false) return #err(#other("You cannot start an auction because NFT is invalid status"));
+
     // Start Bater Auction
     switch (_auctions.get(tokenIndex)) {
       case (?_) {
@@ -113,7 +109,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
 
         // Change `NftStatus` to `#Exhibit`
         changeNftStatus(tokenIndex, returnExhibit);
-      }
+      };
     };
 
     return #ok;
@@ -142,23 +138,23 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
         changeNftStatus(bidToken, returnStay);
         return #err(#other("An error occurred during call to acceptBitOffer function."))
       };
+      // In case of success, change `NftStatus` to `#BidOffering`
       case (#ok(_)) {
-        // do nothing
+        changeNftStatus(bidToken, returnBidOffering(exhibitCanisterId, exhibitToken));
+        return #ok;
       };
     };
-
-    // Change `NftStatus` to `#BidOffering`
-    changeNftStatus(bidToken, returnBidOffering(exhibitCanisterId, exhibitToken));
-
-    return #ok;
   };
 
   public shared ({caller}) func acceptBidOffer({bidToken : TokenIndex; exhibitToken : TokenIndex;}) : async Result<(), Error> {
     if (Principal.isAnonymous(caller)) return #err(#unauthorized("You are not authorized."));
 
-    // Check if `caller` is Family
+    // Check if `caller` is family
     if ((await parentCanister.isFamily(Principal.toText(caller))) == false) return #err(#unauthorized(Principal.toText(caller) # "is not our family."));
 
+    // Check if auction is open
+    if (isAuctionOpen(exhibitToken) == false) return #err(#other("Auction does not exist."));
+    
     // sendToMe
     let nft = switch (await (actor(Principal.toText(caller)) : Types.ChildCanisterIF).sendToMe(bidToken)) {
       case (#err _) return #err(#other("An error occurred during call to sendToMe function."));
@@ -210,11 +206,8 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
   func isOwner(tokenIndex : TokenIndex) : Bool {
     switch (_assetOwners.get(tokenIndex)) {
       case (null) return false;
-      case (?owner) {
-        if (owner != _canisterOwner) return false;
-      }
+      case (?owner) { return owner == _canisterOwner };
     };
-    return true;
   };
 
   // Change `NftStatus` by applying `returnStatus` function
@@ -225,6 +218,36 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
         case (#Stay(nft)) _assets.put(tokenIndex, returnStatus(nft));
         case (_) assert(false);
       }
+    }
+  };
+
+  // Check if the auction is open
+  func isAuctionOpen(tokenIndex: TokenIndex) : Bool {
+    switch (_auctions.get(tokenIndex)) {
+      case (null) return false;
+      case (?auction) return true;
+    };
+  };
+
+  // Check if the token is status of `#Stay`
+  func isStay(tokenIndex : TokenIndex) : Bool {
+    switch (_assets.get(tokenIndex)) {
+      case (null) return false;
+      case (?s) switch (s) {
+        case (#Stay(_)) return true;
+        case (_) return false;
+      };
+    };
+  };
+
+  // Get `Nft` from `NftStatus`
+  func getNftFromNftStatus(nftStatus: NftStatus) : Nft {
+    switch (nftStatus) {
+      case (#Stay(nft)) nft;
+      case (#BidOffered(v)) v.nft;
+      case (#BidOffering(v)) v.nft;
+      case (#Exhibit(nft)) nft;
+      case (#Pending(nft)) nft;
     }
   };
 
