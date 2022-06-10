@@ -6,6 +6,7 @@ import { createNFTBarterActor } from './createNFTBarterActor';
 
 import { TokenIdentifier } from '../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
 import { CanisterID } from '../../../declarations/NFTBarter/NFTBarter.did';
+import { NftStatus as NftStatusCandid } from '../../../declarations/ChildCanister/ChildCanister.did';
 
 export const fetchAllNftsOnChildCanister = async (
   childCanisterId: CanisterID,
@@ -16,27 +17,7 @@ export const fetchAllNftsOnChildCanister = async (
   });
   const assets = await actor.getAssets();
   const nfts: GenerativeArtNFT[] = assets.map((asset) => {
-    const [_, stat] = asset;
-    let tokenId: TokenIdentifier;
-    let nftStatus: NftStatus;
-    if ('Stay' in stat) {
-      tokenId = stat.Stay.MyExtStandardNft;
-      nftStatus = 'stay';
-    } else if ('Exhibit' in stat) {
-      tokenId = stat.Exhibit.MyExtStandardNft;
-      nftStatus = 'exhibit';
-    } else if ('Bid' in stat) {
-      tokenId = stat.Bid.MyExtStandardNft;
-      nftStatus = 'bid';
-    } else {
-      throw new Error('Invalid token');
-    }
-    const { index } = decodeTokenId(tokenId);
-    return {
-      tokenId,
-      tokenIndex: index,
-      status: nftStatus,
-    };
+    return getTokenIdAndNftStatusFromAsset(asset);
   });
   return nfts;
 };
@@ -52,4 +33,37 @@ export const fetchAllExhibitedNft = async (): Promise<GenerativeArtNFT[]> => {
     })
   );
   return allExhibitNfts.flat();
+};
+
+export const getTokenIdAndNftStatusFromAsset = (
+  asset: [bigint, NftStatusCandid]
+) => {
+  const [tokenIndexOnChildCanister, stat] = asset;
+  let tokenId: TokenIdentifier;
+  let nftStatus: NftStatus;
+  if ('Stay' in stat) {
+    tokenId = stat.Stay.MyExtStandardNft;
+    nftStatus = 'stay';
+  } else if ('Exhibit' in stat) {
+    tokenId = stat.Exhibit.MyExtStandardNft;
+    nftStatus = 'exhibit';
+  } else if ('BidOffering' in stat) {
+    tokenId = stat.BidOffering.nft.MyExtStandardNft;
+    nftStatus = 'bidOffering';
+  } else if ('BidOffered' in stat) {
+    tokenId = stat.BidOffered.nft.MyExtStandardNft;
+    nftStatus = 'bidOffered';
+  } else if ('Pending' in stat) {
+    tokenId = stat.Pending.nft.MyExtStandardNft;
+    nftStatus = 'pending';
+  } else {
+    throw new Error('Invalid token');
+  }
+  const { index } = decodeTokenId(tokenId);
+  return {
+    tokenId,
+    tokenIndex: index,
+    tokenIndexOnChildCanister,
+    status: nftStatus,
+  };
 };

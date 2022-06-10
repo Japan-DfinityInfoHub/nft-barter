@@ -14,6 +14,7 @@ module {
   public type CanisterID = Principal;
   public type TokenIndex = Nat;
   public type CanisterIDText = Text;
+  public type TokenIdentifier = ExtTypes.TokenIdentifier;
 
   public type UserProfile = {
     #none;
@@ -39,7 +40,7 @@ module {
   // All Nft Type
   public type Nft = {
     // #SampleNft;
-    #MyExtStandardNft : ExtTypes.TokenIdentifier;
+    #MyExtStandardNft : TokenIdentifier;
   };
   
   public type NftStatus = {
@@ -55,7 +56,10 @@ module {
       exhibitNftIndex : TokenIndex;
     };
     #Exhibit : Nft;
-    #Pending : Nft;
+    #Pending : {
+      recipient : CanisterIDText;
+      nft : Nft;
+    };
   };
 
   // Import Request
@@ -78,7 +82,7 @@ module {
   };
 
   public type ChildCanisterIF = actor {
-    acceptBidOffer : () -> async Result.Result<(), Error>;
+    acceptBidOffer : ({ bidToken: TokenIndex; exhibitToken : TokenIndex;}) -> async Result.Result<(), Error>;
     sendToMe : TokenIndex -> async Result.Result<Nft, Error>;
   }
 
