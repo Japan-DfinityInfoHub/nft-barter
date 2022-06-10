@@ -14,6 +14,7 @@ shared (install) actor class NFTBarter() = this {
   type UserProfile = Types.UserProfile;
   type UserId = Types.UserId;
   type CanisterID = Types.CanisterID;
+  type CanisterIDText = Types.CanisterIDText;
   type Error = Types.Error;
   type Result<T, E> = Result.Result<T, E>;
 
@@ -98,6 +99,14 @@ shared (install) actor class NFTBarter() = this {
 
     _targetNftCanisterId := newCanisterId;
     #ok (_targetNftCanisterId)
+  };
+
+  // Returns true if `canisterId` is in `_childCanisters`
+  public shared func isFamily(canisterId: CanisterIDText) : async Bool {
+    switch (_childCanisters.get(Principal.fromText(canisterId))) {
+      case null { return false };
+      case (?_) { return true };
+    };
   };
 
   public query func getTargetNftCanisterId(): async CanisterID {
