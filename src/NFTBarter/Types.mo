@@ -5,15 +5,15 @@
 import Result "mo:base/Result";
 // import Principal "mo:base/Principal";
 
-
 // import Ext-Standart Types
 import ExtTypes "./NftTypes/ExtTypes";
-
 
 module {
 
   public type UserId = Principal;
   public type CanisterID = Principal;
+  public type TokenIndex = Nat;
+  public type CanisterIDText = Text;
 
   public type UserProfile = {
     #none;
@@ -26,8 +26,6 @@ module {
     #other : Text;
   };
 
-
-
   /* For Child Canister */
   // Parent Types
   public type ParentIF = actor {
@@ -35,7 +33,7 @@ module {
   };
 
   public type CanisterIdList = {
-    myExtStandardNft : Text;
+    myExtStandardNft : CanisterIDText;
   };
 
   // All Nft Type
@@ -48,13 +46,13 @@ module {
     #Stay : Nft;
     #BidOffered : {
       nft : Nft;
-      from : Text;
-      exhibitNftIndex : Nat;
+      from : CanisterIDText;
+      exhibitNftIndex : TokenIndex;
     };
     #BidOffering : {
       nft : Nft;
-      to : Text;
-      exhibitNftIndex : Nat;
+      to : CanisterIDText;
+      exhibitNftIndex : TokenIndex;
     };
     #Exhibit : Nft;
     #Pending : Nft;
@@ -81,8 +79,7 @@ module {
 
   public type ChildCanisterIF = actor {
     acceptBidOffer : () -> async Result.Result<(), Error>;
-    sendToMe : Nat -> async Result.Result<Nft, Error>;
+    sendToMe : TokenIndex -> async Result.Result<Nft, Error>;
   }
-
 
 }
