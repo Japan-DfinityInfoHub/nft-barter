@@ -102,16 +102,18 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     // Check Owner
     if (isOwner(tokenIndex) == false) return #err(#unauthorized("You are not the owner of this NFT"));
 
-    // Change `NftStatus` to `#Exhibit`
-    changeNftStatus(tokenIndex, returnExhibit);
-
     // Start Bater Auction
     switch (_auctions.get(tokenIndex)) {
-      // _
-      case (?_) assert(false);
-      case (null) _auctions.put(tokenIndex, 
-        HashMap.HashMap<UserId, TokenIndex>(0, Principal.equal, Principal.hash)
-      )
+      case (?_) {
+        return #err(#other("The auction has already started"))
+      };
+      case (null) {
+        let bids = HashMap.HashMap<UserId, TokenIndex>(0, Principal.equal, Principal.hash);
+        _auctions.put(tokenIndex, bids);
+
+        // Change `NftStatus` to `#Exhibit`
+        changeNftStatus(tokenIndex, returnExhibit);
+      }
     };
 
     return #ok;
