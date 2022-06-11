@@ -43,12 +43,14 @@ type NftStatus =
       exhibitNftIndex: TokenIndex__1;
       from: CanisterIDText;
       nft: Nft__1;
+      tokenIndexOnOtherCanister: TokenIndex__1;
     };
    BidOffering:
     record {
       exhibitNftIndex: TokenIndex__1;
       nft: Nft__1;
       to: CanisterIDText;
+      tokenIndexOnOtherCanister: TokenIndex__1;
     };
    Exhibit: Nft__1;
    ExhibitEnd: Nft__1;
@@ -108,6 +110,7 @@ type ChildCanister =
        selectedToken: TokenIndex;
      }) -> (Result_1);
    sendToMe: (TokenIndex) -> (Result);
+   withdrawNft: (TokenIndex) -> (Result);
  };
 type CanisterIdList = record {myExtStandardNft: CanisterIDText;};
 type CanisterIDText__1 = text;

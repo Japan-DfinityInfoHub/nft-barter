@@ -27,6 +27,7 @@ export interface ChildCanister {
       arg_0: { 'selectedToken' : TokenIndex, 'exhibitToken' : TokenIndex },
     ) => Promise<Result_1>,
   'sendToMe' : (arg_0: TokenIndex) => Promise<Result>,
+  'withdrawNft' : (arg_0: TokenIndex) => Promise<Result>,
 }
 export type Error = { 'other' : string } |
   { 'alreadyRegistered' : string } |
@@ -37,6 +38,7 @@ export type NftStatus = {
     'BidOffered' : {
       'nft' : Nft__1,
       'from' : CanisterIDText,
+      'tokenIndexOnOtherCanister' : TokenIndex__1,
       'exhibitNftIndex' : TokenIndex__1,
     }
   } |
@@ -49,6 +51,7 @@ export type NftStatus = {
     'BidOffering' : {
       'to' : CanisterIDText,
       'nft' : Nft__1,
+      'tokenIndexOnOtherCanister' : TokenIndex__1,
       'exhibitNftIndex' : TokenIndex__1,
     }
   } |

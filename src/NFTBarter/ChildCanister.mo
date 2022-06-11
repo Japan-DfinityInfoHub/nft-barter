@@ -277,6 +277,69 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     return #ok;
   };
 
+  /* Withdraw Methods */
+
+  public shared ({caller}) func withdrawNft(tokenIndex : TokenIndex) : async Result<Nft, Error> {
+
+    // Check authentication
+    if (Principal.isAnonymous(caller) or (caller != _canisterOwner)) {
+      return #err(#unauthorized("You are not authorized."));
+    };
+
+    // Check owner of NFT
+    switch (_assetOwners.get(tokenIndex)) {
+      case (null) { return #err(#other("Token is not found."))};
+      case (?owner) {
+        // Asset owner must be either caller or caller's child canister
+        if (owner != caller and owner != Principal.fromActor(this)){
+          return #err(#unauthorized("You are not the owner of this token."));
+        };
+      }
+    };
+
+    let nft = switch(_assets.get(tokenIndex)) {
+      case (null) return #err(#other("NFT does not exist."));
+      case (?nftStatus) switch (nftStatus) {
+        case (#Stay(nft)) nft;
+        case (#Exhibit(nft)) {
+          // TODO: cancel auction
+          nft;
+        };
+        case (#BidOffering(v)) {
+          // TODO: cancel bid
+          return #err(#other("Invalid NFT status."));
+        };
+        case (#Selected(nft)) nft;
+        case (_) return #err(#other("Invalid NFT status."));
+      };
+    };
+
+    // Transfer the NFT to `caller`
+    switch (nft) {
+      case (#MyExtStandardNft(tokenIdentifier)) {
+        switch (await (actor(_canisterIdList.myExtStandardNft): MyExtStandardNftCanisterIF)
+          .transfer({
+            from = #principal(Principal.fromActor(this));
+            to = #principal(caller);
+            token = tokenIdentifier;
+            amount = 1;
+            memo = Blob.fromArray([]:[Nat8]);
+            notify = false;
+            subaccount = null;
+          })){
+          case (#err(_)){
+            return #err(#other("An error occurred while transferring NFT"));
+          };
+          case (#ok(_)){
+            return #ok nft;
+          };
+        };
+      };
+      // New nft will be added here.
+      // case (#NewNft(id)) {};
+    };
+
+  };
 
   /* Helper Functions */
   // Check the owner of NFT
