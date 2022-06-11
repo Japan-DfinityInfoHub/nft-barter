@@ -1,5 +1,6 @@
 import type { Principal } from '@dfinity/principal';
 export type CanisterID = Principal;
+export type CanisterIDText = string;
 export type Error = { 'other' : string } |
   { 'alreadyRegistered' : string } |
   { 'unauthorized' : string } |
@@ -9,6 +10,7 @@ export interface NFTBarter {
   'getMyChildCanisters' : () => Promise<Result_2>,
   'getMyProfile' : () => Promise<Result_1>,
   'getTargetNftCanisterId' : () => Promise<CanisterID>,
+  'isFamily' : (arg_0: CanisterIDText) => Promise<boolean>,
   'isRegistered' : () => Promise<boolean>,
   'mintChildCanister' : () => Promise<Result>,
   'register' : () => Promise<Result_1>,

@@ -1,5 +1,30 @@
 type UserId = principal;
+type TokenIndex__1 = nat;
+type TokenIndex = nat;
 type TokenIdentifier = text;
+type Result_5 = 
+ variant {
+   err: Error;
+   ok: NftStatus;
+ };
+type Result_4 = 
+ variant {
+   err: Error;
+   ok: UserId;
+ };
+type Result_3 = 
+ variant {
+   err: Error;
+   ok: vec record {
+             TokenIndex;
+             UserId;
+           };
+ };
+type Result_2 = 
+ variant {
+   err: Error;
+   ok: TokenIndex;
+ };
 type Result_1 = 
  variant {
    err: Error;
@@ -8,13 +33,31 @@ type Result_1 =
 type Result = 
  variant {
    err: Error;
-   ok: nat;
+   ok: Nft;
  };
 type Nft__1 = variant {MyExtStandardNft: TokenIdentifier;};
 type NftStatus = 
  variant {
-   Bid: Nft__1;
+   BidOffered:
+    record {
+      exhibitNftIndex: TokenIndex__1;
+      from: CanisterIDText;
+      nft: Nft__1;
+    };
+   BidOffering:
+    record {
+      exhibitNftIndex: TokenIndex__1;
+      nft: Nft__1;
+      to: CanisterIDText;
+    };
    Exhibit: Nft__1;
+   ExhibitEnd: Nft__1;
+   NotSelected: Nft__1;
+   Pending: record {
+              nft: Nft__1;
+              recipient: CanisterIDText;
+            };
+   Selected: Nft__1;
    Stay: Nft__1;
  };
 type Nft = variant {MyExtStandardNft: TokenIdentifier;};
@@ -27,23 +70,46 @@ type Error =
  };
 type ChildCanister = 
  service {
-   exhibitMyNft: (nat) -> (Result_1);
+   acceptBidOffer:
+    (record {
+       bidToken: TokenIndex;
+       exhibitToken: TokenIndex;
+     }) -> (Result_2);
+   exhibitMyNft: (TokenIndex) -> (Result_1);
+   getAssetByTokenIndex: (TokenIndex) -> (Result_5) query;
+   getAssetOwnerByTokenIndex: (TokenIndex) -> (Result_4) query;
    getAssetOwners: () -> (vec record {
-                                nat;
+                                TokenIndex;
                                 UserId;
                               }) query;
    getAssets: () -> (vec record {
-                           nat;
+                           TokenIndex;
                            NftStatus;
                          }) query;
-   getAuctions: () -> (vec record {
-                             nat;
-                             vec record {
-                                   UserId;
-                                   nat;
-                                 };
-                           }) query;
-   importMyNft: (Nft) -> (Result);
+   getAuctionByTokenIndex: (TokenIndex) -> (Result_3) query;
+   getAuctions: () ->
+    (vec record {
+           TokenIndex;
+           vec record {
+                 TokenIndex;
+                 UserId;
+               };
+         }) query;
+   importMyNft: (Nft) -> (Result_2);
+   offerBidMyNft:
+    (record {
+       bidToken: TokenIndex;
+       exhibitCanisterId: CanisterIDText__1;
+       exhibitToken: TokenIndex;
+     }) -> (Result_2);
+   selectTokenInAuction:
+    (record {
+       exhibitToken: TokenIndex;
+       selectedToken: TokenIndex;
+     }) -> (Result_1);
+   sendToMe: (TokenIndex) -> (Result);
  };
-type CanisterIdList = record {myExtStandardNft: text;};
+type CanisterIdList = record {myExtStandardNft: CanisterIDText;};
+type CanisterIDText__1 = text;
+type CanisterIDText = text;
 service : (principal, CanisterIdList) -> ChildCanister

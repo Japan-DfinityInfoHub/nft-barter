@@ -1,6 +1,7 @@
 import { Secp256k1KeyIdentity } from '@dfinity/identity';
 import fetch from 'isomorphic-fetch';
 import { IDL } from '@dfinity/candid';
+import { jest } from '@jest/globals';
 
 declare module '../../declarations/NFTBarter/NFTBarter.did.js' {
   function idlFactory(): IDL.ServiceClass;
@@ -37,6 +38,9 @@ const identityOptionOfAnonymous = {
   },
 };
 const actorOfAnonymous = createNFTBarterActor(identityOptionOfAnonymous);
+
+// beforeAll has long-running calls
+jest.setTimeout(10000);
 
 describe('Mint child canister test', () => {
   let childCanisterId: CanisterID;

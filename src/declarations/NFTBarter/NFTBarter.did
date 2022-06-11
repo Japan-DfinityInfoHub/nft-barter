@@ -24,6 +24,7 @@ type NFTBarter =
    getMyChildCanisters: () -> (Result_2) query;
    getMyProfile: () -> (Result_1) query;
    getTargetNftCanisterId: () -> (CanisterID) query;
+   isFamily: (CanisterIDText) -> (bool);
    isRegistered: () -> (bool) query;
    mintChildCanister: () -> (Result);
    register: () -> (Result_1);
@@ -36,5 +37,6 @@ type Error =
    other: text;
    unauthorized: text;
  };
+type CanisterIDText = text;
 type CanisterID = principal;
 service : () -> NFTBarter
