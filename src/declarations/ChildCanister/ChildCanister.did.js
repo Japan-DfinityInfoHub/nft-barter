@@ -16,8 +16,8 @@ export const idlFactory = ({ IDL }) => {
   const NftStatus = IDL.Variant({
     'BidOffered' : IDL.Record({
       'nft' : Nft__1,
+      'tokenIndexOnBidCanister' : TokenIndex__1,
       'from' : CanisterIDText,
-      'tokenIndexOnOtherCanister' : TokenIndex__1,
       'exhibitNftIndex' : TokenIndex__1,
     }),
     'Stay' : Nft__1,
@@ -34,7 +34,7 @@ export const idlFactory = ({ IDL }) => {
     'BidOffering' : IDL.Record({
       'to' : CanisterIDText,
       'nft' : Nft__1,
-      'tokenIndexOnOtherCanister' : TokenIndex__1,
+      'tokenIndexOnExhibitCanister' : TokenIndex__1,
       'exhibitNftIndex' : TokenIndex__1,
     }),
     'Pending' : IDL.Record({ 'nft' : Nft__1, 'recipient' : CanisterIDText }),

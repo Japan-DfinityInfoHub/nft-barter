@@ -49,13 +49,13 @@ module {
       nft : Nft;
       from : CanisterIDText;
       exhibitNftIndex : TokenIndex;
-      tokenIndexOnOtherCanister : TokenIndex;
+      tokenIndexOnBidCanister : TokenIndex;
     };
     #BidOffering : {
       nft : Nft;
       to : CanisterIDText;
       exhibitNftIndex : TokenIndex;
-      tokenIndexOnOtherCanister : TokenIndex;
+      tokenIndexOnExhibitCanister : TokenIndex;
     };
     #Exhibit : Nft;
     #ExhibitEnd : {

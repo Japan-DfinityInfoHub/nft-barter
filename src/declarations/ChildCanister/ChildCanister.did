@@ -43,14 +43,14 @@ type NftStatus =
       exhibitNftIndex: TokenIndex__1;
       from: CanisterIDText;
       nft: Nft__1;
-      tokenIndexOnOtherCanister: TokenIndex__1;
+      tokenIndexOnBidCanister: TokenIndex__1;
     };
    BidOffering:
     record {
       exhibitNftIndex: TokenIndex__1;
       nft: Nft__1;
       to: CanisterIDText;
-      tokenIndexOnOtherCanister: TokenIndex__1;
+      tokenIndexOnExhibitCanister: TokenIndex__1;
     };
    Exhibit: Nft__1;
    ExhibitEnd: record {
