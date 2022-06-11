@@ -433,6 +433,12 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
           case (_) return assert(false);
         }
       };
+      case (#BidOffering(v)) {
+        switch (returnStatus(v.nft)){
+          case (#Winning(v)) #Winning(v);
+          case (_) return assert(false);
+        }
+      };
       case (_) return assert(false);
     };
 
