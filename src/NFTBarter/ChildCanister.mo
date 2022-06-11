@@ -230,8 +230,11 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     };
   };
 
-  // Note that `caller` of this method is the exhibiting user.
-  public shared ({caller}) func selectTokenInAuction({selectedToken: TokenIndex; exhibitToken: TokenIndex}) : async Result<(), Error> {
+  // Note that:
+  //  - `caller` of this method is the exhibiting user.
+  //  - `selectedTokenIndex` is an index of selected token in callee's canister
+  //  - `exhibitTokenIndex` is an index of exhibiting token in callee's canister
+  public shared ({caller}) func selectTokenInAuction({selectedTokenIndex: TokenIndex; exhibitTokenIndex: TokenIndex}) : async Result<(), Error> {
     
     // Check authentication
     if (Principal.isAnonymous(caller) or (caller != _canisterOwner)) {
@@ -239,7 +242,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     };
 
     // Get auction
-    let auction = switch (_auctions.get(exhibitToken)){
+    let auction = switch (_auctions.get(exhibitTokenIndex)){
       case (null) return #err(#other("Auction does not exist."));
       case (?auction) auction;
     };
@@ -247,12 +250,12 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     // Find bid from auction 
     let selectedBid : ?(TokenIndex, UserId) = Iter.filter<(TokenIndex, UserId)>(
       auction.entries(), func(index, _) {
-      index == selectedToken
+      index == selectedTokenIndex
     }).next();
 
     let notSelectedBids : Iter.Iter<(TokenIndex, UserId)> = Iter.filter<(TokenIndex, UserId)>(
       auction.entries(), func(index, _) {
-      index != selectedToken
+      index != selectedTokenIndex
     });
 
     let bidder = switch (selectedBid) {
@@ -260,20 +263,74 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       case (?bid) bid.1;
     };
 
+    let winningNft = switch(_assets.get(exhibitTokenIndex)){
+      case (null) return #err(#other("Token is not found."));
+      case (?#Exhibit(nft)) nft;
+      case (_) return #err(#other("Invalid token status."));
+    };
+
+    let bidTokenIndex = switch(_assets.get(selectedTokenIndex)){
+      case (null) return #err(#other("Token is not found."));
+      case (?#BidOffered(v)) v.tokenIndexOnOtherCanister;
+      case (_) return #err(#other("Invalid token status."));
+    };
+
+    // Notify winner
+    switch (await (actor(Principal.toText(bidder)) : ChildCanister).notifyWinner({
+      bidTokenIndex; exhibitTokenIndex; winningNft;
+    })){
+      case (#ok(_)) {}; // do nothing
+      case (#err(_)) return #err(#other("Error occurred while notifying the winner."))
+    };
+
     // Swap owner
-    _assetOwners.put(exhibitToken, bidder);
-    _assetOwners.put(selectedToken, Principal.fromActor(this));
+    _assetOwners.put(exhibitTokenIndex, bidder);
+    _assetOwners.put(selectedTokenIndex, Principal.fromActor(this));
 
     // Change status
-    changeNftStatus(exhibitToken, returnExhibitEnd);
-    changeNftStatus(selectedToken, returnSelected);
+    changeNftStatus(exhibitTokenIndex, returnExhibitEnd);
+    changeNftStatus(selectedTokenIndex, returnSelected);
     for (notSelectedBid in notSelectedBids){
       changeNftStatus(notSelectedBid.0, returnNotSelected);
     };
 
     // Close the auction
-    _auctions.delete(exhibitToken);
+    _auctions.delete(exhibitTokenIndex);
 
+    return #ok;
+  };
+
+  // Note that:
+  //   - `bidTokenIndex` is an index of bidding token in callee's canister
+  //   - `exhibitTokenIndex` is an index of exhibiting token in caller's canister
+  public shared ({caller}) func notifyWinner({bidTokenIndex : TokenIndex; exhibitTokenIndex: TokenIndex; winningNft : Nft}) : async Result<(), Error> {
+    
+    // Check authentication
+    if (Principal.isAnonymous(caller)) {
+      return #err(#unauthorized("You are not authorized."));
+    };
+
+    let nftStatus = switch(_assets.get(bidTokenIndex)) {
+      case (null) return #err(#other("Token is not found."));
+      case (?nftStatus) nftStatus;
+    };
+
+    let nft = switch (nftStatus) {
+      case (#BidOffering(v)){
+        if (v.to != Principal.toText(caller)){
+          return #err(#unauthorized("You are not the correct canister."));
+        };
+        if (v.exhibitNftIndex != exhibitTokenIndex){
+          return #err(#other("Wrong exhibit token."));
+        };
+        v.nft
+      };
+      case (_) { return #err(#other("Invalid status."))}
+    };
+
+    // Change status
+    changeNftStatus(bidTokenIndex, returnWinning(exhibitTokenIndex, winningNft));
+    
     return #ok;
   };
 
@@ -331,6 +388,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
             return #err(#other("An error occurred while transferring NFT"));
           };
           case (#ok(_)){
+            // TODO: delete asset
             return #ok nft;
           };
         };
@@ -413,6 +471,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       case (#Pending(v)) v.nft;
       case (#Selected(nft)) nft;
       case (#NotSelected(nft)) nft;
+      case (#Winning(v)) v.nft;
     }
   };
 
@@ -474,6 +533,17 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
         to;
         exhibitNftIndex;
         tokenIndexOnOtherCanister;
+      })
+    }
+  };
+
+  // Returns function which takes nft as parameter and returns `NftStatus` of `#Winning`
+  func returnWinning(winningTokenIndex: TokenIndex, winningNft: Nft) : Nft -> NftStatus {
+    return func (nft : Nft) : NftStatus {
+      #Winning({
+        nft;
+        winningTokenIndex;
+        winningNft;
       })
     }
   };

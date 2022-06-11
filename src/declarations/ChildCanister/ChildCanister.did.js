@@ -23,6 +23,11 @@ export const idlFactory = ({ IDL }) => {
     'Stay' : Nft__1,
     'Exhibit' : Nft__1,
     'Selected' : Nft__1,
+    'Winning' : IDL.Record({
+      'nft' : Nft__1,
+      'winningTokenIndex' : TokenIndex__1,
+      'winningNft' : Nft__1,
+    }),
     'NotSelected' : Nft__1,
     'ExhibitEnd' : Nft__1,
     'BidOffering' : IDL.Record({
@@ -73,6 +78,17 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'importMyNft' : IDL.Func([Nft], [Result_2], []),
+    'notifyWinner' : IDL.Func(
+        [
+          IDL.Record({
+            'bidTokenIndex' : TokenIndex,
+            'exhibitTokenIndex' : TokenIndex,
+            'winningNft' : Nft,
+          }),
+        ],
+        [Result_1],
+        [],
+      ),
     'offerBidMyNft' : IDL.Func(
         [
           IDL.Record({
@@ -87,8 +103,8 @@ export const idlFactory = ({ IDL }) => {
     'selectTokenInAuction' : IDL.Func(
         [
           IDL.Record({
-            'selectedToken' : TokenIndex,
-            'exhibitToken' : TokenIndex,
+            'selectedTokenIndex' : TokenIndex,
+            'exhibitTokenIndex' : TokenIndex,
           }),
         ],
         [Result_1],

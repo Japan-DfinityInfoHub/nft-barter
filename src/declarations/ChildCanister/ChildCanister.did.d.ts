@@ -16,6 +16,13 @@ export interface ChildCanister {
       Array<[TokenIndex, Array<[TokenIndex, UserId]>]>
     >,
   'importMyNft' : (arg_0: Nft) => Promise<Result_2>,
+  'notifyWinner' : (
+      arg_0: {
+        'bidTokenIndex' : TokenIndex,
+        'exhibitTokenIndex' : TokenIndex,
+        'winningNft' : Nft,
+      },
+    ) => Promise<Result_1>,
   'offerBidMyNft' : (
       arg_0: {
         'exhibitCanisterId' : CanisterIDText__1,
@@ -24,7 +31,10 @@ export interface ChildCanister {
       },
     ) => Promise<Result_2>,
   'selectTokenInAuction' : (
-      arg_0: { 'selectedToken' : TokenIndex, 'exhibitToken' : TokenIndex },
+      arg_0: {
+        'selectedTokenIndex' : TokenIndex,
+        'exhibitTokenIndex' : TokenIndex,
+      },
     ) => Promise<Result_1>,
   'sendToMe' : (arg_0: TokenIndex) => Promise<Result>,
   'withdrawNft' : (arg_0: TokenIndex) => Promise<Result>,
@@ -45,6 +55,13 @@ export type NftStatus = {
   { 'Stay' : Nft__1 } |
   { 'Exhibit' : Nft__1 } |
   { 'Selected' : Nft__1 } |
+  {
+    'Winning' : {
+      'nft' : Nft__1,
+      'winningTokenIndex' : TokenIndex__1,
+      'winningNft' : Nft__1,
+    }
+  } |
   { 'NotSelected' : Nft__1 } |
   { 'ExhibitEnd' : Nft__1 } |
   {

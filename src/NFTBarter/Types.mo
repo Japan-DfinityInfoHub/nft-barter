@@ -65,6 +65,11 @@ module {
     };
     #Selected : Nft;
     #NotSelected : Nft;
+    #Winning : {
+      nft : Nft;
+      winningTokenIndex : TokenIndex;
+      winningNft : Nft;
+    };
   };
 
   // Import Request
