@@ -187,21 +187,28 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     return #ok totalTokenIndex;
   };
 
+  // Note that:
+  //   - `tokenIndex` is an index of token in callee's canister
   public shared ({caller}) func sendToMe(tokenIndex : TokenIndex) : async Result<Nft, Error> {
     if (Principal.isAnonymous(caller)) return #err(#unauthorized("You are not authorized."));
 
     let (nft, recipient) = switch (_assets.get(tokenIndex)) {
       case (null) return #err(#other("NFT does not exist."));
-      case (?nftStatus) switch (nftStatus) {
-        case (#Pending(v)){ 
-          // Check recipient of NFT
-          if (v.recipient != Principal.toText(caller)) {
-            return #err(#unauthorized("You are not authorized."))
-          };
-          (v.nft, v.recipient)
+      case (?#Pending(v)){ 
+        // Check recipient of NFT
+        if (v.recipient != Principal.toText(caller)) {
+          return #err(#unauthorized("You are not authorized."))
         };
-        case (_) return #err(#other("Invalid NFT status (which must be #Pending)"));
-      }
+        (v.nft, v.recipient)
+      };
+      case (?#ExhibitEnd(v)){
+        // Check recipient of NFT
+        if (v.recipient != Principal.toText(caller)) {
+          return #err(#unauthorized("You are not authorized."))
+        };
+        (v.nft, v.recipient)
+      };
+      case (?_) return #err(#other("Invalid NFT status (which must be #Pending)"));
     };
 
     // Transfer the NFT to `recipient`
@@ -288,7 +295,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     _assetOwners.put(selectedTokenIndex, Principal.fromActor(this));
 
     // Change status
-    changeNftStatus(exhibitTokenIndex, returnExhibitEnd);
+    changeNftStatus(exhibitTokenIndex, returnExhibitEnd(Principal.toText(bidder)));
     changeNftStatus(selectedTokenIndex, returnSelected);
     for (notSelectedBid in notSelectedBids){
       changeNftStatus(notSelectedBid.0, returnNotSelected);
@@ -329,7 +336,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     };
 
     // Change status
-    changeNftStatus(bidTokenIndex, returnWinning(exhibitTokenIndex, winningNft));
+    changeNftStatus(bidTokenIndex, returnWinning(exhibitTokenIndex, winningNft, Principal.toText(caller)));
     
     return #ok;
   };
@@ -356,19 +363,24 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
 
     let nft = switch(_assets.get(tokenIndex)) {
       case (null) return #err(#other("NFT does not exist."));
-      case (?nftStatus) switch (nftStatus) {
-        case (#Stay(nft)) nft;
-        case (#Exhibit(nft)) {
-          // TODO: cancel auction
-          nft;
+      case (?#Stay(nft)) nft;
+      case (?#Winning(v)) {
+        let nft = switch(await (actor (v.canisterId) : ChildCanister).sendToMe(v.winningTokenIndex)){
+          case (#err(e)) return #err(e);
+          case (#ok(nft)) nft;
         };
-        case (#BidOffering(v)) {
-          // TODO: cancel bid
-          return #err(#other("Invalid NFT status."));
-        };
-        case (#Selected(nft)) nft;
-        case (_) return #err(#other("Invalid NFT status."));
+        nft
       };
+      case (?#Exhibit(nft)) {
+        // TODO: cancel auction
+        nft;
+      };
+      case (?#BidOffering(v)) {
+        // TODO: cancel bid
+        return #err(#other("Invalid NFT status."));
+      };
+      case (?#Selected(nft)) nft;
+      case (?_) return #err(#other("Invalid NFT status."));
     };
 
     // Transfer the NFT to `caller`
@@ -473,7 +485,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       case (#BidOffered(v)) v.nft;
       case (#BidOffering(v)) v.nft;
       case (#Exhibit(nft)) nft;
-      case (#ExhibitEnd(nft)) nft;
+      case (#ExhibitEnd(v)) v.nft;
       case (#Pending(v)) v.nft;
       case (#Selected(nft)) nft;
       case (#NotSelected(nft)) nft;
@@ -501,14 +513,22 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
   /* `returnStatus` functions */
   func returnStay(nft : Nft)    : NftStatus {#Stay(nft)};
 
-  func returnExhibit(nft : Nft) : NftStatus {#Exhibit(nft)};
-
-  func returnExhibitEnd(nft: Nft) : NftStatus {#ExhibitEnd(nft)};
+  func returnExhibit(nft : Nft) : NftStatus {#Exhibit(nft)};  
 
   func returnSelected(nft: Nft) : NftStatus {#Selected(nft)};
 
   func returnNotSelected(nft: Nft) : NftStatus {#NotSelected(nft)};
   
+  // Return function which takes nft as parameter and returns `NftStatus` of `#ExhibitEnd`
+  func returnExhibitEnd(recipient: CanisterIDText) : Nft -> NftStatus {
+    return func (nft: Nft) : NftStatus {
+      #ExhibitEnd({
+        recipient;
+        nft;
+      })
+    }
+  };
+
   // Return function which takes nft as parameter and returns `NftStatus` of `#Pending`
   func returnPending(recipient: CanisterIDText) : Nft -> NftStatus {
     return func (nft: Nft) : NftStatus {
@@ -544,10 +564,11 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
   };
 
   // Returns function which takes nft as parameter and returns `NftStatus` of `#Winning`
-  func returnWinning(winningTokenIndex: TokenIndex, winningNft: Nft) : Nft -> NftStatus {
+  func returnWinning(winningTokenIndex: TokenIndex, winningNft: Nft, canisterId : CanisterIDText) : Nft -> NftStatus {
     return func (nft : Nft) : NftStatus {
       #Winning({
         nft;
+        canisterId;
         winningTokenIndex;
         winningNft;
       })

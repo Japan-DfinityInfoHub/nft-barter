@@ -8,10 +8,11 @@ const NftStatus = {
   PENDING: 'pending',
   SELECTED: 'selected',
   NOTSELECTED: 'notSelected',
+  WINNING: 'winning',
 } as const;
 
 // type NftStatus = "wallet" | "stay" | "exhibit" | "exhibitEnd" | "bidOffering" |
-// "bidOffered" | "pending" | "selected" | "notSelected"
+// "bidOffered" | "pending" | "selected" | "notSelected" | "winning"
 export type NftStatus = typeof NftStatus[keyof typeof NftStatus];
 
 export const compareNft = (a: GenerativeArtNFT, b: GenerativeArtNFT) =>

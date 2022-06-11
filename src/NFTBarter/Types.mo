@@ -58,7 +58,10 @@ module {
       tokenIndexOnOtherCanister : TokenIndex;
     };
     #Exhibit : Nft;
-    #ExhibitEnd: Nft;
+    #ExhibitEnd : {
+      recipient : CanisterIDText;
+      nft : Nft;
+    };
     #Pending : {
       recipient : CanisterIDText;
       nft : Nft;
@@ -67,6 +70,7 @@ module {
     #NotSelected : Nft;
     #Winning : {
       nft : Nft;
+      canisterId : CanisterIDText;
       winningTokenIndex : TokenIndex;
       winningNft : Nft;
     };

@@ -53,7 +53,10 @@ type NftStatus =
       tokenIndexOnOtherCanister: TokenIndex__1;
     };
    Exhibit: Nft__1;
-   ExhibitEnd: Nft__1;
+   ExhibitEnd: record {
+                 nft: Nft__1;
+                 recipient: CanisterIDText;
+               };
    NotSelected: Nft__1;
    Pending: record {
               nft: Nft__1;
@@ -63,6 +66,7 @@ type NftStatus =
    Stay: Nft__1;
    Winning:
     record {
+      canisterId: CanisterIDText;
       nft: Nft__1;
       winningNft: Nft__1;
       winningTokenIndex: TokenIndex__1;

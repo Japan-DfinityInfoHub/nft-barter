@@ -60,10 +60,11 @@ export type NftStatus = {
       'nft' : Nft__1,
       'winningTokenIndex' : TokenIndex__1,
       'winningNft' : Nft__1,
+      'canisterId' : CanisterIDText,
     }
   } |
   { 'NotSelected' : Nft__1 } |
-  { 'ExhibitEnd' : Nft__1 } |
+  { 'ExhibitEnd' : { 'nft' : Nft__1, 'recipient' : CanisterIDText } } |
   {
     'BidOffering' : {
       'to' : CanisterIDText,
