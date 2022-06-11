@@ -47,6 +47,9 @@ export const getTokenIdAndNftStatusFromAsset = (
   } else if ('Exhibit' in stat) {
     tokenId = stat.Exhibit.MyExtStandardNft;
     nftStatus = 'exhibit';
+  } else if ('ExhibitEnd' in stat) {
+    tokenId = stat.ExhibitEnd.MyExtStandardNft;
+    nftStatus = 'exhibitEnd';
   } else if ('BidOffering' in stat) {
     tokenId = stat.BidOffering.nft.MyExtStandardNft;
     nftStatus = 'bidOffering';
@@ -56,6 +59,12 @@ export const getTokenIdAndNftStatusFromAsset = (
   } else if ('Pending' in stat) {
     tokenId = stat.Pending.nft.MyExtStandardNft;
     nftStatus = 'pending';
+  } else if ('Selected' in stat) {
+    tokenId = stat.Selected.MyExtStandardNft;
+    nftStatus = 'selected';
+  } else if ('NotSelected' in stat) {
+    tokenId = stat.NotSelected.MyExtStandardNft;
+    nftStatus = 'notSelected';
   } else {
     throw new Error('Invalid token');
   }

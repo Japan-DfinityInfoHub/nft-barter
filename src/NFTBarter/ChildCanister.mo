@@ -70,7 +70,8 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
         } else {
           return #err(#unauthorized("You are not the owner of this NFT"));
         };
-      // new nft is added here
+      // New nft will be added here.
+      // case(#NewNft(id)) {};
     };
     return #ok totalTokenIndex;
   };
@@ -170,6 +171,8 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
         }));
         _assetOwners.put(totalTokenIndex, caller);
       };
+      // New nft will be added here.
+      // case(#NewNft(id)) {};
     };
 
     // Add bid to `_auctions`
@@ -203,28 +206,26 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     // Transfer the NFT to `recipient`
     switch (nft) {
       case (#MyExtStandardNft(tokenIdentifier)) {
-        if (await hasNft(tokenIdentifier)) {
-          switch (await (actor(_canisterIdList.myExtStandardNft): MyExtStandardNftCanisterIF)
-            .transfer({
-              from = #principal(Principal.fromActor(this));
-              to = #principal(Principal.fromText(recipient));
-              token = tokenIdentifier;
-              amount = 1;
-              memo = Blob.fromArray([]:[Nat8]);
-              notify = false;
-              subaccount = null;
-            })){
-            case (#err(_)){
-              return #err(#other("An error occurred while transferring NFT"));
-            };
-            case (#ok(_)){
-              return #ok nft;
-            };
+        switch (await (actor(_canisterIdList.myExtStandardNft): MyExtStandardNftCanisterIF)
+          .transfer({
+            from = #principal(Principal.fromActor(this));
+            to = #principal(Principal.fromText(recipient));
+            token = tokenIdentifier;
+            amount = 1;
+            memo = Blob.fromArray([]:[Nat8]);
+            notify = false;
+            subaccount = null;
+          })){
+          case (#err(_)){
+            return #err(#other("An error occurred while transferring NFT"));
           };
-        } else {
-          return #err(#unauthorized("You are not the owner of this NFT"));
+          case (#ok(_)){
+            return #ok nft;
+          };
         };
       };
+      // New nft will be added here.
+      // case(#NewNft(id)) {};
     };
   };
 
@@ -253,13 +254,12 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       index != selectedToken
     });
 
-    let bid = switch (selectedBid) {
+    let bidder = switch (selectedBid) {
       case (null) return #err(#other("Bid is not found."));
-      case (?bid) bid;
+      case (?bid) bid.1;
     };
 
     // Swap owner
-    let bidder = bid.1;
     _assetOwners.put(exhibitToken, bidder);
     _assetOwners.put(selectedToken, Principal.fromActor(this));
 
@@ -294,7 +294,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       case (?ns) { ns };
     };
 
-    let newStatus = switch (oldNftStatus) {
+    let newNftStatus = switch (oldNftStatus) {
       case (#Stay(nft)) returnStatus(nft);
       case (#Pending(v)) returnStatus(v.nft);
       case (#Exhibit(nft)) {
@@ -315,7 +315,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     };
 
     // Apply new status
-    _assets.put(tokenIndex, newStatus);
+    _assets.put(tokenIndex, newNftStatus);
     
   };
 
