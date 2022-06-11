@@ -63,6 +63,10 @@ const identityOptionOfAlice = {
 const userAlice: User = {
   principal: identityOptionOfAlice.agentOptions.identity.getPrincipal(),
 };
+const aliceAccountId = principalToAccountIdentifier(
+  userAlice.principal.toText(),
+  0
+);
 
 const actorOfAlice = createNFTBarterActor(identityOptionOfAlice);
 const generativeNFTActorOfAlice = createGenerativeNFTActor(
@@ -504,6 +508,27 @@ describe('Select NFT test', () => {
         Selected: expect.anything(),
       },
     });
+  });
+
+  it('Check if Alice can withdraw NFT that she has selected', async () => {
+    let tokenIdentifier: string;
+    {
+      const res = await childCanisterActorOfAlice.withdrawNft(
+        selectedTokenIndex
+      );
+      expect(res).toStrictEqual({
+        ok: {
+          MyExtStandardNft: expect.anything(),
+        },
+      });
+      tokenIdentifier = 'ok' in res ? res.ok.MyExtStandardNft : '';
+    }
+    {
+      const res = await generativeNFTActorOfAlice.bearer(tokenIdentifier);
+      expect(res).toStrictEqual({
+        ok: aliceAccountId,
+      });
+    }
   });
 
   it('Check if the new status of exhibit nft is #ExhibitEnd', async () => {
