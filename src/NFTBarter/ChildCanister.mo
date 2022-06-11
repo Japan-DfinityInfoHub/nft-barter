@@ -136,7 +136,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       };
       // In case of success, change `NftStatus` to `#BidOffering`
       case (#ok(tokenIndex)) {
-        changeNftStatus(bidToken, returnBidOffering(exhibitCanisterId, exhibitToken));
+        changeNftStatus(bidToken, returnBidOffering(exhibitCanisterId, exhibitToken, tokenIndex));
         return #ok tokenIndex;
       };
     };
@@ -168,6 +168,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
           nft = #MyExtStandardNft(extTokenIdentifier);
           from = callerText;
           exhibitNftIndex = exhibitToken;
+          tokenIndexOnOtherCanister = bidToken;
         }));
         _assetOwners.put(totalTokenIndex, caller);
       };
@@ -391,23 +392,25 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
   };
 
   // Returns function which takes nft as parameter and returns `NftStatus` of `#BidOffered`
-  func returnBidOffered(from : CanisterIDText, exhibitNftIndex : TokenIndex) : Nft -> NftStatus {
+  func returnBidOffered(from : CanisterIDText, exhibitNftIndex : TokenIndex, tokenIndexOnOtherCanister: TokenIndex) : Nft -> NftStatus {
     return func (nft : Nft) : NftStatus {
       #BidOffered({
         nft;
         from;
         exhibitNftIndex;
+        tokenIndexOnOtherCanister;
       })
     }
   };
 
   // Returns function which takes nft as parameter and returns `NftStatus` of `#BidOffering`
-  func returnBidOffering(to : CanisterIDText, exhibitNftIndex : TokenIndex) : Nft -> NftStatus {
+  func returnBidOffering(to : CanisterIDText, exhibitNftIndex : TokenIndex, tokenIndexOnOtherCanister: TokenIndex) : Nft -> NftStatus {
     return func (nft : Nft) : NftStatus {
       #BidOffering({
         nft;
         to;
         exhibitNftIndex;
+        tokenIndexOnOtherCanister;
       })
     }
   };
