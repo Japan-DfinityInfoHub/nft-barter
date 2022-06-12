@@ -34,7 +34,7 @@ export const App = () => {
           <Route path='' element={<Marketplace />} />
         </Route>
         <Route path='/bid' element={<PrivateRoute />}>
-          <Route path=':bidId' element={<Bid />} />
+          <Route path=':exhibitId' element={<Bid />} />
         </Route>
         <Route path='*' element={<PublicRoute />}>
           <Route path='' element={<NotFound />} />

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { FC } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useAppSelector } from '../app/hooks';
+
 import {
-  Box,
+  Button,
   Image,
   HStack,
   VStack,
@@ -10,15 +12,18 @@ import {
   Spacer,
   useBreakpointValue,
 } from '@chakra-ui/react';
+
+import { selectIsLogin } from '../features/auth/authSlice';
 import { decodeTokenId } from '../utils/ext';
 import {
   GENERATIVE_ART_NFT_CANISTER_ID,
   GENERATIVE_ART_NFT_BASE_URL as baseUrl,
 } from '../utils/canisterId';
-import { createActor } from '../../../declarations/GenerativeArtNFT';
+
+// Features
 import { useExhibitCanister } from '../features/exhibit/useExhibitCanister';
 
-import { BidButton } from '../features/bid/BidButton';
+// Components
 import { NotFound } from './NotFound';
 import { UserIcon } from './UserIcon';
 
@@ -31,14 +36,38 @@ const getStack = () => {
   }
 };
 
+type LinkToBidPageProp = {
+  disabled: boolean;
+  exhibitId?: string;
+};
+const LinkToBidPage: FC<LinkToBidPageProp> = ({ disabled, exhibitId }) => {
+  if (disabled) {
+    return <></>;
+  }
+
+  return (
+    <Link to={`/bid/${exhibitId}`}>
+      <Button
+        color='white'
+        borderRadius='full'
+        bgColor='blue.300'
+        _hover={{ bgColor: 'blue.500' }}
+      >
+        Place Bid
+      </Button>
+    </Link>
+  );
+};
+
 export const NFTDetail = () => {
   const Stack = getStack();
   const { tokenId } = useParams();
+  const isLogin = useAppSelector(selectIsLogin);
 
   if (tokenId === undefined) {
     return <NotFound />;
   }
-  const { bearer, exhibitCanisterAndItsOwner } = useExhibitCanister({
+  const { bearer, isYours, exhibitId, isExhibit } = useExhibitCanister({
     tokenId,
   });
 
@@ -87,10 +116,14 @@ export const NFTDetail = () => {
             alignItems='stretch'
             spacing='12px'
           >
-            <Text color='gray.400'>Owned by</Text>
+            <Text color='gray.400'>Owned by {isYours && 'you'}</Text>
             <UserIcon diameter={28} accountId={bearer} />
             <Text color='blue.400'>{bearer.slice(0, 8)}...</Text>
           </HStack>
+          <LinkToBidPage
+            disabled={!isLogin || !isExhibit || isYours}
+            exhibitId={exhibitId}
+          />
         </VStack>
       </Stack>
     </>

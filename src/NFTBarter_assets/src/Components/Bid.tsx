@@ -7,10 +7,10 @@ import { createActor } from '../../../declarations/ChildCanister';
 import { NotFound } from './NotFound';
 
 export const Bid = () => {
-  // bidId is constructed by canister ID of child canister and token index,
+  // `exhibitId` is constructed by canister ID of exhibit child canister and token index,
   // in the same manner as an EXT token identifier.
-  const { bidId } = useParams();
-  const { index, canisterId } = decodeTokenId(bidId);
+  const { exhibitId } = useParams();
+  const { index, canisterId } = decodeTokenId(exhibitId);
 
   if (canisterId === '') {
     return <NotFound />;
