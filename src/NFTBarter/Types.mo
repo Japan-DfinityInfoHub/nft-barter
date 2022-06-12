@@ -49,20 +49,31 @@ module {
       nft : Nft;
       from : CanisterIDText;
       exhibitNftIndex : TokenIndex;
+      tokenIndexOnBidCanister : TokenIndex;
     };
     #BidOffering : {
       nft : Nft;
       to : CanisterIDText;
       exhibitNftIndex : TokenIndex;
+      tokenIndexOnExhibitCanister : TokenIndex;
     };
     #Exhibit : Nft;
-    #ExhibitEnd: Nft;
+    #ExhibitEnd : {
+      recipient : CanisterIDText;
+      nft : Nft;
+    };
     #Pending : {
       recipient : CanisterIDText;
       nft : Nft;
     };
     #Selected : Nft;
     #NotSelected : Nft;
+    #Winning : {
+      nft : Nft;
+      canisterId : CanisterIDText;
+      winningTokenIndex : TokenIndex;
+      winningNft : Nft;
+    };
   };
 
   // Import Request

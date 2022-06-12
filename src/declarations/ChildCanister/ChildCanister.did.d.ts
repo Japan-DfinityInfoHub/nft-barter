@@ -16,6 +16,13 @@ export interface ChildCanister {
       Array<[TokenIndex, Array<[TokenIndex, UserId]>]>
     >,
   'importMyNft' : (arg_0: Nft) => Promise<Result_2>,
+  'notifyWinner' : (
+      arg_0: {
+        'bidTokenIndex' : TokenIndex,
+        'exhibitTokenIndex' : TokenIndex,
+        'winningNft' : Nft,
+      },
+    ) => Promise<Result_1>,
   'offerBidMyNft' : (
       arg_0: {
         'exhibitCanisterId' : CanisterIDText__1,
@@ -24,9 +31,13 @@ export interface ChildCanister {
       },
     ) => Promise<Result_2>,
   'selectTokenInAuction' : (
-      arg_0: { 'selectedToken' : TokenIndex, 'exhibitToken' : TokenIndex },
+      arg_0: {
+        'selectedTokenIndex' : TokenIndex,
+        'exhibitTokenIndex' : TokenIndex,
+      },
     ) => Promise<Result_1>,
   'sendToMe' : (arg_0: TokenIndex) => Promise<Result>,
+  'withdrawNft' : (arg_0: TokenIndex) => Promise<Result>,
 }
 export type Error = { 'other' : string } |
   { 'alreadyRegistered' : string } |
@@ -36,6 +47,7 @@ export type Nft = { 'MyExtStandardNft' : TokenIdentifier };
 export type NftStatus = {
     'BidOffered' : {
       'nft' : Nft__1,
+      'tokenIndexOnBidCanister' : TokenIndex__1,
       'from' : CanisterIDText,
       'exhibitNftIndex' : TokenIndex__1,
     }
@@ -43,12 +55,21 @@ export type NftStatus = {
   { 'Stay' : Nft__1 } |
   { 'Exhibit' : Nft__1 } |
   { 'Selected' : Nft__1 } |
+  {
+    'Winning' : {
+      'nft' : Nft__1,
+      'winningTokenIndex' : TokenIndex__1,
+      'winningNft' : Nft__1,
+      'canisterId' : CanisterIDText,
+    }
+  } |
   { 'NotSelected' : Nft__1 } |
-  { 'ExhibitEnd' : Nft__1 } |
+  { 'ExhibitEnd' : { 'nft' : Nft__1, 'recipient' : CanisterIDText } } |
   {
     'BidOffering' : {
       'to' : CanisterIDText,
       'nft' : Nft__1,
+      'tokenIndexOnExhibitCanister' : TokenIndex__1,
       'exhibitNftIndex' : TokenIndex__1,
     }
   } |

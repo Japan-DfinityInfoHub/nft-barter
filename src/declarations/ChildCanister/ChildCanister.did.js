@@ -16,17 +16,25 @@ export const idlFactory = ({ IDL }) => {
   const NftStatus = IDL.Variant({
     'BidOffered' : IDL.Record({
       'nft' : Nft__1,
+      'tokenIndexOnBidCanister' : TokenIndex__1,
       'from' : CanisterIDText,
       'exhibitNftIndex' : TokenIndex__1,
     }),
     'Stay' : Nft__1,
     'Exhibit' : Nft__1,
     'Selected' : Nft__1,
+    'Winning' : IDL.Record({
+      'nft' : Nft__1,
+      'winningTokenIndex' : TokenIndex__1,
+      'winningNft' : Nft__1,
+      'canisterId' : CanisterIDText,
+    }),
     'NotSelected' : Nft__1,
-    'ExhibitEnd' : Nft__1,
+    'ExhibitEnd' : IDL.Record({ 'nft' : Nft__1, 'recipient' : CanisterIDText }),
     'BidOffering' : IDL.Record({
       'to' : CanisterIDText,
       'nft' : Nft__1,
+      'tokenIndexOnExhibitCanister' : TokenIndex__1,
       'exhibitNftIndex' : TokenIndex__1,
     }),
     'Pending' : IDL.Record({ 'nft' : Nft__1, 'recipient' : CanisterIDText }),
@@ -71,6 +79,17 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'importMyNft' : IDL.Func([Nft], [Result_2], []),
+    'notifyWinner' : IDL.Func(
+        [
+          IDL.Record({
+            'bidTokenIndex' : TokenIndex,
+            'exhibitTokenIndex' : TokenIndex,
+            'winningNft' : Nft,
+          }),
+        ],
+        [Result_1],
+        [],
+      ),
     'offerBidMyNft' : IDL.Func(
         [
           IDL.Record({
@@ -85,14 +104,15 @@ export const idlFactory = ({ IDL }) => {
     'selectTokenInAuction' : IDL.Func(
         [
           IDL.Record({
-            'selectedToken' : TokenIndex,
-            'exhibitToken' : TokenIndex,
+            'selectedTokenIndex' : TokenIndex,
+            'exhibitTokenIndex' : TokenIndex,
           }),
         ],
         [Result_1],
         [],
       ),
     'sendToMe' : IDL.Func([TokenIndex], [Result], []),
+    'withdrawNft' : IDL.Func([TokenIndex], [Result], []),
   });
   return ChildCanister;
 };

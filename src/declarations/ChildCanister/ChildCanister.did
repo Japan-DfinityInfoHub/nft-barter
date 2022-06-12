@@ -43,15 +43,20 @@ type NftStatus =
       exhibitNftIndex: TokenIndex__1;
       from: CanisterIDText;
       nft: Nft__1;
+      tokenIndexOnBidCanister: TokenIndex__1;
     };
    BidOffering:
     record {
       exhibitNftIndex: TokenIndex__1;
       nft: Nft__1;
       to: CanisterIDText;
+      tokenIndexOnExhibitCanister: TokenIndex__1;
     };
    Exhibit: Nft__1;
-   ExhibitEnd: Nft__1;
+   ExhibitEnd: record {
+                 nft: Nft__1;
+                 recipient: CanisterIDText;
+               };
    NotSelected: Nft__1;
    Pending: record {
               nft: Nft__1;
@@ -59,6 +64,13 @@ type NftStatus =
             };
    Selected: Nft__1;
    Stay: Nft__1;
+   Winning:
+    record {
+      canisterId: CanisterIDText;
+      nft: Nft__1;
+      winningNft: Nft__1;
+      winningTokenIndex: TokenIndex__1;
+    };
  };
 type Nft = variant {MyExtStandardNft: TokenIdentifier;};
 type Error = 
@@ -96,6 +108,12 @@ type ChildCanister =
                };
          }) query;
    importMyNft: (Nft) -> (Result_2);
+   notifyWinner:
+    (record {
+       bidTokenIndex: TokenIndex;
+       exhibitTokenIndex: TokenIndex;
+       winningNft: Nft;
+     }) -> (Result_1);
    offerBidMyNft:
     (record {
        bidToken: TokenIndex;
@@ -104,10 +122,11 @@ type ChildCanister =
      }) -> (Result_2);
    selectTokenInAuction:
     (record {
-       exhibitToken: TokenIndex;
-       selectedToken: TokenIndex;
+       exhibitTokenIndex: TokenIndex;
+       selectedTokenIndex: TokenIndex;
      }) -> (Result_1);
    sendToMe: (TokenIndex) -> (Result);
+   withdrawNft: (TokenIndex) -> (Result);
  };
 type CanisterIdList = record {myExtStandardNft: CanisterIDText;};
 type CanisterIDText__1 = text;
