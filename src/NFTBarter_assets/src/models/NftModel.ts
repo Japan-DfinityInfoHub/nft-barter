@@ -23,3 +23,11 @@ export interface GenerativeArtNFT {
   tokenIndex: number;
   status: NftStatus;
 }
+
+export type Nft = GenerativeArtNFT;
+
+export interface ExhibitToken {
+  exhibitTokenIndex: number;
+  exhibitCanisterId: string;
+  nft: Nft;
+}

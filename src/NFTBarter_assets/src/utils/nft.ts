@@ -1,5 +1,5 @@
 import { Identity } from '@dfinity/agent';
-import { GenerativeArtNFT, NftStatus } from '../models/NftModel';
+import { NftStatus, ExhibitToken, Nft } from '../models/NftModel';
 import { createChildCanisterActorByCanisterId } from './createChildCanisterActor';
 import { decodeTokenId } from './ext';
 import { createNFTBarterActor } from './createNFTBarterActor';
@@ -11,25 +11,33 @@ import { NftStatus as NftStatusCandid } from '../../../declarations/ChildCaniste
 export const fetchAllNftsOnChildCanister = async (
   childCanisterId: CanisterID,
   identity?: Identity
-) => {
+): Promise<Nft[]> => {
   const actor = createChildCanisterActorByCanisterId(childCanisterId)({
     agentOptions: { identity },
   });
   const assets = await actor.getAssets();
-  const nfts: GenerativeArtNFT[] = assets.map((asset) => {
+  const nfts: Nft[] = assets.map((asset) => {
     return getTokenIdAndNftStatusFromAsset(asset);
   });
   return nfts;
 };
 
-export const fetchAllExhibitedNft = async (): Promise<GenerativeArtNFT[]> => {
+export const fetchAllExhibitedNft = async (): Promise<ExhibitToken[]> => {
   const actor = createNFTBarterActor({});
   const allChildCanisters = await actor.getAllChildCanisters();
   const allExhibitNfts = await Promise.all(
-    allChildCanisters.map(async (allChildCanister) => {
-      const [childCanisterId, _] = allChildCanister;
-      const allNfts = await fetchAllNftsOnChildCanister(childCanisterId);
-      return allNfts.filter((nft) => nft.status === 'exhibit');
+    allChildCanisters.map(async (childCanister): Promise<ExhibitToken[]> => {
+      const [exhibitCanisterId, _] = childCanister;
+      const allNfts = await fetchAllNftsOnChildCanister(exhibitCanisterId);
+      return allNfts
+        .filter((nft) => nft.status === 'exhibit')
+        .map((nft) => {
+          return {
+            exhibitTokenIndex: nft.tokenIndex,
+            exhibitCanisterId: exhibitCanisterId.toText(),
+            nft,
+          };
+        });
     })
   );
   return allExhibitNfts.flat();

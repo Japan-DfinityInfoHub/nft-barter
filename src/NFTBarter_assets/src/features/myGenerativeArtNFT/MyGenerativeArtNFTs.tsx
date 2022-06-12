@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { Box, SimpleGrid, Center } from '@chakra-ui/react';
+import { Box, SimpleGrid, Center, Text } from '@chakra-ui/react';
 
 import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../../utils/canisterId';
-import { NFTCard } from './../../Components/NFTCard';
+import { NFTCard } from '../../Components/NFTCard';
+import { ExhibitButton } from '../exhibit/ExhibitButton';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   fetchNFTsOnWallet,
@@ -31,11 +32,18 @@ export const MyGenerativeArtNFTs = () => {
           return (
             <Box mx='auto' my='10px' key={tokenIndex}>
               <NFTCard
+                to={`/asset/${tokenId}`}
                 tokenId={tokenId}
                 status={status}
                 tokenIndex={tokenIndex}
                 baseUrl={baseUrl}
-              />
+              >
+                <ExhibitButton
+                  tokenId={tokenId}
+                  tokenIndex={tokenIndex}
+                  baseUrl={baseUrl}
+                />
+              </NFTCard>
             </Box>
           );
         })}

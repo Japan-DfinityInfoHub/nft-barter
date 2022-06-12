@@ -10,13 +10,12 @@ import {
   Spacer,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { decodeTokenId } from '../utils/ext';
+import { decodeTokenId, generateTokenIdentifier } from '../utils/ext';
 import {
   GENERATIVE_ART_NFT_CANISTER_ID,
   GENERATIVE_ART_NFT_BASE_URL as baseUrl,
 } from '../utils/canisterId';
 import { createActor } from '../../../declarations/GenerativeArtNFT';
-import { generateTokenIdentifier } from '../utils/ext';
 
 import { NotFound } from './NotFound';
 import { UserIcon } from './UserIcon';
