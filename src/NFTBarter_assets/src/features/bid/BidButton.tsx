@@ -21,7 +21,7 @@ interface Props {
   baseUrl: string;
 }
 
-export const ExhibitButton: FC<Props> = ({
+export const BidButton: FC<Props> = ({
   bidTokenId,
   exhibitCanisterId,
   exhibitTokenIndex,
@@ -80,7 +80,7 @@ export const ExhibitButton: FC<Props> = ({
         _hover={{ bgGradient: 'linear(to-r, blue.400, green.300)' }}
         onClick={handleClickBidButton}
       >
-        <Text fontWeight='semibold'>Bid</Text>
+        <Text fontWeight='semibold'>Place Bid</Text>
       </Button>
     </>
   );

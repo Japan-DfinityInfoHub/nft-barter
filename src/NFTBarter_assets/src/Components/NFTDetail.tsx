@@ -10,13 +10,15 @@ import {
   Spacer,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { decodeTokenId, generateTokenIdentifier } from '../utils/ext';
+import { decodeTokenId } from '../utils/ext';
 import {
   GENERATIVE_ART_NFT_CANISTER_ID,
   GENERATIVE_ART_NFT_BASE_URL as baseUrl,
 } from '../utils/canisterId';
 import { createActor } from '../../../declarations/GenerativeArtNFT';
+import { useExhibitCanister } from '../features/exhibit/useExhibitCanister';
 
+import { BidButton } from '../features/bid/BidButton';
 import { NotFound } from './NotFound';
 import { UserIcon } from './UserIcon';
 
@@ -30,29 +32,21 @@ const getStack = () => {
 };
 
 export const NFTDetail = () => {
-  const [accountId, setAccountId] = useState('');
   const Stack = getStack();
   const { tokenId } = useParams();
-  const { index, canisterId } = decodeTokenId(tokenId);
 
+  if (tokenId === undefined) {
+    return <NotFound />;
+  }
+  const { bearer, exhibitCanisterAndItsOwner } = useExhibitCanister({
+    tokenId,
+  });
+
+  const { index, canisterId } = decodeTokenId(tokenId);
   // So far we only accept GenerativeArtNFT canister
   if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
     return <NotFound />;
   }
-
-  const fetchBearer = async () => {
-    const actor = createActor(canisterId);
-    const tid = generateTokenIdentifier(canisterId, index);
-    const res = await actor.bearer(tid);
-    if ('ok' in res) {
-      const aid = res.ok;
-      setAccountId(aid);
-    }
-  };
-
-  useEffect(() => {
-    fetchBearer();
-  }, []);
 
   return (
     <>
@@ -94,8 +88,8 @@ export const NFTDetail = () => {
             spacing='12px'
           >
             <Text color='gray.400'>Owned by</Text>
-            <UserIcon diameter={28} accountId={accountId} />
-            <Text color='blue.400'>{accountId.slice(0, 8)}...</Text>
+            <UserIcon diameter={28} accountId={bearer} />
+            <Text color='blue.400'>{bearer.slice(0, 8)}...</Text>
           </HStack>
         </VStack>
       </Stack>

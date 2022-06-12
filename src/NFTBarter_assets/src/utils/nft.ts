@@ -5,8 +5,18 @@ import { decodeTokenId } from './ext';
 import { createNFTBarterActor } from './createNFTBarterActor';
 
 import { TokenIdentifier } from '../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
-import { CanisterID } from '../../../declarations/NFTBarter/NFTBarter.did';
+import {
+  CanisterID,
+  UserId,
+} from '../../../declarations/NFTBarter/NFTBarter.did';
 import { NftStatus as NftStatusCandid } from '../../../declarations/ChildCanister/ChildCanister.did';
+
+export const fetchAllChildCanisters = async (): Promise<
+  [CanisterID, UserId][]
+> => {
+  const actor = createNFTBarterActor({});
+  return await actor.getAllChildCanisters();
+};
 
 export const fetchAllNftsOnChildCanister = async (
   childCanisterId: CanisterID,
@@ -23,8 +33,7 @@ export const fetchAllNftsOnChildCanister = async (
 };
 
 export const fetchAllExhibitedNft = async (): Promise<ExhibitToken[]> => {
-  const actor = createNFTBarterActor({});
-  const allChildCanisters = await actor.getAllChildCanisters();
+  const allChildCanisters = await fetchAllChildCanisters();
   const allExhibitNfts = await Promise.all(
     allChildCanisters.map(async (childCanister): Promise<ExhibitToken[]> => {
       const [exhibitCanisterId, _] = childCanister;
