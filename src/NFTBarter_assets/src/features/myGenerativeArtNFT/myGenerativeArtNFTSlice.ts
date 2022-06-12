@@ -140,12 +140,11 @@ export const { updateNft } = myGenerativeArtNFTSlice.actions;
 
 export const selectError = (state: RootState) => state.myGenerativeArtNFT.error;
 export const selectNftsOnWallet = (state: RootState) =>
-  state.myGenerativeArtNFT.nftsOnWallet.sort(compareNft);
+  state.myGenerativeArtNFT.nftsOnWallet;
 export const selectNftsOnChildCanister = (state: RootState) =>
-  state.myGenerativeArtNFT.nftsOnChildCanisters.sort(compareNft);
-export const selectAllNfts = (state: RootState) =>
-  [
-    ...state.myGenerativeArtNFT.nftsOnWallet,
-    ...state.myGenerativeArtNFT.nftsOnChildCanisters,
-  ].sort(compareNft);
+  state.myGenerativeArtNFT.nftsOnChildCanisters;
+export const selectAllNfts = (state: RootState) => [
+  ...state.myGenerativeArtNFT.nftsOnWallet,
+  ...state.myGenerativeArtNFT.nftsOnChildCanisters,
+];
 export default myGenerativeArtNFTSlice.reducer;

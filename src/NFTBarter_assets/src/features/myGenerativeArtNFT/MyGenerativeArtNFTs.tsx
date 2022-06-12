@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, SimpleGrid, Center, Text } from '@chakra-ui/react';
+import { Box, SimpleGrid } from '@chakra-ui/react';
 
 import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../../utils/canisterId';
 import { NFTCard } from '../../Components/NFTCard';
