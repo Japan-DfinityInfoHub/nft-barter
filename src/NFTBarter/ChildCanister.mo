@@ -51,14 +51,15 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       return #err(#unauthorized("You are not authorized."));
     };
     
-    // Check Double Import
-    if(
-      Iter.filter<(TokenIndex, NftStatus)>(
-        _assets.entries(), func(_, nftStatus) {
-          nft == getNftFromNftStatus(nftStatus)
-        }
-      ).next() != null
-    ) return #err(#alreadyRegistered("This NFT is already registered."));
+    // Check if the token is already registered
+    let asset : ?(TokenIndex, NftStatus) = Iter.filter<(TokenIndex, NftStatus)>(
+      _assets.entries(), func(_, nftStatus) {
+        nft == getNftFromNftStatus(nftStatus)
+      }).next();
+    switch (asset) {
+      case (null) {}; // do nothing
+      case (?a) return #ok(a.0);
+    };
     
     // Import Nft
     switch (nft) {
