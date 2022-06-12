@@ -17,7 +17,7 @@ import picIcon from '@iconify/icons-icon-park-solid/pic';
 import arrowRight from '@iconify/icons-bi/arrow-right';
 import { useAppSelector } from '../../app/hooks';
 
-import { selectStatus } from './exhibitSlice';
+import { selectStatus } from './bidSlice';
 import { IconWithSpinner } from '../../Components/IconWithSpinner';
 
 const ArrowRight = () => {
@@ -37,18 +37,18 @@ export const ProgressModalContent = () => {
     isCreatingChildCanisterFinished,
     isTransferNftFinished,
     isImportingNftFinished,
-    isExhibitingNftFinished,
+    isBiddingNftFinished,
   } = useAppSelector(selectStatus);
 
   const isCreatingCanister = !isCreatingChildCanisterFinished;
   const isTransferingNft =
     isCreatingChildCanisterFinished && !isTransferNftFinished;
   const isImportingNft = isTransferNftFinished && !isImportingNftFinished;
-  const isExhibitingNft = isImportingNftFinished && !isExhibitingNftFinished;
+  const isBiddingNft = isImportingNftFinished && !isBiddingNftFinished;
 
   return (
     <ModalContent mx='4px'>
-      <ModalHeader mx='auto'>Exhibit in Progress</ModalHeader>
+      <ModalHeader mx='auto'>Bid in Progress</ModalHeader>
       <ModalBody>
         <VStack>
           <Text fontSize='md'>
@@ -115,13 +115,13 @@ export const ProgressModalContent = () => {
 
             <VStack textAlign='center'>
               <IconWithSpinner
-                loading={isExhibitingNft}
-                isFinished={isExhibitingNftFinished}
+                loading={isBiddingNft}
+                isFinished={isBiddingNftFinished}
               >
                 <Icon
                   icon={picIcon}
                   height='36'
-                  color={isExhibitingNftFinished ? '#FFFFFF' : '#0D0041'}
+                  color={isBiddingNftFinished ? '#FFFFFF' : '#0D0041'}
                 />
               </IconWithSpinner>
               <Text fontSize='md'>
