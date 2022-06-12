@@ -83,7 +83,7 @@ export const getTokenIdAndNftStatusFromAsset = (
   return {
     tokenId,
     tokenIndex: index,
-    tokenIndexOnChildCanister,
+    tokenIndexOnChildCanister: Number(tokenIndexOnChildCanister),
     status: nftStatus,
   };
 };

@@ -35,6 +35,7 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
     await new Promise((resolve) => setTimeout(resolve, 500));
     dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
     setIsProgress(false);
+    onClose();
   };
 
   return (

@@ -3,21 +3,7 @@ import { Center, Box, Circle, SimpleGrid, Image, Text } from '@chakra-ui/react';
 import { useAllExhibitedNftQuery } from './useExhibitedNFTQuery';
 import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../../utils/canisterId';
 import { NFTCard } from '../../Components/NFTCard';
-
-const Exhibited = () => {
-  return (
-    <Center
-      color='white'
-      px='1em'
-      fontSize={{ base: 'sm', md: 'md' }}
-      height='2em'
-      borderRadius='xl'
-      bgColor='blue.300'
-    >
-      <Text fontWeight='semibold'>Exhibited</Text>
-    </Center>
-  );
-};
+import { Exhibited } from '../exhibit/Exhibited';
 
 export const Marketplace = () => {
   const { data } = useAllExhibitedNftQuery();
@@ -61,7 +47,7 @@ export const Marketplace = () => {
                 const { tokenId, tokenIndex, status } = nft;
 
                 return (
-                  <Box mx='auto' my='10px' key={tokenIndex}>
+                  <Box mx='auto' my='10px' key={tokenId}>
                     <NFTCard
                       to={`/asset/${tokenId}`}
                       tokenId={tokenId}
