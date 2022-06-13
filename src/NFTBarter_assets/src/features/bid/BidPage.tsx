@@ -14,20 +14,25 @@ export const BidPage = () => {
   // `exhibitId` is constructed by canister ID of exhibit child canister and token index,
   // in the same manner as an EXT token identifier.
   const { exhibitId } = useParams();
-  const { index, canisterId } = decodeTokenId(exhibitId);
+  const { index: exhibitTokenindex, canisterId: exhibitCanisterId } =
+    decodeTokenId(exhibitId);
 
   const [tokenId, setTokenId] = useState('');
+  const { index: extTokenIndex } = decodeTokenId(tokenId);
 
-  if (canisterId === '' || exhibitId === undefined) {
+  if (exhibitCanisterId === '' || exhibitId === undefined) {
     return <NotFound />;
   }
 
   const fetchToken = async () => {
-    const actor = createActor(canisterId);
-    const res = await actor.getAssetByTokenIndex(BigInt(index));
+    const actor = createActor(exhibitCanisterId);
+    const res = await actor.getAssetByTokenIndex(BigInt(exhibitTokenindex));
     if ('ok' in res) {
       const nftStatus = res.ok;
-      const nft = getTokenIdAndNftStatusFromAsset([BigInt(index), nftStatus]);
+      const nft = getTokenIdAndNftStatusFromAsset([
+        BigInt(exhibitTokenindex),
+        nftStatus,
+      ]);
       setTokenId(nft.tokenId);
     }
   };
@@ -43,7 +48,7 @@ export const BidPage = () => {
           Offer will be placed for ...
         </Text>
         <Text fontSize='lg' fontWeight='bold' color='gray.600'>
-          # {index}
+          # {extTokenIndex}
         </Text>
         <Box minWidth='150px' maxWidth='200px'>
           <Image
@@ -59,7 +64,10 @@ export const BidPage = () => {
         </Text>
       </VStack>
 
-      <BidTokens exhibitCanisterId={canisterId} exhibitTokenIndex={index} />
+      <BidTokens
+        exhibitCanisterId={exhibitCanisterId}
+        exhibitTokenIndex={exhibitTokenindex}
+      />
     </>
   );
 };

@@ -45,6 +45,7 @@ export const BidButton: FC<Props> = ({
     await new Promise((resolve) => setTimeout(resolve, 500));
     // dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
     setIsProgress(false);
+    onClose();
   };
 
   return (
