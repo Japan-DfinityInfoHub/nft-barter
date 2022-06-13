@@ -96,7 +96,7 @@ describe('Bid an NFT test', () => {
 
   let bidTokenIndex: TokenIndex = BigInt(1); // Assume Bob imports only one NFT
   let exhibitTokenIndex: TokenIndex;
-  let bidTokenIndexInChildCanisterOfAlice: TokenIndex;
+  let bidTokenIndexInChildCanisterOfAlice: number;
 
   let bidNft: Nft;
   let exhibitNft: Nft;
@@ -274,7 +274,7 @@ describe('Bid an NFT test', () => {
   it("On Alice's child canister, asset owner of the bidded token is Bob's child canister", async () => {
     const res =
       await childCanisterActorOfAliceCalledByBob.getAssetOwnerByTokenIndex(
-        bidTokenIndexInChildCanisterOfAlice
+        BigInt(bidTokenIndexInChildCanisterOfAlice)
       );
     expect(res).toStrictEqual({
       ok: childCanisterIdOfBob,
