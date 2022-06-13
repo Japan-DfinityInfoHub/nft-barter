@@ -8,32 +8,42 @@ import {
 } from '@chakra-ui/react';
 
 import { useAppDispatch } from '../../app/hooks';
-import { exhibit, reset } from './exhibitSlice';
-import { updateNft } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
+import { offerBid, reset } from './bidSlice';
+// import { updateNft } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
 import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
 import { ProgressModalContent } from './ProgressModalContent';
 
 interface Props {
-  tokenId: string;
+  bidTokenId: string;
+  exhibitCanisterId: string;
+  exhibitTokenIndex: number;
   tokenIndex: number;
   baseUrl: string;
 }
 
-export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
+export const BidButton: FC<Props> = ({
+  bidTokenId,
+  exhibitCanisterId,
+  exhibitTokenIndex,
+  tokenIndex,
+  baseUrl,
+}) => {
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isProgress, setIsProgress] = useState(false);
 
-  const handleClickExhibitButton = () => {
+  const handleClickBidButton = () => {
     onOpen();
   };
 
   const handleClickYesButton = async () => {
     dispatch(reset());
     setIsProgress(true);
-    await dispatch(exhibit({ tokenId }));
+    await dispatch(
+      offerBid({ bidTokenId, exhibitCanisterId, exhibitTokenIndex })
+    );
     await new Promise((resolve) => setTimeout(resolve, 500));
-    dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
+    // dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
     setIsProgress(false);
     onClose();
   };
@@ -51,8 +61,8 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
           <ProgressModalContent />
         ) : (
           <ConfirmationModalContent
-            title='Do you wish to exhibit your NFT?'
-            tokenId={tokenId}
+            title='Do you wish to bid using your NFT?'
+            tokenId={bidTokenId}
             tokenIndex={tokenIndex}
             baseUrl={baseUrl}
             onClick={handleClickYesButton}
@@ -69,9 +79,9 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
         bgGradient='linear(to-r, blue.300, green.200)'
         borderRadius='xl'
         _hover={{ bgGradient: 'linear(to-r, blue.400, green.300)' }}
-        onClick={handleClickExhibitButton}
+        onClick={handleClickBidButton}
       >
-        <Text fontWeight='semibold'>Exhibit</Text>
+        <Text fontWeight='semibold'>Place Bid</Text>
       </Button>
     </>
   );

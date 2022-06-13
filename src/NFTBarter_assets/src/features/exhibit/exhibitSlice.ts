@@ -160,6 +160,9 @@ export const exhibitSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => {
+      state.error = undefined;
+      state.childCanisterId = undefined;
+      state.tokenIndexOnChildCanister = undefined;
       state.status = {
         isFetchingChildCanistersFinished: false,
         isCreatingChildCanisterFinished: false,

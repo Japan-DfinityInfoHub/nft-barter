@@ -3,15 +3,11 @@ import { AuthClient } from '@dfinity/auth-client';
 
 import { RootState, AsyncThunkConfig } from '../../app/store';
 import { createNFTBarterActor } from '../../utils/createNFTBarterActor';
-import {
-  CanisterID,
-  UserId,
-  Error,
-} from '../../../../declarations/NFTBarter/NFTBarter.did';
+import { Error } from '../../../../declarations/NFTBarter/NFTBarter.did';
 
 export interface ChildCanisterState {
   canisterIds: string[];
-  allChildCanisters: [CanisterID, UserId][];
+  allChildCanisters: [string, string][];
   error?: Error;
 }
 
@@ -21,17 +17,20 @@ const initialState: ChildCanisterState = {
 };
 
 export const getAllChildCanisters = createAsyncThunk<
-  ChildCanisterState,
+  { allChildCanisters: [string, string][] },
   undefined,
   AsyncThunkConfig<{ error: Error }>
 >('childCanister/getAll', async (_, { rejectWithValue }) => {
   const actor = createNFTBarterActor({});
 
   try {
-    const allChildCanisters: [CanisterID, UserId][] =
-      await actor.getAllChildCanisters();
+    const allChildCanisters: [string, string][] = (
+      await actor.getAllChildCanisters()
+    ).map((data) => {
+      return [data[0].toText(), data[1].toText()];
+    });
+
     return {
-      canisterIds: [],
       allChildCanisters,
     };
   } catch {
@@ -73,7 +72,7 @@ export const getMyChildCanisters = createAsyncThunk<
 });
 
 export const createChildCanister = createAsyncThunk<
-  ChildCanisterState,
+  { canisterIds: string[] },
   undefined,
   AsyncThunkConfig<{ error: Error }>
 >('childCanister/create', async (_, { rejectWithValue }) => {
@@ -92,7 +91,7 @@ export const createChildCanister = createAsyncThunk<
 
   const res = await actor.mintChildCanister();
   if ('ok' in res) {
-    return { canisterIds: [res.ok.toText()], allChildCanisters: [] };
+    return { canisterIds: [res.ok.toText()] };
   } else {
     return rejectWithValue({
       error: res.err,

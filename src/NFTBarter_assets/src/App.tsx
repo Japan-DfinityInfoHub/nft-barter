@@ -12,6 +12,7 @@ import { NFTMint } from './Components/NFTMint';
 import { NFTDetail } from './Components/NFTDetail';
 import { NotFound } from './Components/NotFound';
 import { Marketplace } from './features/marketplace/Marketplace';
+import { BidPage } from './features/bid/BidPage';
 
 export const App = () => {
   return (
@@ -31,6 +32,9 @@ export const App = () => {
         </Route>
         <Route path='/marketplace' element={<PublicRoute />}>
           <Route path='' element={<Marketplace />} />
+        </Route>
+        <Route path='/bid' element={<PrivateRoute />}>
+          <Route path=':exhibitId' element={<BidPage />} />
         </Route>
         <Route path='*' element={<PublicRoute />}>
           <Route path='' element={<NotFound />} />

@@ -1,83 +1,96 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { FC, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useAppSelector } from '../app/hooks';
+
 import {
   Box,
+  Button,
   Image,
   HStack,
   VStack,
+  Stack,
   Text,
   Center,
   Spacer,
-  useBreakpointValue,
 } from '@chakra-ui/react';
+
+import { selectIsLogin } from '../features/auth/authSlice';
 import { decodeTokenId } from '../utils/ext';
 import {
   GENERATIVE_ART_NFT_CANISTER_ID,
   GENERATIVE_ART_NFT_BASE_URL as baseUrl,
 } from '../utils/canisterId';
-import { createActor } from '../../../declarations/GenerativeArtNFT';
-import { generateTokenIdentifier } from '../utils/ext';
 
+// Features
+import { useAuction } from '../features/auction/useAuction';
+
+// Components
 import { NotFound } from './NotFound';
 import { UserIcon } from './UserIcon';
+import { OfferTable } from './OfferTable';
 
-const getStack = () => {
-  const isMobile = useBreakpointValue({ base: true, sm: false });
-  if (isMobile) {
-    return VStack;
-  } else {
-    return HStack;
+type LinkToBidPageProp = {
+  disabled: boolean;
+  exhibitId?: string;
+};
+const LinkToBidPage: FC<LinkToBidPageProp> = ({ disabled, exhibitId }) => {
+  if (disabled) {
+    return <></>;
   }
+
+  return (
+    <Link to={`/bid/${exhibitId}`}>
+      <Button
+        color='white'
+        borderRadius='full'
+        bgColor='blue.300'
+        _hover={{ bgColor: 'blue.500' }}
+      >
+        Place Bid
+      </Button>
+    </Link>
+  );
 };
 
 export const NFTDetail = () => {
-  const [accountId, setAccountId] = useState('');
-  const Stack = getStack();
   const { tokenId } = useParams();
-  const { index, canisterId } = decodeTokenId(tokenId);
+  const isLogin = useAppSelector(selectIsLogin);
 
-  // So far we only accept GenerativeArtNFT canister
-  if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
+  if (tokenId === undefined) {
     return <NotFound />;
   }
-
-  const fetchBearer = async () => {
-    const actor = createActor(canisterId);
-    const tid = generateTokenIdentifier(canisterId, index);
-    const res = await actor.bearer(tid);
-    if ('ok' in res) {
-      const aid = res.ok;
-      setAccountId(aid);
-    }
-  };
-
-  useEffect(() => {
-    fetchBearer();
-  }, []);
+  const { bearer, isYours, exhibitId, isExhibit, offers } = useAuction(tokenId);
+  const { index, canisterId } = decodeTokenId(tokenId);
+  // So far we only accept GenerativeArtNFT canister
+  if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID || !bearer) {
+    return <NotFound />;
+  }
 
   return (
     <>
       <Stack
         maxW='1300px'
         mx='auto'
-        alignItems={{ base: 'center', sm: 'flex-start' }}
+        alignItems={{ base: 'center', md: 'flex-start' }}
+        direction={{ base: 'column', md: 'row' }}
       >
         <Center
           width={{ base: '100%', sm: '40%' }}
-          borderRadius='lg'
           overflow='hidden'
           my={{ base: '20px', md: '40px' }}
           mx={{ base: '0px', sm: '20px' }}
         >
           <Image
             fit={'cover'}
-            maxHeight='70vw'
+            maxHeight='450px'
+            maxWidth={{ base: '90%', md: '450px' }}
+            width='100%'
             alt={`${tokenId}`}
             src={`${baseUrl}/?tokenid=${tokenId}`}
           />
         </Center>
         <VStack
-          alignItems={{ base: 'center', sm: 'flex-start' }}
+          alignItems={{ base: 'center', md: 'flex-start' }}
           mx={{ base: '0px', md: '20px' }}
           spacing={{ base: '10px', md: '20px' }}
         >
@@ -94,10 +107,19 @@ export const NFTDetail = () => {
             alignItems='stretch'
             spacing='12px'
           >
-            <Text color='gray.400'>Owned by</Text>
-            <UserIcon diameter={28} accountId={accountId} />
-            <Text color='blue.400'>{accountId.slice(0, 8)}...</Text>
+            <Text color='gray.400'>Owned by {isYours && 'you'}</Text>
+            <UserIcon diameter={28} accountId={bearer} />
+            <Text color='blue.400'>{bearer.slice(0, 8)}...</Text>
           </HStack>
+          <LinkToBidPage
+            disabled={!isLogin || !isExhibit || isYours}
+            exhibitId={exhibitId}
+          />
+          {isExhibit && offers !== undefined && (
+            <Box py='20px'>
+              <OfferTable offers={offers} />
+            </Box>
+          )}
         </VStack>
       </Stack>
     </>

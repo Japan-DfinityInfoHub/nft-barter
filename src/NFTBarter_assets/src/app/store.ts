@@ -4,7 +4,9 @@ import mintReducer from '../features/mint/mintSlice';
 import tranferReducer from '../features/transfer/transferSlice';
 import myGenerativeArtNFTReducer from '../features/myGenerativeArtNFT/myGenerativeArtNFTSlice';
 import exhibitReducer from '../features/exhibit/exhibitSlice';
+import bidReducer from '../features/bid/bidSlice';
 import childCanisterReducer from '../features/childCanister/childCanisterSlice';
+import auctionReducer from '../features/auction/auctionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +15,9 @@ export const store = configureStore({
     transfer: tranferReducer,
     myGenerativeArtNFT: myGenerativeArtNFTReducer,
     exhibit: exhibitReducer,
+    bid: bidReducer,
     childCanister: childCanisterReducer,
+    auction: auctionReducer,
   },
 });
 

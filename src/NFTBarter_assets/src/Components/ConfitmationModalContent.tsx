@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 
 interface Props {
+  title: string;
   tokenId: string;
   tokenIndex: number;
   baseUrl: string;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export const ConfirmationModalContent: FC<Props> = ({
+  title,
   tokenId,
   tokenIndex,
   baseUrl,
@@ -42,7 +44,7 @@ export const ConfirmationModalContent: FC<Props> = ({
             />
           </Box>
           <Text fontSize='md' fontWeight='bold'>
-            Do you wish to exhibit your NFT?
+            {title}
           </Text>
         </VStack>
       </ModalBody>

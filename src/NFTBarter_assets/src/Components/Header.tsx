@@ -4,7 +4,6 @@ import { Image, Box, Flex, Spacer, HStack } from '@chakra-ui/react';
 import { useAppSelector } from '../app/hooks';
 import { selectIsLogin } from '../features/auth/authSlice';
 import { LoginButton } from '../features/auth/LoginButton';
-import { UserIcon } from './UserIcon';
 import { Menu } from './Menu';
 
 export const Header = () => {
