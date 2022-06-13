@@ -3,14 +3,15 @@ import { Link, useParams } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks';
 
 import {
+  Box,
   Button,
   Image,
   HStack,
   VStack,
+  Stack,
   Text,
   Center,
   Spacer,
-  useBreakpointValue,
 } from '@chakra-ui/react';
 
 import { selectIsLogin } from '../features/auth/authSlice';
@@ -26,15 +27,7 @@ import { useExhibitCanister } from '../features/exhibit/useExhibitCanister';
 // Components
 import { NotFound } from './NotFound';
 import { UserIcon } from './UserIcon';
-
-const getStack = () => {
-  const isMobile = useBreakpointValue({ base: true, sm: false });
-  if (isMobile) {
-    return VStack;
-  } else {
-    return HStack;
-  }
-};
+import { OfferTable } from './OfferTable';
 
 type LinkToBidPageProp = {
   disabled: boolean;
@@ -60,7 +53,6 @@ const LinkToBidPage: FC<LinkToBidPageProp> = ({ disabled, exhibitId }) => {
 };
 
 export const NFTDetail = () => {
-  const Stack = getStack();
   const { tokenId } = useParams();
   const isLogin = useAppSelector(selectIsLogin);
 
@@ -82,24 +74,26 @@ export const NFTDetail = () => {
       <Stack
         maxW='1300px'
         mx='auto'
-        alignItems={{ base: 'center', sm: 'flex-start' }}
+        alignItems={{ base: 'center', md: 'flex-start' }}
+        direction={{ base: 'column', md: 'row' }}
       >
         <Center
           width={{ base: '100%', sm: '40%' }}
-          borderRadius='lg'
           overflow='hidden'
           my={{ base: '20px', md: '40px' }}
           mx={{ base: '0px', sm: '20px' }}
         >
           <Image
             fit={'cover'}
-            maxHeight='70vw'
+            maxHeight='450px'
+            maxWidth={{ base: '90%', md: '450px' }}
+            width='100%'
             alt={`${tokenId}`}
             src={`${baseUrl}/?tokenid=${tokenId}`}
           />
         </Center>
         <VStack
-          alignItems={{ base: 'center', sm: 'flex-start' }}
+          alignItems={{ base: 'center', md: 'flex-start' }}
           mx={{ base: '0px', md: '20px' }}
           spacing={{ base: '10px', md: '20px' }}
         >
@@ -124,6 +118,11 @@ export const NFTDetail = () => {
             disabled={!isLogin || !isExhibit || isYours}
             exhibitId={exhibitId}
           />
+          {isExhibit && (
+            <Box py='20px'>
+              <OfferTable />
+            </Box>
+          )}
         </VStack>
       </Stack>
     </>
