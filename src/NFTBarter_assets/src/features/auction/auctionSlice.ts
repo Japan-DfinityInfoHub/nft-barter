@@ -17,12 +17,18 @@ import {
 } from '../../utils/ext';
 import { getTokenIdAndNftStatusFromAsset } from '../../utils/nft';
 
+export type Offer = {
+  bidTokenIndex: number;
+  bidChildCanister: string;
+};
+
 export interface AuctionState {
   isExhibit: boolean;
   isYours: boolean;
   bearer?: string;
   exhibitId?: string;
   ownerOfExhibitCanister?: string;
+  offers?: Offer[];
   error?: Error;
 }
 
@@ -125,13 +131,28 @@ export const fetchAuction = createAsyncThunk<
     };
   }
 
-  // This token is exhibited
+  // This token is exhibited. Fetch offers.
+  const { index: extTokenIndex } = decodeTokenId(exhibitId);
+  const actor = createActorCC(childCanisterId);
+  const res = await actor.getAuctionByTokenIndex(BigInt(extTokenIndex));
+  if ('err' in res) {
+    return rejectWithValue({ error: { other: 'Failed to fetch offers.' } });
+  }
+
+  const offers = res.ok.map(([index, owner]) => {
+    return {
+      bidTokenIndex: Number(index),
+      bidChildCanister: owner.toText(),
+    };
+  });
+
   return {
     isExhibit: true,
     isYours: userPrincipal === ownerId,
     bearer,
     exhibitId,
     ownerOfExhibitCanister: ownerId,
+    offers,
   };
 });
 
@@ -146,6 +167,7 @@ export const auctionSlice = createSlice({
       state.bearer = action.payload?.bearer;
       state.exhibitId = action.payload?.exhibitId;
       state.ownerOfExhibitCanister = action.payload?.ownerOfExhibitCanister;
+      state.offers = action.payload?.offers;
     });
     builder.addCase(fetchAuction.rejected, (state, action) => {
       state.error = action.payload?.error;
@@ -160,5 +182,6 @@ export const selectExhibitId = (state: RootState) => state.auction.exhibitId;
 export const selectOwenerOfExhibitCanister = (state: RootState) =>
   state.auction.ownerOfExhibitCanister;
 export const selectError = (state: RootState) => state.auction.error;
+export const selectOffers = (state: RootState) => state.auction.offers;
 
 export default auctionSlice.reducer;

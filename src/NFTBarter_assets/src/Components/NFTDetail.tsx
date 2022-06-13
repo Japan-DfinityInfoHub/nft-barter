@@ -59,7 +59,7 @@ export const NFTDetail = () => {
   if (tokenId === undefined) {
     return <NotFound />;
   }
-  const { bearer, isYours, exhibitId, isExhibit, error } = useAuction(tokenId);
+  const { bearer, isYours, exhibitId, isExhibit, offers } = useAuction(tokenId);
   const { index, canisterId } = decodeTokenId(tokenId);
   // So far we only accept GenerativeArtNFT canister
   if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID || !bearer) {
@@ -115,9 +115,9 @@ export const NFTDetail = () => {
             disabled={!isLogin || !isExhibit || isYours}
             exhibitId={exhibitId}
           />
-          {isExhibit && (
+          {isExhibit && offers !== undefined && (
             <Box py='20px'>
-              <OfferTable />
+              <OfferTable offers={offers} />
             </Box>
           )}
         </VStack>

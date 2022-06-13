@@ -52,10 +52,9 @@ export const fetchAllExhibitedNft = async (): Promise<ExhibitToken[]> => {
   return allExhibitNfts.flat();
 };
 
-export const getTokenIdAndNftStatusFromAsset = (
-  asset: [bigint, NftStatusCandid]
+export const getTokenIdAndStatusFromNftStatusCandid = (
+  stat: NftStatusCandid
 ) => {
-  const [tokenIndexOnChildCanister, stat] = asset;
   let tokenId: TokenIdentifier;
   let nftStatus: NftStatus;
   if ('Stay' in stat) {
@@ -88,6 +87,15 @@ export const getTokenIdAndNftStatusFromAsset = (
   } else {
     throw new Error('Invalid token');
   }
+  return { tokenId, nftStatus };
+};
+
+export const getTokenIdAndNftStatusFromAsset = (
+  asset: [bigint, NftStatusCandid]
+) => {
+  const [tokenIndexOnChildCanister, stat] = asset;
+  const { tokenId, nftStatus } = getTokenIdAndStatusFromNftStatusCandid(stat);
+
   const { index } = decodeTokenId(tokenId);
   return {
     tokenId,

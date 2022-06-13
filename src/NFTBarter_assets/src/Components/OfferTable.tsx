@@ -14,10 +14,13 @@ import {
 } from '@chakra-ui/react';
 import { Icon } from '@iconify/react';
 import listChecklist from '@iconify/icons-ci/list-checklist';
+import { Offer } from '../features/auction/auctionSlice';
 
-type Props = {};
+type Props = {
+  offers: Offer[];
+};
 
-export const OfferTable: FC<Props> = () => {
+export const OfferTable: FC<Props> = ({ offers }) => {
   return (
     <Box borderWidth='1px' borderRadius='lg'>
       <TableContainer>
@@ -32,26 +35,20 @@ export const OfferTable: FC<Props> = () => {
           <Thead>
             <Tr>
               <Th>Collection</Th>
-              <Th>No.</Th>
+              <Th>ID</Th>
               <Th>From</Th>
             </Tr>
           </Thead>
           <Tbody fontSize='sm' color='gray.500'>
-            <Tr>
-              <Td>inches</Td>
-              <Td>123</Td>
-              <Td isNumeric>25.4</Td>
-            </Tr>
-            <Tr>
-              <Td>feet</Td>
-              <Td>123</Td>
-              <Td isNumeric>30.48</Td>
-            </Tr>
-            <Tr>
-              <Td>yards</Td>
-              <Td>123</Td>
-              <Td isNumeric>0.91444</Td>
-            </Tr>
+            {offers.map((offer) => {
+              return (
+                <Tr>
+                  <Td>GenerativeArtNFT</Td>
+                  <Td>{offer.bidTokenIndex}</Td>
+                  <Td>{offer.bidChildCanister}</Td>
+                </Tr>
+              );
+            })}
           </Tbody>
         </Table>
       </TableContainer>

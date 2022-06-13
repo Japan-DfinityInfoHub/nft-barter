@@ -7,6 +7,7 @@ import {
   selectExhibitId,
   selectIsExhibit,
   selectError,
+  selectOffers,
 } from './auctionSlice';
 
 export const useAuction = (tokenId: string) => {
@@ -16,6 +17,7 @@ export const useAuction = (tokenId: string) => {
   const isYours = useAppSelector(selectIsYours);
   const exhibitId = useAppSelector(selectExhibitId);
   const isExhibit = useAppSelector(selectIsExhibit);
+  const offers = useAppSelector(selectOffers);
   const error = useAppSelector(selectError);
 
   useEffect(() => {
@@ -27,6 +29,7 @@ export const useAuction = (tokenId: string) => {
     isExhibit,
     isYours,
     exhibitId,
+    offers,
     error,
   };
 };

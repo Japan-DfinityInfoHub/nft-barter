@@ -125,7 +125,7 @@ export const ProgressModalContent = () => {
                 />
               </IconWithSpinner>
               <Text fontSize='md'>
-                Exhibiting <br /> NFT
+                Bidding <br /> NFT
               </Text>
             </VStack>
           </HStack>
