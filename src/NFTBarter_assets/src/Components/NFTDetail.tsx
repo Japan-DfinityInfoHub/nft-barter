@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks';
 
@@ -22,7 +22,7 @@ import {
 } from '../utils/canisterId';
 
 // Features
-import { useExhibitCanister } from '../features/exhibit/useExhibitCanister';
+import { useAuction } from '../features/auction/useAuction';
 
 // Components
 import { NotFound } from './NotFound';
@@ -59,13 +59,10 @@ export const NFTDetail = () => {
   if (tokenId === undefined) {
     return <NotFound />;
   }
-  const { bearer, isYours, exhibitId, isExhibit } = useExhibitCanister({
-    tokenId,
-  });
-
+  const { bearer, isYours, exhibitId, isExhibit, error } = useAuction(tokenId);
   const { index, canisterId } = decodeTokenId(tokenId);
   // So far we only accept GenerativeArtNFT canister
-  if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID) {
+  if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID || !bearer) {
     return <NotFound />;
   }
 
