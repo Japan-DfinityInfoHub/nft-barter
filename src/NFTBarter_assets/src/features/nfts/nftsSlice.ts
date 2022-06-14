@@ -76,12 +76,16 @@ export const fetchNFTsOnChildCanister = createAsyncThunk<
           Principal.fromText(childCanisterId),
           identity
         );
-        return nfts.map((nft) => {
-          return {
-            childCanisterId,
-            ...nft,
-          };
-        });
+        return nfts
+          .filter((nft) => {
+            return nft.status !== 'exhibitEnd';
+          })
+          .map((nft) => {
+            return {
+              childCanisterId,
+              ...nft,
+            };
+          });
       })
     )
   ).flat();

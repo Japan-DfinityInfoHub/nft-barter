@@ -41,7 +41,6 @@ export const BidButton: FC<Props> = ({
     await dispatch(
       offerBid({ bidTokenId, exhibitCanisterId, exhibitTokenIndex })
     );
-    await new Promise((resolve) => setTimeout(resolve, 500));
     setIsProgress(false);
     onClose();
   };

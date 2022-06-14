@@ -7,11 +7,13 @@ import {
   createChildCanister,
 } from '../childCanister/childCanisterSlice';
 import { transfer } from '../transfer/transferSlice';
+import { moveFromWalletToChildCanister } from '../nfts/nftsSlice';
 
 import { Error } from '../../../../declarations/NFTBarter/NFTBarter.did';
 import { Nft } from '../../../../declarations/ChildCanister/ChildCanister.did';
 
 import { createChildCanisterActorByCanisterId } from '../../utils/createChildCanisterActor';
+import { decodeTokenId } from '../../utils/ext';
 
 export interface BidState {
   childCanisterId?: string;
@@ -56,6 +58,8 @@ export const offerBid = createAsyncThunk<
       });
     }
     const identity = await authClient.getIdentity();
+
+    const { index: tokenIndex } = decodeTokenId(bidTokenId);
 
     // Get user's child canister IDs.
     let childCanisterIds: string[];
@@ -108,11 +112,11 @@ export const offerBid = createAsyncThunk<
     const bidNft: Nft = { MyExtStandardNft: bidTokenId };
 
     // Import NFT into child canister
-    let bidTokenIndex: bigint;
+    let bidTokenIndex: number;
     try {
       const res = await actor.importMyNft(bidNft);
       if ('ok' in res) {
-        bidTokenIndex = res.ok;
+        bidTokenIndex = Number(res.ok);
       } else {
         return rejectWithValue({
           error: res.err,
@@ -131,7 +135,7 @@ export const offerBid = createAsyncThunk<
     try {
       const res = await actor.offerBidMyNft({
         exhibitCanisterId,
-        bidToken: bidTokenIndex,
+        bidToken: BigInt(bidTokenIndex),
         exhibitToken: BigInt(exhibitTokenIndex),
       });
       if ('ok' in res) {
@@ -149,6 +153,17 @@ export const offerBid = createAsyncThunk<
       });
     }
     dispatch(finishBiddingNft());
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    dispatch(
+      moveFromWalletToChildCanister({
+        tokenId: bidTokenId,
+        tokenIndex,
+        status: 'bidOffering',
+        childCanisterId,
+        tokenIndexOnChildCanister: bidTokenIndex,
+      })
+    );
 
     return {
       childCanisterId,

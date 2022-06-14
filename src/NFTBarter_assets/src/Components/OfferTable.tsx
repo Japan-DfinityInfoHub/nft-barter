@@ -19,6 +19,7 @@ import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../utils/canisterId';
 import { decodeTokenId } from '../utils/ext';
 import { SelectButton } from '../features/select/SelectButton';
 import { useAuction } from '../features/auction/useAuction';
+import { StatusBadge } from '../Components/StatusBadge';
 
 type Props = {
   tokenId: string;
@@ -78,9 +79,7 @@ export const OfferTable: FC<Props> = ({ tokenId }) => {
                       <Text>{bidChildCanisterAid.slice(0, 8)}...</Text>
                     </Td>
                     <Td>
-                      {nftStatus === 'notSelected' && <Text>Not Selected</Text>}
-                      {nftStatus === 'selected' && <Text>Selected</Text>}
-                      {nftStatus === 'bidOffered' && isYours && (
+                      {nftStatus === 'bidOffered' && isYours ? (
                         <SelectButton
                           exhibitCanisterId={exhibitCanisterId}
                           selectedTokenIndex={bidTokenIndex}
@@ -89,9 +88,8 @@ export const OfferTable: FC<Props> = ({ tokenId }) => {
                           baseUrl={baseUrl}
                           tokenIndex={index}
                         />
-                      )}
-                      {nftStatus === 'bidOffered' && !isYours && (
-                        <Text>Offered</Text>
+                      ) : (
+                        <StatusBadge status={nftStatus} />
                       )}
                     </Td>
                   </Tr>
