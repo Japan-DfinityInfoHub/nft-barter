@@ -69,8 +69,6 @@ export const NFTDetail = () => {
   return (
     <>
       <Stack
-        maxW='1300px'
-        mx='auto'
         alignItems={{ base: 'center', md: 'flex-start' }}
         direction={{ base: 'column', md: 'row' }}
       >
@@ -115,13 +113,13 @@ export const NFTDetail = () => {
             disabled={!isLogin || !isExhibit || isYours}
             exhibitId={exhibitId}
           />
-          {isExhibit && offers !== undefined && (
-            <Box py='20px'>
-              <OfferTable offers={offers} />
-            </Box>
-          )}
         </VStack>
       </Stack>
+      {isExhibit && (
+        <Box p='20px'>
+          <OfferTable tokenId={tokenId} />
+        </Box>
+      )}
     </>
   );
 };

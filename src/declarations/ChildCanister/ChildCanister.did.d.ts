@@ -63,7 +63,7 @@ export type NftStatus = {
       'canisterId' : CanisterIDText,
     }
   } |
-  { 'NotSelected' : Nft__1 } |
+  { 'NotSelected' : { 'nft' : Nft__1, 'recipient' : CanisterIDText } } |
   { 'ExhibitEnd' : { 'nft' : Nft__1, 'recipient' : CanisterIDText } } |
   {
     'BidOffering' : {

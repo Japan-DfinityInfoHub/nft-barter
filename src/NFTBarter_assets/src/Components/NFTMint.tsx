@@ -36,7 +36,11 @@ export const NFTMint = () => {
   return (
     <>
       <Box
-        h='80vh'
+        w='100vw'
+        position='relative'
+        left='50%'
+        minH='80vh'
+        transform='translateX(-50%)'
         bgImage="url('/mint-page-background.svg')"
         bgRepeat='no-repeat'
         bgPosition='right top'
@@ -83,7 +87,7 @@ export const NFTMint = () => {
             )}
           </VStack>
           <Box>
-            {tokenIndex ? (
+            {tokenIndex && (
               <Image
                 maxHeight='340px'
                 maxWidth={{ base: '90%', md: '340px' }}
@@ -92,15 +96,6 @@ export const NFTMint = () => {
                 boxShadow='xl'
                 src={`${baseUrl}/?tokenid=${tokenId}`}
                 alt={`${tokenId}`}
-              />
-            ) : (
-              <Image
-                maxHeight='340px'
-                maxWidth={{ base: '90%', md: '340px' }}
-                fit={'cover'}
-                boxShadow='xl'
-                src='/sample-nft.svg'
-                alt='sample-nft'
               />
             )}
           </Box>

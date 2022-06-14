@@ -67,7 +67,10 @@ module {
       nft : Nft;
     };
     #Selected : Nft;
-    #NotSelected : Nft;
+    #NotSelected : {
+      recipient : CanisterIDText;
+      nft : Nft;
+    };
     #Winning : {
       nft : Nft;
       canisterId : CanisterIDText;

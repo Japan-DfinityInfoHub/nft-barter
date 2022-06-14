@@ -29,7 +29,10 @@ export const idlFactory = ({ IDL }) => {
       'winningNft' : Nft__1,
       'canisterId' : CanisterIDText,
     }),
-    'NotSelected' : Nft__1,
+    'NotSelected' : IDL.Record({
+      'nft' : Nft__1,
+      'recipient' : CanisterIDText,
+    }),
     'ExhibitEnd' : IDL.Record({ 'nft' : Nft__1, 'recipient' : CanisterIDText }),
     'BidOffering' : IDL.Record({
       'to' : CanisterIDText,

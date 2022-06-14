@@ -1,5 +1,11 @@
 import { Identity } from '@dfinity/agent';
-import { NftStatus, ExhibitToken, Nft } from '../models/NftModel';
+import {
+  NftStatus,
+  ExhibitToken,
+  Nft,
+  WithdrawableNftStatus,
+  withdrawableNftStatus,
+} from '../models/NftModel';
 import { createChildCanisterActorByCanisterId } from './createChildCanisterActor';
 import { decodeTokenId } from './ext';
 import { createNFTBarterActor } from './createNFTBarterActor';
@@ -11,6 +17,14 @@ import {
 } from '../../../declarations/NFTBarter/NFTBarter.did';
 import { NftStatus as NftStatusCandid } from '../../../declarations/ChildCanister/ChildCanister.did';
 
+export const compareNft = (a: Nft, b: Nft) => a.tokenIndex - b.tokenIndex;
+
+export const isWithdrawable = (
+  status: string
+): status is WithdrawableNftStatus => {
+  return withdrawableNftStatus.includes(status as WithdrawableNftStatus);
+};
+
 export const fetchAllChildCanisters = async (): Promise<
   [CanisterID, UserId][]
 > => {
@@ -21,12 +35,12 @@ export const fetchAllChildCanisters = async (): Promise<
 export const fetchAllNftsOnChildCanister = async (
   childCanisterId: CanisterID,
   identity?: Identity
-): Promise<Nft[]> => {
+) => {
   const actor = createChildCanisterActorByCanisterId(childCanisterId)({
     agentOptions: { identity },
   });
   const assets = await actor.getAssets();
-  const nfts: Nft[] = assets.map((asset) => {
+  const nfts = assets.map((asset) => {
     return getTokenIdAndNftStatusFromAsset(asset);
   });
   return nfts;
@@ -79,7 +93,7 @@ export const getTokenIdAndStatusFromNftStatusCandid = (
     tokenId = stat.Selected.MyExtStandardNft;
     nftStatus = 'selected';
   } else if ('NotSelected' in stat) {
-    tokenId = stat.NotSelected.MyExtStandardNft;
+    tokenId = stat.NotSelected.nft.MyExtStandardNft;
     nftStatus = 'notSelected';
   } else if ('Winning' in stat) {
     tokenId = stat.Winning.nft.MyExtStandardNft;

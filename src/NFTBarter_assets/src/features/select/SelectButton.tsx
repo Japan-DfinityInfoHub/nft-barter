@@ -8,31 +8,47 @@ import {
 } from '@chakra-ui/react';
 
 import { useAppDispatch } from '../../app/hooks';
-import { exhibit, reset } from './exhibitSlice';
-import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
-import { ProgressModalContent } from './ProgressModalContent';
 
-interface Props {
+import { handleClickSelect } from './selectSlice';
+
+import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
+
+type Props = {
+  exhibitCanisterId: string;
+  selectedTokenIndex: number;
+  exhibitTokenIndex: number;
   tokenId: string;
   tokenIndex: number;
   baseUrl: string;
-}
+};
 
-export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
+export const SelectButton: FC<Props> = ({
+  exhibitCanisterId,
+  selectedTokenIndex,
+  exhibitTokenIndex,
+  tokenId,
+  tokenIndex,
+  baseUrl,
+}) => {
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isProgress, setIsProgress] = useState(false);
 
-  const handleClickExhibitButton = () => {
+  const handleClickSelectButton = () => {
     onOpen();
   };
 
   const handleClickYesButton = async () => {
-    dispatch(reset());
     setIsProgress(true);
-    await dispatch(exhibit({ tokenId }));
-    setIsProgress(false);
+    await dispatch(
+      handleClickSelect({
+        exhibitCanisterId,
+        selectedTokenIndex,
+        exhibitTokenIndex,
+      })
+    );
     onClose();
+    setIsProgress(false);
   };
 
   return (
@@ -44,19 +60,15 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
         size='2xl'
       >
         <ModalOverlay />
-        {isProgress ? (
-          <ProgressModalContent />
-        ) : (
-          <ConfirmationModalContent
-            title='Do you wish to exhibit your NFT?'
-            tokenId={tokenId}
-            tokenIndex={tokenIndex}
-            baseUrl={baseUrl}
-            disabled={isProgress}
-            onClick={handleClickYesButton}
-            onClose={onClose}
-          />
-        )}
+        <ConfirmationModalContent
+          title='Do you wish to select this NFT?'
+          tokenId={tokenId}
+          tokenIndex={tokenIndex}
+          baseUrl={baseUrl}
+          onClick={handleClickYesButton}
+          onClose={onClose}
+          disabled={isProgress}
+        />
       </Modal>
 
       <Button
@@ -67,9 +79,9 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
         bgGradient='linear(to-r, blue.300, green.200)'
         borderRadius='xl'
         _hover={{ bgGradient: 'linear(to-r, blue.400, green.300)' }}
-        onClick={handleClickExhibitButton}
+        onClick={handleClickSelectButton}
       >
-        <Text fontWeight='semibold'>Exhibit</Text>
+        <Text fontWeight='semibold'>Select</Text>
       </Button>
     </>
   );

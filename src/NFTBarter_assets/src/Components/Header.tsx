@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Image, Box, Flex, Spacer, HStack } from '@chakra-ui/react';
 
 import { useAppSelector } from '../app/hooks';
@@ -17,11 +18,14 @@ export const Header = () => {
         mx='auto'
         alignItems='center'
       >
-        <HStack ml={{ base: '4', sm: '3' }}>
-          <Image height={'40px'} alt='Brand logo' src={`/brand-logo.svg`} />
-          <Spacer />
-          <Image height={'20px'} alt='Brand logo' src={`/brand-name.svg`} />
-        </HStack>
+        <Link to='/'>
+          <HStack ml={{ base: '4', sm: '3' }}>
+            <Image height={'40px'} alt='Brand logo' src={`/brand-logo.svg`} />
+            <Spacer />
+            <Image height={'20px'} alt='Brand logo' src={`/brand-name.svg`} />
+          </HStack>
+        </Link>
+
         <Spacer />
         <Box as='nav' mr={{ base: '4', sm: '3' }} verticalAlign='middle'>
           {isLogin ? <Menu /> : <LoginButton />}

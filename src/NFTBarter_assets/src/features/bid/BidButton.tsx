@@ -9,7 +9,6 @@ import {
 
 import { useAppDispatch } from '../../app/hooks';
 import { offerBid, reset } from './bidSlice';
-// import { updateNft } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
 import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
 import { ProgressModalContent } from './ProgressModalContent';
 
@@ -42,8 +41,6 @@ export const BidButton: FC<Props> = ({
     await dispatch(
       offerBid({ bidTokenId, exhibitCanisterId, exhibitTokenIndex })
     );
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    // dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
     setIsProgress(false);
     onClose();
   };
@@ -65,6 +62,7 @@ export const BidButton: FC<Props> = ({
             tokenId={bidTokenId}
             tokenIndex={tokenIndex}
             baseUrl={baseUrl}
+            disabled={isProgress}
             onClick={handleClickYesButton}
             onClose={onClose}
           />

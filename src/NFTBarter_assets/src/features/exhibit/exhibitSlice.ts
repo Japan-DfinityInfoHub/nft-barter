@@ -7,11 +7,13 @@ import {
   createChildCanister,
 } from '../childCanister/childCanisterSlice';
 import { transfer } from '../transfer/transferSlice';
+import { moveFromWalletToChildCanister } from '../nfts/nftsSlice';
 
 import { Error } from '../../../../declarations/NFTBarter/NFTBarter.did';
 import { Nft } from '../../../../declarations/ChildCanister/ChildCanister.did';
 
 import { createChildCanisterActorByCanisterId } from '../../utils/createChildCanisterActor';
+import { decodeTokenId } from '../../utils/ext';
 
 export interface ExhibitState {
   childCanisterId?: string;
@@ -51,6 +53,8 @@ export const exhibit = createAsyncThunk<
     });
   }
   const identity = await authClient.getIdentity();
+
+  const { index: tokenIndex } = decodeTokenId(tokenId);
 
   // Get user's child canister IDs.
   let childCanisterIds: string[];
@@ -103,11 +107,11 @@ export const exhibit = createAsyncThunk<
   const nft: Nft = { MyExtStandardNft: tokenId };
 
   // Import NFT into child canister
-  let tokenIndexOnChildCanister: bigint;
+  let tokenIndexOnChildCanister: number;
   try {
     const res = await actor.importMyNft(nft);
     if ('ok' in res) {
-      tokenIndexOnChildCanister = res.ok;
+      tokenIndexOnChildCanister = Number(res.ok);
     } else {
       return rejectWithValue({
         error: res.err,
@@ -124,7 +128,7 @@ export const exhibit = createAsyncThunk<
 
   // Exhibit NFT
   try {
-    const res = await actor.exhibitMyNft(tokenIndexOnChildCanister);
+    const res = await actor.exhibitMyNft(BigInt(tokenIndexOnChildCanister));
     if ('ok' in res) {
       // do nothing
     } else {
@@ -140,6 +144,17 @@ export const exhibit = createAsyncThunk<
     });
   }
   dispatch(finishExhibitingNft());
+
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  dispatch(
+    moveFromWalletToChildCanister({
+      tokenId,
+      tokenIndex,
+      status: 'exhibit',
+      childCanisterId,
+      tokenIndexOnChildCanister,
+    })
+  );
 
   return {
     childCanisterId,

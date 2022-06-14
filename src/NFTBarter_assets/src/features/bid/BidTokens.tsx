@@ -4,10 +4,7 @@ import { Box, SimpleGrid } from '@chakra-ui/react';
 import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../../utils/canisterId';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { NFTCard } from '../../Components/NFTCard';
-import {
-  fetchNFTsOnWallet,
-  selectNftsOnWallet,
-} from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
+import { fetchMyNFTsOnWallet, selectNftsOnWallet } from '../nfts/nftsSlice';
 import { BidButton } from './BidButton';
 
 type Props = {
@@ -23,11 +20,11 @@ export const BidTokens: FC<Props> = ({
   const allNfts = useAppSelector(selectNftsOnWallet);
 
   useEffect(() => {
-    dispatch(fetchNFTsOnWallet());
+    dispatch(fetchMyNFTsOnWallet());
   }, []);
 
   return (
-    <Box maxW='1300px' mx='auto' mt='20px'>
+    <Box m='20px'>
       <SimpleGrid
         mx={{ base: '0px', md: '10px' }}
         spacing='10px'
