@@ -115,13 +115,13 @@ export const NFTDetail = () => {
             disabled={!isLogin || !isExhibit || isYours}
             exhibitId={exhibitId}
           />
-          {isExhibit && offers !== undefined && (
-            <Box py='20px'>
-              <OfferTable offers={offers} />
-            </Box>
-          )}
         </VStack>
       </Stack>
+      {isExhibit && offers !== undefined && (
+        <Box p='20px'>
+          <OfferTable offers={offers} />
+        </Box>
+      )}
     </>
   );
 };
