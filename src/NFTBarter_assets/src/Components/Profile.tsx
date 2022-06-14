@@ -40,7 +40,14 @@ export const Profile = () => {
 
   return (
     <>
-      <Box h={{ base: '32', sm: '40' }} bg='#EDF4FF' />
+      <Box
+        h={{ base: '32', sm: '40' }}
+        w='100vw'
+        position='relative'
+        left='50%'
+        transform='translateX(-50%)'
+        bg='#EDF4FF'
+      />
       <Center pos='relative'>
         <Box pos='absolute' top='-50'>
           <UserIcon diameter={100} accountId={accountId} />
@@ -48,7 +55,6 @@ export const Profile = () => {
         <Box mt='20'>{accountId && <AccountID accountId={accountId} />}</Box>
       </Center>
       <MyNFTs />
-      <Center h='60vh'></Center>
     </>
   );
 };

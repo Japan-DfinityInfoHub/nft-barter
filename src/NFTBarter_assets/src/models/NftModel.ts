@@ -33,6 +33,14 @@ export type GenerativeArtNFT = {
 
 export type Nft = GenerativeArtNFT;
 
+export type NftOnChildCanisters = {
+  tokenId: string;
+  tokenIndex: number;
+  status: NftStatus;
+  childCanisterId: string;
+  tokenIndexOnChildCanister: number;
+};
+
 export type ExhibitToken = {
   exhibitTokenIndex: number;
   exhibitCanisterId: string;

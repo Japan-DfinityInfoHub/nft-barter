@@ -35,12 +35,12 @@ export const fetchAllChildCanisters = async (): Promise<
 export const fetchAllNftsOnChildCanister = async (
   childCanisterId: CanisterID,
   identity?: Identity
-): Promise<Nft[]> => {
+) => {
   const actor = createChildCanisterActorByCanisterId(childCanisterId)({
     agentOptions: { identity },
   });
   const assets = await actor.getAssets();
-  const nfts: Nft[] = assets.map((asset) => {
+  const nfts = assets.map((asset) => {
     return getTokenIdAndNftStatusFromAsset(asset);
   });
   return nfts;

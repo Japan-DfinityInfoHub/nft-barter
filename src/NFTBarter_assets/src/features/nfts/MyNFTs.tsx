@@ -23,7 +23,7 @@ export const MyNFTs = () => {
   }, []);
 
   return (
-    <Box maxW='1300px' mx='auto' mt='20px'>
+    <Box mt='20px'>
       <SimpleGrid
         mx={{ base: '0px', md: '10px' }}
         spacing='10px'
@@ -50,20 +50,14 @@ export const MyNFTs = () => {
                   baseUrl={baseUrl}
                 >
                   <>
-                    {status === 'exhibit' && <StatusBadge title='Exhibited' />}
-                  </>
-                  <>
-                    {status === 'exhibitEnd' && (
-                      <StatusBadge title='ExhibitEnd' />
-                    )}
-                  </>
-                  <>
-                    {status === 'wallet' && (
+                    {status === 'wallet' ? (
                       <ExhibitButton
                         tokenId={tokenId}
                         tokenIndex={tokenIndex}
                         baseUrl={baseUrl}
                       />
+                    ) : (
+                      <StatusBadge status={status} />
                     )}
                   </>
                 </NFTCard>

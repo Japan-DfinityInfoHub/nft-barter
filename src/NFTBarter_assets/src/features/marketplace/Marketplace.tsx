@@ -13,7 +13,7 @@ export const Marketplace = () => {
       <Box mt='20px' mx='auto'>
         <Box
           mx='20px'
-          borderRadius='lg'
+          borderRadius='2xl'
           h={{ base: '32', sm: '40' }}
           bgImage='/generative-art-nft-header.png'
           overflow='hidden'
@@ -34,7 +34,7 @@ export const Marketplace = () => {
           src={`/brand-logo.svg`}
         />
       </Center>
-      <Box maxW='1300px' mx='auto' mt='20px'>
+      <Box m='20px'>
         <SimpleGrid
           mx={{ base: '0px', md: '10px' }}
           spacing='10px'
@@ -55,7 +55,7 @@ export const Marketplace = () => {
                       tokenIndex={tokenIndex}
                       baseUrl={baseUrl}
                     >
-                      <StatusBadge title='Exhibited' />
+                      <StatusBadge status={status} />
                     </NFTCard>
                   </Box>
                 );

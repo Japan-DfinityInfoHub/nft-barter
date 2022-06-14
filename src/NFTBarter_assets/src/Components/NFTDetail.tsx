@@ -69,8 +69,6 @@ export const NFTDetail = () => {
   return (
     <>
       <Stack
-        maxW='1300px'
-        mx='auto'
         alignItems={{ base: 'center', md: 'flex-start' }}
         direction={{ base: 'column', md: 'row' }}
       >

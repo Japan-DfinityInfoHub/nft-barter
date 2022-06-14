@@ -15,7 +15,6 @@ import {
 } from '@chakra-ui/react';
 import { Icon } from '@iconify/react';
 import listChecklist from '@iconify/icons-ci/list-checklist';
-import { Offer } from '../features/auction/auctionSlice';
 import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../utils/canisterId';
 import { decodeTokenId } from '../utils/ext';
 import { SelectButton } from '../features/select/SelectButton';

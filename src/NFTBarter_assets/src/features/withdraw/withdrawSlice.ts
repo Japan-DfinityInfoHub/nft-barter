@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
 import { AuthClient } from '@dfinity/auth-client';
 
 import { RootState, AsyncThunkConfig } from '../../app/store';
-import { Nft } from '../../models/NftModel';
 
 // Slices
 import { removeFromWithdrawableNfts } from '../nfts/nftsSlice';
@@ -21,14 +20,14 @@ export const withdrawNft = createAsyncThunk<
   WithdrawState,
   {
     childCanisterId: string;
-    tokenIndex: number;
+    tokenIndexOnChildCanister: number;
     tokenId: string;
   },
   AsyncThunkConfig<{ error: Error }>
 >(
   'withdraw/withdrawNft',
   async (
-    { childCanisterId, tokenIndex, tokenId },
+    { childCanisterId, tokenIndexOnChildCanister, tokenId },
     { rejectWithValue, dispatch }
   ) => {
     const authClient = await AuthClient.create();
@@ -43,7 +42,7 @@ export const withdrawNft = createAsyncThunk<
       agentOptions: { identity },
     });
 
-    const res = await actor.withdrawNft(BigInt(tokenIndex));
+    const res = await actor.withdrawNft(BigInt(tokenIndexOnChildCanister));
     if ('err' in res) {
       return rejectWithValue({ error: res.err });
     }

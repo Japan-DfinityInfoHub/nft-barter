@@ -24,7 +24,7 @@ export const BidTokens: FC<Props> = ({
   }, []);
 
   return (
-    <Box maxW='1300px' mx='auto' mt='20px'>
+    <Box m='20px'>
       <SimpleGrid
         mx={{ base: '0px', md: '10px' }}
         spacing='10px'
