@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Flex, Text, Center, Box } from '@chakra-ui/react';
+import { Text, Center } from '@chakra-ui/react';
 
 import { NftStatus } from '../models/NftModel';
 
@@ -15,19 +15,19 @@ export const StatusBadge: FC<Props> = ({ status }) => {
     bgColor = 'green.400';
     text = 'Exhibit';
   } else if (status === 'exhibitEnd') {
-    bgColor = 'blue.400';
+    bgColor = 'blue.200';
     text = 'ExhibitEnd';
   } else if (status === 'bidOffering') {
-    bgColor = 'green.600';
+    bgColor = 'green.400';
     text = 'Offering';
   } else if (status === 'selected') {
-    bgColor = 'blue.800';
+    bgColor = 'blue.400';
     text = 'Selected';
   } else if (status === 'notSelected') {
-    bgColor = 'blue.300';
+    bgColor = 'blue.200';
     text = 'NotSelected';
   } else if (status === 'winning') {
-    bgColor = 'green.800';
+    bgColor = 'blue.400';
     text = 'Winning';
   }
 

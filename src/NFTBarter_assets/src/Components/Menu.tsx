@@ -13,6 +13,7 @@ import logoutIcon from '@iconify/icons-material-symbols/logout';
 import createIcon from '@iconify/icons-gridicons/create';
 import userOutlined from '@iconify/icons-ant-design/user-outlined';
 import smallShopAlt from '@iconify/icons-iconoir/small-shop-alt';
+import squareHintArrowBack16Regular from '@iconify/icons-fluent/square-hint-arrow-back-16-regular';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { logout, selectAccountId } from '../features/auth/authSlice';
@@ -38,6 +39,15 @@ export const Menu = () => {
         <Link to='/marketplace'>
           <MenuItem icon={<Icon icon={smallShopAlt} height={iconSize} />}>
             <Text fontSize={fontSize}>Marketplace</Text>
+          </MenuItem>
+        </Link>
+        <Link to='/withdraw'>
+          <MenuItem
+            icon={
+              <Icon icon={squareHintArrowBack16Regular} height={iconSize} />
+            }
+          >
+            <Text fontSize={fontSize}>Withdraw</Text>
           </MenuItem>
         </Link>
         <Link to='/profile'>
