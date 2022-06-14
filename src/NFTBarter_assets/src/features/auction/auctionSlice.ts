@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
 import { RootState, AsyncThunkConfig } from '../../app/store';
+import { NftStatus } from '../../models/NftModel';
 
 // Slices
 import { getAllChildCanisters } from '../childCanister/childCanisterSlice';
@@ -15,11 +16,17 @@ import {
   principalToAccountIdentifier,
   generateTokenIdentifier,
 } from '../../utils/ext';
-import { getTokenIdAndNftStatusFromAsset } from '../../utils/nft';
+import {
+  getTokenIdAndNftStatusFromAsset,
+  getTokenIdAndStatusFromNftStatusCandid,
+} from '../../utils/nft';
 
 export type Offer = {
   bidTokenIndex: number;
   bidChildCanister: string;
+  bidChildCanisterAid: string;
+  tokenId: string;
+  nftStatus: NftStatus;
 };
 
 export interface AuctionState {
@@ -139,12 +146,33 @@ export const fetchAuction = createAsyncThunk<
     return rejectWithValue({ error: { other: 'Failed to fetch offers.' } });
   }
 
-  const offers = res.ok.map(([index, owner]) => {
-    return {
-      bidTokenIndex: Number(index),
-      bidChildCanister: owner.toText(),
-    };
-  });
+  let offers: Offer[] = [];
+  try {
+    offers = await Promise.all(
+      res.ok.map(async ([index, owner]) => {
+        const res = await actor.getAssetByTokenIndex(index);
+        if ('ok' in res) {
+          const { tokenId, nftStatus } = getTokenIdAndStatusFromNftStatusCandid(
+            res.ok
+          );
+          return {
+            bidTokenIndex: Number(index),
+            bidChildCanister: owner.toText(),
+            bidChildCanisterAid: principalToAccountIdentifier(
+              owner.toText(),
+              0
+            ),
+            tokenId,
+            nftStatus,
+          };
+        } else {
+          throw new Error();
+        }
+      })
+    );
+  } catch {
+    return rejectWithValue({ error: { other: 'Failed to fetch offers.' } });
+  }
 
   return {
     isExhibit: true,
