@@ -7,6 +7,7 @@ import exhibitReducer from '../features/exhibit/exhibitSlice';
 import bidReducer from '../features/bid/bidSlice';
 import childCanisterReducer from '../features/childCanister/childCanisterSlice';
 import auctionReducer from '../features/auction/auctionSlice';
+import selectReducer from '../features/select/selectSlice';
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     bid: bidReducer,
     childCanister: childCanisterReducer,
     auction: auctionReducer,
+    select: selectReducer,
   },
 });
 

@@ -1,4 +1,9 @@
-import { createSlice, createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  unwrapResult,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import { RootState, AsyncThunkConfig } from '../../app/store';
 import { NftStatus } from '../../models/NftModel';
 
@@ -187,7 +192,18 @@ export const fetchAuction = createAsyncThunk<
 export const auctionSlice = createSlice({
   name: 'auction',
   initialState,
-  reducers: {},
+  reducers: {
+    selectOffer: (state, action: PayloadAction<number>) => {
+      const selectedTokenIndex = action.payload;
+      state.offers?.forEach((offer) => {
+        if (selectedTokenIndex === offer.bidTokenIndex) {
+          offer.nftStatus = 'selected';
+        } else {
+          offer.nftStatus = 'notSelected';
+        }
+      });
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchAuction.fulfilled, (state, action) => {
       state.isExhibit = action.payload?.isExhibit;
@@ -202,6 +218,8 @@ export const auctionSlice = createSlice({
     });
   },
 });
+
+export const { selectOffer } = auctionSlice.actions;
 
 export const selectIsExhibit = (state: RootState) => state.auction.isExhibit;
 export const selectIsYours = (state: RootState) => state.auction.isYours;

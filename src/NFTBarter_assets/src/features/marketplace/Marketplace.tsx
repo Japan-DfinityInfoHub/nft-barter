@@ -3,7 +3,7 @@ import { Center, Box, Circle, SimpleGrid, Image, Text } from '@chakra-ui/react';
 import { useAllExhibitedNftQuery } from './useExhibitedNFTQuery';
 import { GENERATIVE_ART_NFT_BASE_URL as baseUrl } from '../../utils/canisterId';
 import { NFTCard } from '../../Components/NFTCard';
-import { Exhibited } from '../exhibit/Exhibited';
+import { StatusBadge } from '../../Components/StatusBadge';
 
 export const Marketplace = () => {
   const { data } = useAllExhibitedNftQuery();
@@ -55,7 +55,7 @@ export const Marketplace = () => {
                       tokenIndex={tokenIndex}
                       baseUrl={baseUrl}
                     >
-                      <Exhibited />
+                      <StatusBadge title='Exhibited' />
                     </NFTCard>
                   </Box>
                 );

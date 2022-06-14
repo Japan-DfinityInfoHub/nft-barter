@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Center, Text } from '@chakra-ui/react';
 
-export const Exhibited = () => {
+type Props = {
+  title: string;
+};
+
+export const StatusBadge: FC<Props> = ({ title }) => {
   return (
     <Center
       color='white'
@@ -11,7 +15,7 @@ export const Exhibited = () => {
       borderRadius='xl'
       bgColor='blue.300'
     >
-      <Text fontWeight='semibold'>Exhibited</Text>
+      <Text fontWeight='semibold'>{title}</Text>
     </Center>
   );
 };

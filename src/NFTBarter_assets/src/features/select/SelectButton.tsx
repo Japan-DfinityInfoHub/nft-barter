@@ -8,23 +8,25 @@ import {
 } from '@chakra-ui/react';
 
 import { useAppDispatch } from '../../app/hooks';
-import { offerBid, reset } from './bidSlice';
-// import { updateNft } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
-import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
-import { ProgressModalContent } from './ProgressModalContent';
 
-interface Props {
-  bidTokenId: string;
+import { handleClickSelect } from './selectSlice';
+
+import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
+
+type Props = {
   exhibitCanisterId: string;
+  selectedTokenIndex: number;
   exhibitTokenIndex: number;
+  tokenId: string;
   tokenIndex: number;
   baseUrl: string;
-}
+};
 
-export const BidButton: FC<Props> = ({
-  bidTokenId,
+export const SelectButton: FC<Props> = ({
   exhibitCanisterId,
+  selectedTokenIndex,
   exhibitTokenIndex,
+  tokenId,
   tokenIndex,
   baseUrl,
 }) => {
@@ -32,20 +34,21 @@ export const BidButton: FC<Props> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isProgress, setIsProgress] = useState(false);
 
-  const handleClickBidButton = () => {
+  const handleClickSelectButton = () => {
     onOpen();
   };
 
   const handleClickYesButton = async () => {
-    dispatch(reset());
     setIsProgress(true);
     await dispatch(
-      offerBid({ bidTokenId, exhibitCanisterId, exhibitTokenIndex })
+      handleClickSelect({
+        exhibitCanisterId,
+        selectedTokenIndex,
+        exhibitTokenIndex,
+      })
     );
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    // dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
-    setIsProgress(false);
     onClose();
+    setIsProgress(false);
   };
 
   return (
@@ -57,19 +60,15 @@ export const BidButton: FC<Props> = ({
         size='2xl'
       >
         <ModalOverlay />
-        {isProgress ? (
-          <ProgressModalContent />
-        ) : (
-          <ConfirmationModalContent
-            title='Do you wish to bid using your NFT?'
-            tokenId={bidTokenId}
-            tokenIndex={tokenIndex}
-            baseUrl={baseUrl}
-            disabled={isProgress}
-            onClick={handleClickYesButton}
-            onClose={onClose}
-          />
-        )}
+        <ConfirmationModalContent
+          title='Do you wish to select this NFT?'
+          tokenId={tokenId}
+          tokenIndex={tokenIndex}
+          baseUrl={baseUrl}
+          onClick={handleClickYesButton}
+          onClose={onClose}
+          disabled={isProgress}
+        />
       </Modal>
 
       <Button
@@ -80,9 +79,9 @@ export const BidButton: FC<Props> = ({
         bgGradient='linear(to-r, blue.300, green.200)'
         borderRadius='xl'
         _hover={{ bgGradient: 'linear(to-r, blue.400, green.300)' }}
-        onClick={handleClickBidButton}
+        onClick={handleClickSelectButton}
       >
-        <Text fontWeight='semibold'>Place Bid</Text>
+        <Text fontWeight='semibold'>Select</Text>
       </Button>
     </>
   );

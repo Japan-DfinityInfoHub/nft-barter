@@ -55,6 +55,7 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
             tokenId={tokenId}
             tokenIndex={tokenIndex}
             baseUrl={baseUrl}
+            disabled={isProgress}
             onClick={handleClickYesButton}
             onClose={onClose}
           />

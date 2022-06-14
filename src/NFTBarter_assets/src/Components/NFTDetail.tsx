@@ -117,9 +117,9 @@ export const NFTDetail = () => {
           />
         </VStack>
       </Stack>
-      {isExhibit && offers !== undefined && (
+      {isExhibit && (
         <Box p='20px'>
-          <OfferTable offers={offers} />
+          <OfferTable tokenId={tokenId} />
         </Box>
       )}
     </>

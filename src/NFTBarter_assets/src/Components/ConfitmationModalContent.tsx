@@ -17,6 +17,7 @@ interface Props {
   tokenId: string;
   tokenIndex: number;
   baseUrl: string;
+  disabled: boolean;
   onClick: () => void;
   onClose: () => void;
 }
@@ -26,6 +27,7 @@ export const ConfirmationModalContent: FC<Props> = ({
   tokenId,
   tokenIndex,
   baseUrl,
+  disabled,
   onClick,
   onClose,
 }) => {
@@ -56,11 +58,17 @@ export const ConfirmationModalContent: FC<Props> = ({
           bgGradient='linear(to-r, blue.300, green.200)'
           mr={3}
           onClick={onClick}
+          disabled={disabled}
         >
           YES
         </Button>
         <Spacer />
-        <Button onClick={onClose} color='white' bgColor='gray.300'>
+        <Button
+          onClick={onClose}
+          color='white'
+          bgColor='gray.300'
+          disabled={disabled}
+        >
           NO
         </Button>
         <Spacer />
