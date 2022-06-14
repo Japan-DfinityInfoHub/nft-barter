@@ -9,7 +9,6 @@ import {
 
 import { useAppDispatch } from '../../app/hooks';
 import { offerBid, reset } from './bidSlice';
-// import { updateNft } from '../nfts/nftsSlice';
 import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
 import { ProgressModalContent } from './ProgressModalContent';
 
@@ -43,7 +42,6 @@ export const BidButton: FC<Props> = ({
       offerBid({ bidTokenId, exhibitCanisterId, exhibitTokenIndex })
     );
     await new Promise((resolve) => setTimeout(resolve, 500));
-    // dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
     setIsProgress(false);
     onClose();
   };

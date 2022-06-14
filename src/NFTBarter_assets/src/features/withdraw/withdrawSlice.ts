@@ -1,45 +1,66 @@
 import { createSlice, createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
-import { RootState, AsyncThunkConfig } from '../../app/store';
+import { AuthClient } from '@dfinity/auth-client';
 
+import { RootState, AsyncThunkConfig } from '../../app/store';
 import { Nft } from '../../models/NftModel';
-import { isWithdrawable } from '../../utils/nft';
 
 // Slices
-import { fetchNFTsOnChildCanister } from '../nfts/nftsSlice';
+import { removeFromWithdrawableNfts } from '../nfts/nftsSlice';
+
+// Declarations
+import { Error } from '../../../../declarations/ChildCanister/ChildCanister.did.js';
+import { createActor } from '../../../../declarations/ChildCanister';
 
 export interface WithdrawState {
-  withdrawableNfts: Nft[];
-  error?: string;
+  error?: Error;
 }
 
-const initialState: WithdrawState = {
-  withdrawableNfts: [],
-};
+const initialState: WithdrawState = {};
 
-export const fetchAll = createAsyncThunk<
-  { withdrawableNfts: Nft[] },
-  undefined,
-  AsyncThunkConfig<{ error: string }>
->('withdraw/fetchAll', async (_, { dispatch }) => {
-  const action = await dispatch(fetchNFTsOnChildCanister());
-  const state = unwrapResult(action);
-  const nftsOnMyChildCanisters = state.nftsOnMyChildCanisters;
+export const withdrawNft = createAsyncThunk<
+  WithdrawState,
+  {
+    childCanisterId: string;
+    tokenIndex: number;
+    tokenId: string;
+  },
+  AsyncThunkConfig<{ error: Error }>
+>(
+  'withdraw/withdrawNft',
+  async (
+    { childCanisterId, tokenIndex, tokenId },
+    { rejectWithValue, dispatch }
+  ) => {
+    const authClient = await AuthClient.create();
+    if (!authClient || !authClient.isAuthenticated()) {
+      return rejectWithValue({
+        error: { unauthorized: 'Failed to use auth client.' },
+      });
+    }
+    const identity = await authClient.getIdentity();
 
-  const withdrawableNfts = nftsOnMyChildCanisters.filter((nft) => {
-    const { status } = nft;
-    return isWithdrawable(status);
-  });
+    const actor = createActor(childCanisterId, {
+      agentOptions: { identity },
+    });
 
-  return { withdrawableNfts };
-});
+    const res = await actor.withdrawNft(BigInt(tokenIndex));
+    if ('err' in res) {
+      return rejectWithValue({ error: res.err });
+    }
+
+    dispatch(removeFromWithdrawableNfts(tokenId));
+
+    return {};
+  }
+);
 
 export const withdrawSlice = createSlice({
   name: 'withdraw',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchAll.fulfilled, (state, action) => {
-      state.withdrawableNfts = action.payload?.withdrawableNfts;
+    builder.addCase(withdrawNft.rejected, (state, action) => {
+      state.error = action.payload?.error;
     });
   },
 });

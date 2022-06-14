@@ -9,7 +9,7 @@ import {
 
 import { useAppDispatch } from '../../app/hooks';
 import { exhibit, reset } from './exhibitSlice';
-import { updateNft } from '../nfts/nftsSlice';
+import { moveFromWalletToChildCanister } from '../nfts/nftsSlice';
 import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
 import { ProgressModalContent } from './ProgressModalContent';
 
@@ -33,7 +33,9 @@ export const ExhibitButton: FC<Props> = ({ tokenId, tokenIndex, baseUrl }) => {
     setIsProgress(true);
     await dispatch(exhibit({ tokenId }));
     await new Promise((resolve) => setTimeout(resolve, 500));
-    dispatch(updateNft({ tokenId, tokenIndex, status: 'exhibit' }));
+    dispatch(
+      moveFromWalletToChildCanister({ tokenId, tokenIndex, status: 'exhibit' })
+    );
     setIsProgress(false);
     onClose();
   };

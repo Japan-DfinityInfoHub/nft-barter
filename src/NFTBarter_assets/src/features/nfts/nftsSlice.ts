@@ -1,26 +1,58 @@
-import { createSlice, createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  unwrapResult,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import { Principal } from '@dfinity/principal';
 import { AuthClient } from '@dfinity/auth-client';
+
 import { RootState, AsyncThunkConfig } from '../../app/store';
-import { generateTokenIdentifier } from '../../utils/ext';
-import { GENERATIVE_ART_NFT_CANISTER_ID as canisterId } from '../../utils/canisterId';
-import { fetchAllNftsOnChildCanister, compareNft } from '../../utils/nft';
 import { Nft } from '../../models/NftModel';
 import { getMyChildCanisters } from '../childCanister/childCanisterSlice';
 
+// Declarations
 import { User } from '../../../../declarations/GenerativeArtNFT/GenerativeArtNFT.did.js';
 import { createActor } from '../../../../declarations/GenerativeArtNFT';
+
+// Utils
+import { generateTokenIdentifier } from '../../utils/ext';
+import { GENERATIVE_ART_NFT_CANISTER_ID as canisterId } from '../../utils/canisterId';
+import {
+  fetchAllNftsOnChildCanister,
+  compareNft,
+  isWithdrawable,
+} from '../../utils/nft';
 
 export interface MyNFTState {
   nftsOnMyWallet: Nft[];
   nftsOnMyChildCanisters: Nft[];
+  withdrawableNfts: Nft[];
   error?: string;
 }
 
 const initialState: MyNFTState = {
   nftsOnMyWallet: [],
   nftsOnMyChildCanisters: [],
+  withdrawableNfts: [],
 };
+
+export const fetchWithdrawableNfts = createAsyncThunk<
+  { withdrawableNfts: Nft[] },
+  undefined,
+  AsyncThunkConfig<{ error: string }>
+>('nfts/fetchWithdrawableNfts', async (_, { dispatch }) => {
+  const action = await dispatch(fetchNFTsOnChildCanister());
+  const state = unwrapResult(action);
+  const nftsOnMyChildCanisters = state.nftsOnMyChildCanisters;
+
+  const withdrawableNfts = nftsOnMyChildCanisters.filter((nft) => {
+    const { status } = nft;
+    return isWithdrawable(status);
+  });
+
+  return { withdrawableNfts };
+});
 
 export const fetchNFTsOnChildCanister = createAsyncThunk<
   { nftsOnMyChildCanisters: Nft[] },
@@ -85,24 +117,27 @@ export const nftsSlice = createSlice({
   name: 'nfts',
   initialState,
   reducers: {
-    updateNft(state, action: { payload: Nft }) {
+    moveFromChildCanisterToWallet(state, action: PayloadAction<Nft>) {
       const updatedNft = action.payload;
-      if (updatedNft.status === 'wallet') {
-        // Remove the NFT from nftsOnMyChildCanisters and add it to nftsOnMyWallet
-        state.nftsOnMyChildCanisters = state.nftsOnMyChildCanisters.filter(
-          (nft) => nft.tokenId !== updatedNft.tokenId
-        );
-        state.nftsOnMyWallet = [...state.nftsOnMyWallet, updatedNft];
-      } else {
-        // Remove the NFT from nftsOnMyWallet and add it to nftsOnMyChildCanisters
-        state.nftsOnMyWallet = state.nftsOnMyWallet.filter(
-          (nft) => nft.tokenId !== updatedNft.tokenId
-        );
-        state.nftsOnMyChildCanisters = [
-          ...state.nftsOnMyChildCanisters,
-          updatedNft,
-        ];
-      }
+      state.nftsOnMyChildCanisters = state.nftsOnMyChildCanisters.filter(
+        (nft) => nft.tokenId !== updatedNft.tokenId
+      );
+      state.nftsOnMyWallet = [...state.nftsOnMyWallet, updatedNft];
+    },
+    moveFromWalletToChildCanister(state, action: PayloadAction<Nft>) {
+      const updatedNft = action.payload;
+      state.nftsOnMyWallet = state.nftsOnMyWallet.filter(
+        (nft) => nft.tokenId !== updatedNft.tokenId
+      );
+      state.nftsOnMyChildCanisters = [
+        ...state.nftsOnMyChildCanisters,
+        updatedNft,
+      ];
+    },
+    removeFromWithdrawableNfts(state, action: PayloadAction<string>) {
+      state.withdrawableNfts = state.withdrawableNfts.filter((nft) => {
+        nft.tokenId !== action.payload;
+      });
     },
   },
   extraReducers: (builder) => {
@@ -118,10 +153,17 @@ export const nftsSlice = createSlice({
     builder.addCase(fetchNFTsOnChildCanister.rejected, (state, action) => {
       state.error = action.payload?.error;
     });
+    builder.addCase(fetchWithdrawableNfts.fulfilled, (state, action) => {
+      state.withdrawableNfts = action.payload?.withdrawableNfts;
+    });
   },
 });
 
-export const { updateNft } = nftsSlice.actions;
+export const {
+  moveFromChildCanisterToWallet,
+  moveFromWalletToChildCanister,
+  removeFromWithdrawableNfts,
+} = nftsSlice.actions;
 
 export const selectError = (state: RootState) => state.nfts.error;
 export const selectNftsOnWallet = (state: RootState) =>
