@@ -7,17 +7,18 @@ import { ExhibitButton } from '../exhibit/ExhibitButton';
 import { StatusBadge } from '../../Components/StatusBadge';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
-  fetchNFTsOnWallet,
+  fetchMyNFTsOnWallet,
   fetchNFTsOnChildCanister,
   selectAllNfts,
-} from './myGenerativeArtNFTSlice';
+} from './nftsSlice';
 
-export const MyGenerativeArtNFTs = () => {
+// NFTs on user's wallet and child canisters.
+export const MyNFTs = () => {
   const dispatch = useAppDispatch();
   const allNfts = useAppSelector(selectAllNfts);
 
   useEffect(() => {
-    dispatch(fetchNFTsOnWallet());
+    dispatch(fetchMyNFTsOnWallet());
     dispatch(fetchNFTsOnChildCanister());
   }, []);
 

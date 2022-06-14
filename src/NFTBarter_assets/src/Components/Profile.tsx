@@ -3,7 +3,7 @@ import { Center, Box, HStack, Image, Text } from '@chakra-ui/react';
 import { useAppSelector } from '../app/hooks';
 import { selectAccountId } from '../features/auth/authSlice';
 import { UserIcon } from './UserIcon';
-import { MyGenerativeArtNFTs } from '../features/myGenerativeArtNFT/MyGenerativeArtNFTs';
+import { MyNFTs } from '../features/nfts/MyNFTs';
 
 const AccountID: FC<{ accountId: string }> = ({ accountId }) => {
   return (
@@ -47,7 +47,7 @@ export const Profile = () => {
         </Box>
         <Box mt='20'>{accountId && <AccountID accountId={accountId} />}</Box>
       </Center>
-      <MyGenerativeArtNFTs />
+      <MyNFTs />
       <Center h='60vh'></Center>
     </>
   );

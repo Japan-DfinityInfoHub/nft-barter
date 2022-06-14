@@ -41,7 +41,7 @@ export const getAllChildCanisters = createAsyncThunk<
 });
 
 export const getMyChildCanisters = createAsyncThunk<
-  ChildCanisterState,
+  { canisterIds: string[] },
   undefined,
   AsyncThunkConfig<{ error: Error }>
 >('childCanister/get', async (_, { rejectWithValue }) => {
@@ -62,12 +62,11 @@ export const getMyChildCanisters = createAsyncThunk<
   if ('ok' in res) {
     return {
       canisterIds: res.ok.map((p) => p.toText()),
-      allChildCanisters: [],
     };
   } else {
-    return rejectWithValue({
-      error: res.err,
-    });
+    return {
+      canisterIds: [],
+    };
   }
 });
 

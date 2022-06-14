@@ -9,7 +9,7 @@ import {
 
 import { useAppDispatch } from '../../app/hooks';
 import { offerBid, reset } from './bidSlice';
-// import { updateNft } from '../myGenerativeArtNFT/myGenerativeArtNFTSlice';
+// import { updateNft } from '../nfts/nftsSlice';
 import { ConfirmationModalContent } from '../../Components/ConfitmationModalContent';
 import { ProgressModalContent } from './ProgressModalContent';
 

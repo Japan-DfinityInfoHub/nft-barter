@@ -1,5 +1,11 @@
 import { Identity } from '@dfinity/agent';
-import { NftStatus, ExhibitToken, Nft } from '../models/NftModel';
+import {
+  NftStatus,
+  ExhibitToken,
+  Nft,
+  WithdrawableNftStatus,
+  withdrawableNftStatus,
+} from '../models/NftModel';
 import { createChildCanisterActorByCanisterId } from './createChildCanisterActor';
 import { decodeTokenId } from './ext';
 import { createNFTBarterActor } from './createNFTBarterActor';
@@ -10,6 +16,14 @@ import {
   UserId,
 } from '../../../declarations/NFTBarter/NFTBarter.did';
 import { NftStatus as NftStatusCandid } from '../../../declarations/ChildCanister/ChildCanister.did';
+
+export const compareNft = (a: Nft, b: Nft) => a.tokenIndex - b.tokenIndex;
+
+export const isWithdrawable = (
+  status: string
+): status is WithdrawableNftStatus => {
+  return withdrawableNftStatus.includes(status as WithdrawableNftStatus);
+};
 
 export const fetchAllChildCanisters = async (): Promise<
   [CanisterID, UserId][]
