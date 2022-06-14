@@ -358,7 +358,8 @@ describe('Select NFT test', () => {
       expect(res).toStrictEqual({
         ok: {
           NotSelected: {
-            MyExtStandardNft: expect.anything(),
+            nft: { MyExtStandardNft: expect.anything() },
+            recipient: childCanisterIdOfBob.toText(),
           },
         },
       });

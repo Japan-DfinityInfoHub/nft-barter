@@ -93,7 +93,7 @@ export const getTokenIdAndStatusFromNftStatusCandid = (
     tokenId = stat.Selected.MyExtStandardNft;
     nftStatus = 'selected';
   } else if ('NotSelected' in stat) {
-    tokenId = stat.NotSelected.MyExtStandardNft;
+    tokenId = stat.NotSelected.nft.MyExtStandardNft;
     nftStatus = 'notSelected';
   } else if ('Winning' in stat) {
     tokenId = stat.Winning.nft.MyExtStandardNft;

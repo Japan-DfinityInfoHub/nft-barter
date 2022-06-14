@@ -209,6 +209,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
         };
         (v.nft, v.recipient)
       };
+      case (?#NotSelected(v)) (v.nft, v.recipient);
       case (?#BidOffered(v)) (v.nft, v.from);
       case (?_) return #err(#other("Invalid NFT status (which must be #Pending)"));
     };
@@ -318,7 +319,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
     changeNftStatus(exhibitTokenIndex, returnExhibitEnd(Principal.toText(bidder)));
     changeNftStatus(selectedTokenIndex, returnSelected);
     for (notSelectedBid in notSelectedBids){
-      changeNftStatus(notSelectedBid.0, returnNotSelected);
+      changeNftStatus(notSelectedBid.0, returnNotSelected(Principal.toText(notSelectedBid.1)));
     };
 
     // Close the auction
@@ -472,7 +473,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       case (#BidOffered(v)) {
         switch(returnStatus(v.nft)){
           case (#Selected(nft)) #Selected(nft);
-          case (#NotSelected(nft)) #NotSelected(nft);
+          case (#NotSelected(v)) #NotSelected(v);
           case (_) return assert(false);
         }
       };
@@ -521,7 +522,7 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
       case (#ExhibitEnd(v)) v.nft;
       case (#Pending(v)) v.nft;
       case (#Selected(nft)) nft;
-      case (#NotSelected(nft)) nft;
+      case (#NotSelected(v)) v.nft;
       case (#Winning(v)) v.nft;
     }
   };
@@ -550,7 +551,14 @@ shared ({caller=installer}) actor class ChildCanister(_canisterOwner : Principal
 
   func returnSelected(nft: Nft) : NftStatus {#Selected(nft)};
 
-  func returnNotSelected(nft: Nft) : NftStatus {#NotSelected(nft)};
+  func returnNotSelected(recipient: CanisterIDText) : Nft -> NftStatus {
+    return func (nft: Nft) : NftStatus {
+      #NotSelected({
+        recipient;
+        nft;
+      })
+    }
+  };
   
   // Return function which takes nft as parameter and returns `NftStatus` of `#ExhibitEnd`
   func returnExhibitEnd(recipient: CanisterIDText) : Nft -> NftStatus {

@@ -44,6 +44,7 @@ export const withdrawNft = createAsyncThunk<
 
     const res = await actor.withdrawNft(BigInt(tokenIndexOnChildCanister));
     if ('err' in res) {
+      console.log(res.err);
       return rejectWithValue({ error: res.err });
     }
 

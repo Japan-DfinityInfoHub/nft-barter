@@ -57,7 +57,10 @@ type NftStatus =
                  nft: Nft__1;
                  recipient: CanisterIDText;
                };
-   NotSelected: Nft__1;
+   NotSelected: record {
+                  nft: Nft__1;
+                  recipient: CanisterIDText;
+                };
    Pending: record {
               nft: Nft__1;
               recipient: CanisterIDText;
