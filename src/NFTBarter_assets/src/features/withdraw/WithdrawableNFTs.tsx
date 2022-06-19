@@ -30,7 +30,7 @@ export const WithdrawableNFTs = () => {
       <Flex px='20px' py='10px' alignItems='center'>
         <Icon icon={listChecklist} />
         <Text px='12px' fontSize='lg' color='gray.800'>
-          Offers
+          List
         </Text>
       </Flex>
       <TableContainer>

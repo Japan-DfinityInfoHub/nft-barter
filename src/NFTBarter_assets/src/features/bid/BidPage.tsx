@@ -60,7 +60,7 @@ export const BidPage = () => {
         </Box>
 
         <Text p='10px' fontSize='xl' fontWeight='bold' color='gray.600'>
-          Select yur NFT for a bid
+          Select your NFT for a bid
         </Text>
       </VStack>
 
