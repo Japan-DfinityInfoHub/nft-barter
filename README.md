@@ -1,26 +1,51 @@
-# NFTBarter
+# Flippy (NFT Barter)
 
 [![Build and run tests](https://github.com/Japan-DfinityInfoHub/nft-barter/actions/workflows/test.yml/badge.svg)](https://github.com/Japan-DfinityInfoHub/nft-barter/actions/workflows/test.yml)
 
-Welcome to your new NFTBarter project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+<p align="center">
+  <img src="./pictures/Flippy_logo.png"/>
+</p>
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+## What is this?
 
-To learn more before you start working with NFTBarter, see the following documentation available online:
+Wouldn't it be cool if we could trade NFTs directly with each other as we did with trading cards when we were kids?
+In Internet Computer, the primary way to get NFTs is to purchase them in marketplaces using cryptocurrencies such as ICP or WICP. There is currently no way to exchange NFTs trustless.
+Imagine you exchange NFTs with someone. You must agree that one of you sends an NFT to the other first, and the other sends an NFT back. In this case, there is a risk that the person receiving the NFT first may run away with it, making it impossible to exchange NFTs with peace of mind.
+"Flippy" is a new platform that enables the trustless direct exchanges of NFTs.
 
-- [Quick Start](https://sdk.dfinity.org/docs/quickstart/quickstart-intro.html)
-- [SDK Developer Tools](https://sdk.dfinity.org/docs/developers-guide/sdk-guide.html)
-- [Motoko Programming Language Guide](https://sdk.dfinity.org/docs/language-guide/motoko.html)
-- [Motoko Language Quick Reference](https://sdk.dfinity.org/docs/language-guide/language-manual.html)
-- [JavaScript API Reference](https://erxue-5aaaa-aaaab-qaagq-cai.raw.ic0.app)
+Note: This application was developed for the [Supernova hackathon](https://supernova.devpost.com/). The video demo is available [here](https://www.youtube.com/channel/UCmjQ46z1s6vOXt4yO-79tiA).
 
-If you want to start working on your project right away, you might want to try the following commands:
+## Canister architecture
 
-```bash
-cd NFTBarter/
-dfx help
-dfx config --help
-```
+To accomplish the trustless exchange between users, we have designed the exchange to take place on top of Canisters. There is the central Canister where user information is stored, and this main Canister creates a Child Canister for each user, granting specific access privileges to users.
+
+<p align="center">
+  <img src="./pictures/main_canister_and_child_canisters.png" width="70%" height="70%"/>
+</p>
+
+When a user lists an NFT that they own, the user first sends the NFT to their Canister from their wallet. The submitted NFTs are listed in the front-end application.
+
+<p align="center">
+  <img src="./pictures/exhibit_nft.png" width="70%" height="70%"/>
+</p>
+
+When bidding on a listed NFT, each user sends an NFT once to their Canister, and then the NFT is forwarded to the seller's Canister.
+
+<p align="center">
+  <img src="./pictures/bid_nft.png" width="70%" height="70%"/>
+</p>
+
+A Canister contains the owner of each NFT; only the owner can withdraw the NFT and send it to their wallet.
+
+<p align="center">
+  <img src="./pictures/status_in_child_canister.png" width="70%" height="70%"/>
+</p>
+
+When Alice selects one of the bid NFTs, the update call swaps internal owner information in the Canister. Since this process occurs within a single commit, it can ensure that the exchange is executed atomically.
+
+<p align="center">
+  <img src="./pictures/swap_owner_in_child_canister.png" width="70%" height="70%"/>
+</p>
 
 ## Running the project locally
 
@@ -126,8 +151,20 @@ If you are hosting frontend code somewhere without using DFX, you may need to ma
 - Write your own `createActor` constructor
 
 ## Running tests
+
 To run tests:
+
 ```bash
 # Run canister e2e tests
 npm run test
 ```
+
+## Further reading
+
+To learn more about working with `dfx`, see the following documentation available online:
+
+- [Quick Start](https://sdk.dfinity.org/docs/quickstart/quickstart-intro.html)
+- [SDK Developer Tools](https://sdk.dfinity.org/docs/developers-guide/sdk-guide.html)
+- [Motoko Programming Language Guide](https://sdk.dfinity.org/docs/language-guide/motoko.html)
+- [Motoko Language Quick Reference](https://sdk.dfinity.org/docs/language-guide/language-manual.html)
+- [JavaScript API Reference](https://erxue-5aaaa-aaaab-qaagq-cai.raw.ic0.app)

@@ -13,13 +13,16 @@ export const StatusBadge: FC<Props> = ({ status }) => {
 
   if (status === 'exhibit') {
     bgColor = 'green.400';
-    text = 'Exhibit';
+    text = 'Waiting';
   } else if (status === 'exhibitEnd') {
     bgColor = 'blue.200';
     text = 'ExhibitEnd';
   } else if (status === 'bidOffering') {
     bgColor = 'green.400';
     text = 'Offering';
+  } else if (status === 'bidOffered') {
+    bgColor = 'green.400';
+    text = 'Offered';
   } else if (status === 'selected') {
     bgColor = 'blue.400';
     text = 'Selected';
