@@ -52,6 +52,7 @@ export const BidPage = () => {
         </Text>
         <Box minWidth='150px' maxWidth='200px'>
           <Image
+            fallbackSrc='/loading.png'
             fit={'cover'}
             width='100%'
             alt={`${tokenId}`}

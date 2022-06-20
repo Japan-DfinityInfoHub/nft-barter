@@ -65,6 +65,7 @@ export const OfferTable: FC<Props> = ({ tokenId }) => {
                   <Tr key={offer.tokenId}>
                     <Td>
                       <Image
+                        fallbackSrc='/loading.png'
                         fit={'cover'}
                         maxHeight='50px'
                         maxWidth='50px'

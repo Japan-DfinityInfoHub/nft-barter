@@ -12,6 +12,7 @@ import {
   Text,
   Center,
   Spacer,
+  Skeleton,
 } from '@chakra-ui/react';
 
 import { selectIsLogin } from '../features/auth/authSlice';
@@ -52,6 +53,50 @@ const LinkToBidPage: FC<LinkToBidPageProp> = ({ disabled, exhibitId }) => {
   );
 };
 
+const NFTDetailSkelton = () => {
+  return (
+    <>
+      <Stack
+        alignItems={{ base: 'center', md: 'flex-start' }}
+        direction={{ base: 'column', md: 'row' }}
+      >
+        <Center
+          width={{ base: '100%', md: '50%' }}
+          overflow='hidden'
+          my={{ base: '20px', md: '40px' }}
+          mx={{ base: '0px', sm: '20px' }}
+        >
+          <Box maxHeight='450px' maxWidth={{ base: '90%', md: '450px' }}>
+            <Skeleton
+              height={{ base: '200px', md: '450px' }}
+              width={{ base: '200px', md: '450px' }}
+            />
+          </Box>
+        </Center>
+        <VStack
+          alignItems={{ base: 'center', md: 'flex-start' }}
+          mx={{ base: '0px', md: '20px' }}
+          spacing={{ base: '10px', md: '20px' }}
+        >
+          <Skeleton
+            mt={{ base: '20px', md: '40px' }}
+            height='40px'
+            width='240px'
+          />
+          <Spacer />
+          <HStack
+            fontSize={{ base: 'lg', md: 'xl' }}
+            alignItems='stretch'
+            spacing='12px'
+          >
+            <Skeleton height='20px' width='200px' />
+          </HStack>
+        </VStack>
+      </Stack>
+    </>
+  );
+};
+
 export const NFTDetail = () => {
   const { tokenId } = useParams();
   const isLogin = useAppSelector(selectIsLogin);
@@ -63,9 +108,8 @@ export const NFTDetail = () => {
   const { index, canisterId } = decodeTokenId(tokenId);
   // So far we only accept GenerativeArtNFT canister
   if (canisterId !== GENERATIVE_ART_NFT_CANISTER_ID || !bearer) {
-    return <NotFound />;
+    return <NFTDetailSkelton />;
   }
-
   return (
     <>
       <Stack
@@ -79,6 +123,7 @@ export const NFTDetail = () => {
           mx={{ base: '0px', sm: '20px' }}
         >
           <Image
+            fallbackSrc='/loading.png'
             fit={'cover'}
             maxHeight='450px'
             maxWidth={{ base: '90%', md: '450px' }}

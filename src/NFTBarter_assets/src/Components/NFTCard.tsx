@@ -30,6 +30,7 @@ export const NFTCard: FC<Props> = ({
     >
       <Link to={to}>
         <Image
+          fallbackSrc='/loading.png'
           fit={'cover'}
           width='100%'
           alt={`${tokenId}`}
