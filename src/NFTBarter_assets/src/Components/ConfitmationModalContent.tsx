@@ -39,6 +39,7 @@ export const ConfirmationModalContent: FC<Props> = ({
           <Text fontSize='md'># {tokenIndex}</Text>
           <Box minWidth='150px' maxWidth='200px'>
             <Image
+              fallbackSrc='/loading.png'
               fit={'cover'}
               width='100%'
               alt={`${tokenId}`}

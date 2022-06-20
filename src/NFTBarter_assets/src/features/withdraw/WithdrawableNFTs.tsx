@@ -53,6 +53,7 @@ export const WithdrawableNFTs = () => {
                 <Tr key={tokenId}>
                   <Td>
                     <Image
+                      fallbackSrc='/loading.png'
                       fit={'cover'}
                       maxHeight='50px'
                       maxWidth='50px'
