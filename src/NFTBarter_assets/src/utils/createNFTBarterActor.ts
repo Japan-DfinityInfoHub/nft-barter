@@ -9,8 +9,8 @@ import {
 } from '../../../declarations/NFTBarter/NFTBarter.did.js';
 import { curriedCreateActor } from '../../../NFTBarter_assets/src/utils/createActor';
 import localCanisterIds from '../../../../.dfx/local/canister_ids.json';
-
-const canisterId = localCanisterIds.NFTBarter.local;
+const canisterId =
+  process.env.NFTBARTER_CANISTER_ID ?? localCanisterIds.NFTBarter.local;
 
 export const createNFTBarterActor =
   curriedCreateActor<INFTBarter>(idlFactory)(canisterId);

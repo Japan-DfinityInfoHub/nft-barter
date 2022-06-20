@@ -1,3 +1,4 @@
+import Cycles "mo:base/ExperimentalCycles";
 import Debug "mo:base/Debug";
 import HashMap "mo:base/HashMap";
 import Iter "mo:base/Iter";
@@ -75,7 +76,7 @@ shared (install) actor class NFTBarter() = this {
   /* child canister functions */
   public shared ({ caller }) func mintChildCanister(): async Result<CanisterID, Error> {
     if (Principal.isAnonymous(caller)) { return #err(#unauthorized(Principal.toText(caller))) };
-
+    Cycles.add(1_000_000_000_000);
     let child = await ChildCanister.ChildCanister(caller, {myExtStandardNft=Principal.toText(_targetNftCanisterId)});
     _childCanisters.put(Principal.fromActor(child), caller);
     #ok (Principal.fromActor(child))
